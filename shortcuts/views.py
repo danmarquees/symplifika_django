@@ -1,6 +1,5 @@
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.models import User
-from django.db.models import Q, Count, Avg, Sum
+from django.shortcuts import get_object_or_404
+from django.db.models import Q, Count, Sum
 from django.utils import timezone
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
@@ -164,7 +163,7 @@ class ShortcutViewSet(viewsets.ModelViewSet):
 
             return enhanced_content
 
-        except Exception as e:
+        except Exception:
             # Em caso de erro, retorna conteúdo original
             return content
 

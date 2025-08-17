@@ -1,0 +1,475 @@
+/* Symplifika Chrome Extension - Content Script Styles */
+
+/* Reset and base styles for extension elements */
+.symplifika-modal-content *,
+.symplifika-notification *,
+.symplifika-tooltip-content *,
+.symplifika-feedback-container * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+/* Loading Indicator */
+.symplifika-loading-indicator {
+  position: fixed;
+  background: #007bff;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 10001;
+  animation: symplifika-pulse 1.5s infinite;
+}
+
+@keyframes symplifika-pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+/* Variable Modal */
+.symplifika-variable-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10002;
+  animation: symplifika-fade-in 0.3s ease;
+}
+
+@keyframes symplifika-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.symplifika-modal-content {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  min-width: 400px;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow: hidden;
+  animation: symplifika-slide-up 0.3s ease;
+}
+
+@keyframes symplifika-slide-up {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.symplifika-modal-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.symplifika-modal-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.symplifika-close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.symplifika-close-btn:hover {
+  background: #f8f9fa;
+  color: #333;
+}
+
+.symplifika-modal-body {
+  padding: 20px 24px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.symplifika-variable-field {
+  margin-bottom: 16px;
+}
+
+.symplifika-variable-field:last-child {
+  margin-bottom: 0;
+}
+
+.symplifika-variable-field label {
+  display: block;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.symplifika-variable-field input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.symplifika-variable-field input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.symplifika-modal-footer {
+  padding: 16px 24px 20px;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+/* Buttons */
+.symplifika-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+}
+
+.symplifika-btn-primary {
+  background: #007bff;
+  color: white;
+}
+
+.symplifika-btn-primary:hover {
+  background: #0056b3;
+}
+
+.symplifika-btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.symplifika-btn-secondary:hover {
+  background: #545b62;
+}
+
+.symplifika-btn-small {
+  padding: 4px 8px;
+  font-size: 12px;
+  min-height: 28px;
+}
+
+/* Suggestion Tooltip */
+.symplifika-suggestion-tooltip {
+  position: fixed;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 10001;
+  animation: symplifika-fade-in 0.3s ease;
+}
+
+.symplifika-tooltip-content {
+  padding: 12px 16px;
+}
+
+.symplifika-tooltip-content p {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+/* Feedback Container */
+.symplifika-feedback-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10003;
+  pointer-events: none;
+}
+
+/* Notifications */
+.symplifika-notification {
+  background: white;
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 250px;
+  animation: symplifika-slide-in 0.3s ease;
+  pointer-events: auto;
+  border-left: 4px solid;
+}
+
+@keyframes symplifika-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.symplifika-notification.symplifika-success {
+  border-left-color: #28a745;
+  color: #155724;
+  background: #d4edda;
+}
+
+.symplifika-notification.symplifika-error {
+  border-left-color: #dc3545;
+  color: #721c24;
+  background: #f8d7da;
+}
+
+.symplifika-notification.symplifika-info {
+  border-left-color: #007bff;
+  color: #004085;
+  background: #d1ecf1;
+}
+
+.symplifika-notification.symplifika-warning {
+  border-left-color: #ffc107;
+  color: #856404;
+  background: #fff3cd;
+}
+
+/* Input highlighting for active shortcuts */
+.symplifika-input-active {
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25) !important;
+  border-color: #007bff !important;
+}
+
+/* Quick search overlay (future feature) */
+.symplifika-quick-search {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  width: 500px;
+  max-height: 400px;
+  z-index: 10004;
+  display: none;
+}
+
+.symplifika-quick-search.active {
+  display: block;
+  animation: symplifika-fade-in 0.3s ease;
+}
+
+.symplifika-search-input {
+  width: 100%;
+  padding: 16px 20px;
+  border: none;
+  border-bottom: 1px solid #e9ecef;
+  font-size: 16px;
+}
+
+.symplifika-search-input:focus {
+  outline: none;
+}
+
+.symplifika-search-results {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.symplifika-search-result {
+  padding: 12px 20px;
+  border-bottom: 1px solid #f8f9fa;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.symplifika-search-result:hover {
+  background: #f8f9fa;
+}
+
+.symplifika-search-result:last-child {
+  border-bottom: none;
+}
+
+.symplifika-search-trigger {
+  font-weight: 600;
+  color: #007bff;
+  font-size: 14px;
+}
+
+.symplifika-search-title {
+  margin: 4px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.symplifika-search-preview {
+  font-size: 14px;
+  color: #666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .symplifika-modal-content {
+    background: #2d3748;
+    color: #e2e8f0;
+  }
+
+  .symplifika-modal-header {
+    border-bottom-color: #4a5568;
+  }
+
+  .symplifika-modal-footer {
+    border-top-color: #4a5568;
+  }
+
+  .symplifika-variable-field input {
+    background: #4a5568;
+    border-color: #718096;
+    color: #e2e8f0;
+  }
+
+  .symplifika-variable-field input:focus {
+    border-color: #4299e1;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+  }
+
+  .symplifika-variable-field label {
+    color: #e2e8f0;
+  }
+
+  .symplifika-suggestion-tooltip {
+    background: #2d3748;
+    border-color: #4a5568;
+    color: #e2e8f0;
+  }
+
+  .symplifika-notification {
+    background: #2d3748;
+    color: #e2e8f0;
+  }
+
+  .symplifika-quick-search {
+    background: #2d3748;
+  }
+
+  .symplifika-search-input {
+    background: #2d3748;
+    color: #e2e8f0;
+    border-bottom-color: #4a5568;
+  }
+
+  .symplifika-search-result {
+    border-bottom-color: #4a5568;
+  }
+
+  .symplifika-search-result:hover {
+    background: #4a5568;
+  }
+
+  .symplifika-search-title {
+    color: #e2e8f0;
+  }
+
+  .symplifika-search-preview {
+    color: #a0aec0;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .symplifika-modal-content {
+    min-width: 90vw;
+    margin: 20px;
+  }
+
+  .symplifika-quick-search {
+    width: 90vw;
+  }
+
+  .symplifika-feedback-container {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+  }
+
+  .symplifika-notification {
+    min-width: auto;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .symplifika-modal-content {
+    border: 2px solid #000;
+  }
+
+  .symplifika-btn {
+    border: 1px solid #000;
+  }
+
+  .symplifika-variable-field input {
+    border: 2px solid #000;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .symplifika-modal-content,
+  .symplifika-notification,
+  .symplifika-loading-indicator,
+  .symplifika-suggestion-tooltip,
+  .symplifika-quick-search {
+    animation: none;
+  }
+
+  .symplifika-btn,
+  .symplifika-variable-field input,
+  .symplifika-search-result {
+    transition: none;
+  }
+}

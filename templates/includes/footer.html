@@ -47,7 +47,7 @@
                 </h3>
                 <ul class="space-y-2">
                     <li>
-                        <a href="{% url 'core:index' %}"</li> class="text-gray-600 dark:text-gray-300 hover:text-symplifika-primary transition-colors">
+                        <a href="{% url 'core:index' %}"class="text-gray-600 dark:text-gray-300 hover:text-symplifika-primary transition-colors">
                             Início
                         </a>
                     </li>
@@ -83,7 +83,7 @@
                 </h3>
                 <ul class="space-y-2">
                     <li></li>
-                        <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-symplifika-primary transition-colors">
+                        <a href="{% url 'core:help' %}" class="text-gray-600 dark:text-gray-300 hover:text-symplifika-primary transition-colors">
                             Central de Ajuda
                         </a>
                     </li>
@@ -93,12 +93,12 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-symplifika-primary transition-colors">
+                        <a href="{% url 'core:faq' %}" class="text-gray-600 dark:text-gray-300 hover:text-symplifika-primary transition-colors">
                             FAQ
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-symplifika-primary transition-colors">
+                        <a href="{% url 'core:contact' %}" class="text-gray-600 dark:text-gray-300 hover:text-symplifika-primary transition-colors">
                             Contato
                         </a>
                     </li>
@@ -119,10 +119,10 @@
                         © {% now "Y" %} Symplifika. Todos os direitos reservados.
                     </p>
                     <div class="flex space-x-6">
-                        <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-symplifika-primary text-sm transition-colors">
+                        <a href="{% url 'core:privacy' %}" class="text-gray-500 dark:text-gray-400 hover:text-symplifika-primary text-sm transition-colors">
                             Política de Privacidade
                         </a>
-                        <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-symplifika-primary text-sm transition-colors">
+                        <a href="{% url 'core:terms' %}" class="text-gray-500 dark:text-gray-400 hover:text-symplifika-primary text-sm transition-colors">
                             Termos de Uso
                         </a>
                         <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-symplifika-primary text-sm transition-colors">

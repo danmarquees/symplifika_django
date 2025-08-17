@@ -1,0 +1,362 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Upgrade de Plano - Symplifika{% endblock %}
+
+{% block meta_description %}Faça upgrade do seu plano Symplifika e tenha acesso a mais atalhos e funcionalidades avançadas.{% endblock %}
+
+{% block body_class %}bg-symplifika-gradient bg-mesh min-h-screen{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-white mb-4">
+            Upgrade seu <span class="text-symplifika-primary">Plano</span>
+        </h1>
+        <p class="text-gray-300 text-lg max-w-2xl mx-auto">
+            Escolha o plano ideal para suas necessidades e desbloqueie todo o potencial do Symplifika
+        </p>
+    </div>
+
+    <!-- Current Plan Info -->
+    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h3 class="text-white font-semibold text-lg">Plano Atual</h3>
+                <p class="text-gray-300">
+                    {% if current_plan == 'free' %}
+                        Gratuito
+                    {% elif current_plan == 'premium' %}
+                        Premium - R$ 19,90/mês
+                    {% elif current_plan == 'enterprise' %}
+                        Enterprise - R$ 49,90/mês
+                    {% endif %}
+                </p>
+            </div>
+            <div class="text-right">
+                <p class="text-sm text-gray-400">Atalhos utilizados</p>
+                <p class="text-white font-semibold">
+                    {{ user.shortcuts.count }} /
+                    {% if user.profile.max_shortcuts == -1 %}
+                        Ilimitado
+                    {% else %}
+                        {{ user.profile.max_shortcuts }}
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mb-6">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Plan Comparison -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        {% for plan in plans %}
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-8 border-2 {% if plan.is_current %}border-symplifika-primary{% else %}border-transparent{% endif %} relative">
+            {% if plan.is_current %}
+            <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <span class="bg-symplifika-primary text-black px-4 py-1 rounded-full text-sm font-semibold">
+                    Plano Atual
+                </span>
+            </div>
+            {% endif %}
+
+            <div class="text-center mb-6">
+                <h3 class="text-2xl font-bold text-white mb-2">{{ plan.plan_display }}</h3>
+                <div class="text-3xl font-bold text-symplifika-primary mb-1">
+                    R$ {{ plan.monthly_price }}
+                </div>
+                <p class="text-gray-400 text-sm">por mês</p>
+                {% if plan.yearly_price %}
+                <p class="text-sm text-gray-400 mt-2">
+                    ou R$ {{ plan.yearly_price }}/ano
+                    <span class="text-green-400">(economize 17%)</span>
+                </p>
+                {% endif %}
+            </div>
+
+            <ul class="space-y-3 mb-8">
+                <li class="flex items-center text-gray-300">
+                    <svg class="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    {% if plan.max_shortcuts == -1 %}
+                        Atalhos ilimitados
+                    {% else %}
+                        {{ plan.max_shortcuts }} atalhos
+                    {% endif %}
+                </li>
+                <li class="flex items-center text-gray-300">
+                    <svg class="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    {% if plan.max_ai_requests == -1 %}
+                        Requisições IA ilimitadas
+                    {% else %}
+                        {{ plan.max_ai_requests }} requisições IA/mês
+                    {% endif %}
+                </li>
+                <li class="flex items-center text-gray-300">
+                    <svg class="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Expansão com IA
+                </li>
+                <li class="flex items-center text-gray-300">
+                    <svg class="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Categorias personalizadas
+                </li>
+                {% if plan.features.export_import %}
+                <li class="flex items-center text-gray-300">
+                    <svg class="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Importar/Exportar atalhos
+                </li>
+                {% endif %}
+                {% if plan.features.priority_support %}
+                <li class="flex items-center text-gray-300">
+                    <svg class="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Suporte prioritário
+                </li>
+                {% endif %}
+                {% if plan.features.custom_integrations %}
+                <li class="flex items-center text-gray-300">
+                    <svg class="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Integrações personalizadas
+                </li>
+                {% endif %}
+            </ul>
+
+            {% if plan.can_upgrade %}
+            <button
+                onclick="selectPlan('{{ plan.plan }}', '{{ plan.monthly_price }}', '{{ plan.plan_display }}')"
+                class="w-full bg-symplifika-primary hover:bg-symplifika-secondary text-black font-semibold py-3 px-6 rounded-lg transition-colors"
+            >
+                Escolher {{ plan.plan_display }}
+            </button>
+            {% elif plan.is_current %}
+            <button class="w-full bg-gray-600 text-gray-300 font-semibold py-3 px-6 rounded-lg cursor-not-allowed">
+                Plano Atual
+            </button>
+            {% else %}
+            <button class="w-full bg-gray-700 text-gray-400 font-semibold py-3 px-6 rounded-lg cursor-not-allowed">
+                Não Disponível
+            </button>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Upgrade Form -->
+    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-8 max-w-2xl mx-auto" id="upgradeForm" style="display: none;">
+        <h3 class="text-2xl font-bold text-white mb-6 text-center">Finalizar Upgrade</h3>
+
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+
+            <!-- Selected Plan -->
+            <div id="selectedPlanInfo" class="bg-white/5 rounded-lg p-4 mb-6">
+                <!-- Will be populated by JavaScript -->
+            </div>
+
+            <!-- Payment Method -->
+            <div>
+                <label class="block text-white font-semibold mb-3">Método de Pagamento</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% for method in payment_methods %}
+                    {% if method.is_available %}
+                    <label class="payment-method-option bg-white/5 p-4 rounded-lg border-2 border-transparent hover:border-symplifika-primary cursor-pointer transition-colors">
+                        <input type="radio" name="payment_method" value="{{ method.key }}" class="sr-only" required>
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-symplifika-primary/20 rounded-lg flex items-center justify-center mr-4">
+                                <i class="icon-{{ method.icon }} text-symplifika-primary text-xl"></i>
+                            </div>
+                            <div>
+                                <div class="text-white font-semibold">{{ method.name }}</div>
+                                <div class="text-gray-400 text-sm">{{ method.description }}</div>
+                            </div>
+                        </div>
+                    </label>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Billing Cycle -->
+            <div>
+                <label class="block text-white font-semibold mb-3">Ciclo de Cobrança</label>
+                <div class="space-y-3">
+                    <label class="billing-cycle-option bg-white/5 p-4 rounded-lg border-2 border-transparent hover:border-symplifika-primary cursor-pointer transition-colors flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input type="radio" name="billing_cycle" value="monthly" class="sr-only" checked>
+                            <div>
+                                <div class="text-white font-semibold">Mensal</div>
+                                <div class="text-gray-400 text-sm">Cobrança todo mês</div>
+                            </div>
+                        </div>
+                        <div class="text-symplifika-primary font-semibold" id="monthlyPrice">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </label>
+                    <label class="billing-cycle-option bg-white/5 p-4 rounded-lg border-2 border-transparent hover:border-symplifika-primary cursor-pointer transition-colors flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input type="radio" name="billing_cycle" value="yearly" class="sr-only">
+                            <div>
+                                <div class="text-white font-semibold">Anual</div>
+                                <div class="text-gray-400 text-sm">Cobrança anual com desconto</div>
+                            </div>
+                        </div>
+                        <div class="text</div>-right">
+                            <div class="text-symplifika-primary font-semibold" id="yearlyPrice">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                            <div class="text-green-400 text-sm">Economize 17%</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Hidden fields -->
+            <input type="hidden" name="plan" id="selectedPlan">
+
+            <!-- Actions -->
+            <div class="flex space-x-4">
+                <button
+                    type="button"
+                    onclick="cancelUpgrade()"
+                    class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+                >
+                    Cancelar
+                </button>
+                <button
+                    type="submit"
+                    class="flex-1 bg-symplifika-primary hover:bg-symplifika-secondary text-black font-semibold py-3 px-6 rounded-lg transition-colors"
+                >
+                    Continuar para Pagamento
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-8 mt-12">
+        <h3 class="text-2xl font-bold text-white mb-6 text-center">Perguntas Frequentes</h3>
+
+        <div class="space-y-6">
+            <div>
+                <h4 class="text-white font-semibold mb-2">Posso cancelar a qualquer momento?</h4>
+                <p class="text-gray-300">Sim! Você pode cancelar sua assinatura a qualquer momento. Seus dados serão mantidos e você pode reativar quando quiser.</p>
+            </div>
+
+            <div>
+                <h4 class="text-white font-semibold mb-2">O que acontece com meus atalhos se eu cancelar?</h4>
+                <p class="text-gray-300">Seus atalhos são mantidos, mas você terá acesso limitado conforme o plano gratuito. Atalhos excedentes ficam inativos até o upgrade.</p>
+            </div>
+
+            <div>
+                <h4 class="text-white font-semibold mb-2">Posso fazer downgrade do meu plano?</h4>
+                <p class="text-gray-300">Sim, você pode cancelar sua assinatura e retornar ao plano gratuito. O downgrade será efetivado no final do período pago.</p>
+            </div>
+
+            <div>
+                <h4 class="text-white font-semibold mb-2">Os métodos de pagamento são seguros?</h4>
+                <p class="text-gray-300">Sim! Utilizamos criptografia de ponta e não armazenamos dados de cartão. Todos os pagamentos são processados de forma segura.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let selectedPlanData = null;
+
+function selectPlan(planKey, monthlyPrice, planDisplay) {
+    selectedPlanData = {
+        key: planKey,
+        display: planDisplay,
+        monthlyPrice: monthlyPrice,
+        yearlyPrice: (monthlyPrice * 10).toFixed(2) // Aproximação para demonstração
+    };
+
+    // Update hidden field
+    document.getElementById('selectedPlan').value = planKey;
+
+    // Show upgrade form
+    document.getElementById('upgradeForm').style.display = 'block';
+
+    // Update selected plan info
+    const planInfo = document.getElementById('selectedPlanInfo');
+    planInfo.innerHTML = `
+        <div class="flex items-center justify-between">
+            <div>
+                <h4 class="text-white font-semibold">Plano Selecionado</h4>
+                <p class="text-symplifika-primary">${planDisplay}</p>
+            </div>
+            <div class="text-right">
+                <div class="text-white font-semibold">A partir de</div>
+                <div class="text-symplifika-primary font-bold text-xl">R$ ${monthlyPrice}/mês</div>
+            </div>
+        </div>
+    `;
+
+    // Update pricing
+    document.getElementById('monthlyPrice').textContent = `R$ ${monthlyPrice}/mês`;
+    document.getElementById('yearlyPrice').textContent = `R$ ${selectedPlanData.yearlyPrice}/ano`;
+
+    // Scroll to form
+    document.getElementById('upgradeForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+function cancelUpgrade() {
+    document.getElementById('upgradeForm').style.display = 'none';
+    selectedPlanData = null;
+}
+
+// Handle radio button styling
+document.addEventListener('DOMContentLoaded', function() {
+    // Payment methods
+    const paymentOptions = document.querySelectorAll('.payment-method-option');
+    paymentOptions.forEach(option => {
+        const radio = option.querySelector('input[type="radio"]');
+        option.addEventListener('click', function() {
+            paymentOptions.forEach(opt => opt.classList.remove('border-symplifika-primary'));
+            option.classList.add('border-symplifika-primary');
+            radio.checked = true;
+        });
+    });
+
+    // Billing cycles
+    const billingOptions = document.querySelectorAll('.billing-cycle-option');
+    billingOptions.forEach(option => {
+        const radio = option.querySelector('input[type="radio"]');
+        option.addEventListener('click', function() {
+            billingOptions.forEach(opt => opt.classList.remove('border-symplifika-primary'));
+            option.classList.add('border-symplifika-primary');
+            radio.checked = true;
+        });
+    });
+
+    // Set initial selected state
+    if (paymentOptions.length > 0) {
+        paymentOptions[0].classList.add('border-symplifika-primary');
+    }
+    if (billingOptions.length > 0) {
+        billingOptions[0].classList.add('border-symplifika-primary');
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Symplifika - Configurações</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="options-header">
+    <div class="header-content">
+      <div class="logo">
+        <img src="icons/icon48.png" alt="Symplifika" class="logo-icon">
+        <div class="logo-text">
+          <h1>Symplifika</h1>
+          <p>Configurações da Extensão</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="saveBtn" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+            <polyline points="17,21 17,13 7,13 7,21"/>
+            <polyline points="7,3 7,8 15,8"/>
+          </svg>
+          Salvar
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="options-main">
+    <div class="container">
+      <!-- Connection Settings -->
+      <section class="settings-section">
+        <div class="section-header">
+          <h2>Conexão</h2>
+          <p>Configure a conexão com o servidor Symplifika</p>
+        </div>
+
+        <div class="settings-grid">
+          <div class="setting-item">
+            <label for="serverUrl">URL do Servidor</label>
+            <input type="url" id="serverUrl" class="form-input" placeholder="http://localhost:8000">
+            <small class="help-text">URL do seu servidor Symplifika (incluindo protocolo)</small>
+          </div>
+
+          <div class="setting-item">
+            <label for="apiTimeout">Timeout da API (segundos)</label>
+            <input type="number" id="apiTimeout" class="form-input" min="5" max="60" value="30">
+            <small class="help-text">Tempo limite para requisições à API</small>
+          </div>
+        </div>
+
+        <div class="connection-status">
+          <div class="status-indicator">
+            <div class="status-dot" id="connectionDot"></div>
+            <span id="connectionStatus">Verificando conexão...</span>
+          </div>
+          <button id="testConnectionBtn" class="btn btn-secondary">Testar Conexão</button>
+        </div>
+      </section>
+
+      <!-- Account Information -->
+      <section class="settings-section">
+        <div class="section-header">
+          <h2>Conta</h2>
+          <p>Informações da sua conta Symplifika</p>
+        </div>
+
+        <div id="accountInfo" class="account-info" style="display: none;">
+          <div class="account-card">
+            <div class="account-avatar">
+              <div class="avatar-placeholder" id="userAvatar"></div>
+            </div>
+            <div class="account-details">
+              <h3 id="userName">--</h3>
+              <p id="userEmail">--</p>
+              <span class="user-plan" id="userPlan">--</span>
+            </div>
+            <div class="account-actions">
+              <button id="logoutBtn" class="btn btn-outline">Sair</button>
+            </div>
+          </div>
+
+          <div class="account-stats">
+            <div class="stat-card">
+              <div class="stat-icon">📝</div>
+              <div class="stat-info">
+                <span class="stat-number" id="totalShortcuts">--</span>
+                <span class="stat-label">Atalhos</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🚀</div>
+              <div class="stat-info">
+                <span class="stat-number" id="totalUsage">--</span>
+                <span class="stat-label">Usos</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🤖</div>
+              <div class="stat-info">
+                <span class="stat-number" id="aiUsage">--</span>
+                <span class="stat-label">IA Usada</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="notLoggedIn" class="not-logged-in">
+          <div class="login-prompt">
+            <div class="login-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                <polyline points="10,17 15,12 10,7"/>
+                <line x1="15" y1="12" x2="3" y2="12"/>
+              </svg>
+            </div>
+            <h3>Não conectado</h3>
+            <p>Faça login para acessar suas configurações de conta</p>
+            <button id="openLoginBtn" class="btn btn-primary">Fazer Login</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Extension Behavior -->
+      <section class="settings-section">
+        <div class="section-header">
+          <h2>Comportamento</h2>
+          <p>Configure como a extensão funciona</p>
+        </div>
+
+        <div class="settings-grid">
+          <div class="setting-item">
+            <div class="setting-toggle">
+              <input type="checkbox" id="extensionEnabled" class="toggle-input">
+              <label for="extensionEnabled" class="toggle-label">
+                <span class="toggle-slider"></span>
+              </label>
+              <div class="setting-info">
+                <label for="extensionEnabled" class="setting-title">Extensão Ativa</label>
+                <small class="setting-desc">Ativar/desativar a detecção de atalhos</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-toggle">
+              <input type="checkbox" id="autoExpand" class="toggle-input">
+              <label for="autoExpand" class="toggle-label">
+                <span class="toggle-slider"></span>
+              </label>
+              <div class="setting-info">
+                <label for="autoExpand" class="setting-title">Expansão Automática</label>
+                <small class="setting-desc">Expandir atalhos automaticamente ao digitar</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-toggle">
+              <input type="checkbox" id="showNotifications" class="toggle-input">
+              <label for="showNotifications" class="toggle-label">
+                <span class="toggle-slider"></span>
+              </label>
+              <div class="setting-info">
+                <label for="showNotifications" class="setting-title">Notificações</label>
+                <small class="setting-desc">Mostrar notificações quando atalhos são usados</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-toggle">
+              <input type="checkbox" id="soundEffects" class="toggle-input">
+              <label for="soundEffects" class="toggle-label">
+                <span class="toggle-slider"></span>
+              </label>
+              <div class="setting-info">
+                <label for="soundEffects" class="setting-title">Efeitos Sonoros</label>
+                <small class="setting-desc">Reproduzir sons ao usar atalhos</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-grid">
+          <div class="setting-item">
+            <label for="triggerDelay">Delay de Detecção (ms)</label>
+            <input type="range" id="triggerDelay" class="form-range" min="50" max="1000" value="100" step="50">
+            <div class="range-value">
+              <span id="triggerDelayValue">100</span>ms
+            </div>
+            <small class="help-text">Tempo de espera antes de detectar atalhos</small>
+          </div>
+
+          <div class="setting-item">
+            <label for="syncInterval">Intervalo de Sincronização (minutos)</label>
+            <input type="range" id="syncInterval" class="form-range" min="5" max="120" value="30" step="5">
+            <div class="range-value">
+              <span id="syncIntervalValue">30</span> min
+            </div>
+            <small class="help-text">Frequência de sincronização com o servidor</small>
+          </div>
+        </div>
+      </section>
+
+      <!-- Advanced Settings -->
+      <section class="settings-section">
+        <div class="section-header">
+          <h2>Avançado</h2>
+          <p>Configurações avançadas e ferramentas</p>
+        </div>
+
+        <div class="settings-grid">
+          <div class="setting-item">
+            <div class="setting-toggle">
+              <input type="checkbox" id="debugMode" class="toggle-input">
+              <label for="debugMode" class="toggle-label">
+                <span class="toggle-slider"></span>
+              </label>
+              <div class="setting-info">
+                <label for="debugMode" class="setting-title">Modo Debug</label>
+                <small class="setting-desc">Ativar logs detalhados no console</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-toggle">
+              <input type="checkbox" id="betaFeatures" class="toggle-input">
+              <label for="betaFeatures" class="toggle-label">
+                <span class="toggle-slider"></span>
+              </label>
+              <div class="setting-info">
+                <label for="betaFeatures" class="setting-title">Recursos Beta</label>
+                <small class="setting-desc">Ativar recursos experimentais</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="advanced-actions">
+          <button id="clearCacheBtn" class="btn btn-outline">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18"/>
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+            </svg>
+            Limpar Cache
+          </button>
+
+          <button id="exportSettingsBtn" class="btn btn-outline">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7,10 12,15 17,10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Exportar Configurações
+          </button>
+
+          <button id="importSettingsBtn" class="btn btn-outline">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17,8 12,3 7,8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            Importar Configurações
+          </button>
+        </div>
+      </section>
+
+      <!-- About -->
+      <section class="settings-section">
+        <div class="section-header">
+          <h2>Sobre</h2>
+          <p>Informações sobre a extensão</p>
+        </div>
+
+        <div class="about-info">
+          <div class="about-card">
+            <div class="about-logo">
+              <img src="icons/icon48.png" alt="Symplifika">
+            </div>
+            <div class="about-details">
+              <h3>Symplifika Chrome Extension</h3>
+              <p>Versão <span id="extensionVersion">1.0.0</span></p>
+              <p class="about-description">
+                Extensão oficial do Symplifika para expandir atalhos de texto automaticamente
+                em qualquer site com inteligência artificial.
+              </p>
+            </div>
+          </div>
+
+          <div class="about-links">
+            <a href="https://github.com/symplifika/chrome-extension" target="_blank" class="link-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+              </svg>
+              GitHub
+            </a>
+
+            <a href="https://symplifika.com/docs" target="_blank" class="link-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14,2 14,8 20,8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10,9 9,9 8,9"/>
+              </svg>
+              Documentação
+            </a>
+
+            <a href="https://symplifika.com/support" target="_blank" class="link-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 17h.01"/>
+              </svg>
+              Suporte
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Toast Notifications -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Import File Input -->
+  <input type="file" id="importFileInput" accept=".json" style="display: none;">
+
+  <script src="options.js"></script>
+</body>
+</html>

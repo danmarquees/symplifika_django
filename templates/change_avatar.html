@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load custom_filters %}
 
 {% block title %}Alterar Avatar | Symplifika{% endblock %}
 
@@ -235,7 +236,7 @@
                     <div class="text-center">
                         <div class="mb-4">
                             <img class="avatar-preview rounded-full border-4 border-symplifika-primary mx-auto"
-                                 src="https://www.gravatar.com/avatar/{{ user.email|lower|md5 }}?s=150&d=identicon"
+                                 src="{{ user.email|gravatar_url:150 }}"
                                  alt="Gravatar">
                         </div>
                         <p class="text-gray-600 dark:text-gray-400 mb-4">
@@ -421,7 +422,7 @@ function useGravatar() {
     selectedAvatarType = 'gravatar';
     selectedAvatarData = '{{ user.email|lower }}';
 
-    const gravatarUrl = `https://www.gravatar.com/avatar/{{ user.email|lower|md5 }}?s=150&d=identicon`;
+    const gravatarUrl = '{{ user.email|gravatar_url:150 }}';
     updateCurrentAvatar(gravatarUrl);
     enableSaveButton();
 }
@@ -515,10 +516,6 @@ function saveAvatar() {
     });
 }
 
-// MD5 hash function for Gravatar (simplified)
-function md5(string) {
-    // This is a simplified version - in production, use a proper MD5 library
-    return string; // Placeholder
-}
+
 </script>
 {% endblock %}

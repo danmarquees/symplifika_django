@@ -11,6 +11,7 @@ urlpatterns = [
     # API endpoints
     path('api/status/', views.api_status, name='api-status'),
     path('api/health/', views.health_check, name='health-check'),
+    path('api/statistics/', views.statistics_view, name='api-statistics'),
 
     # Authentication (redirects to users app)
     path('register/', views.register, name='register'),
@@ -37,4 +38,5 @@ urlpatterns = [
     path('terms/', views.terms, name='terms'),
     path('faq/', views.faq, name='faq'),
     path('help/', views.help, name='help'),
+    path('pricing/', views.pricing, name='pricing'),
 ]

@@ -1,0 +1,370 @@
+{% load static %} {% load custom_filters %}
+
+<!-- Upgrade Banner Component -->
+{% if user.is_authenticated and user.profile.plan != 'enterprise' %}
+<!-- Calculate usage percentages -->
+{% with shortcuts_count=user.shortcuts.count %} {% if user.profile.max_shortcuts
+!= -1 %} {% with
+shortcuts_percent=shortcuts_count|mul:100|div:user.profile.max_shortcuts %} {%
+if shortcuts_percent >= 80 or user.profile.monthly_ai_requests_used|default:0 >=
+user.profile.max_ai_requests|mul:0.8 %}
+<div
+    class="upgrade-banner bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4 mb-6"
+>
+    <div class="flex items-start space-x-3">
+        <!-- Warning Icon -->
+        <div class="flex-shrink-0">
+            {% if shortcuts_percent >= 90 or
+            user.profile.monthly_ai_requests_used|default:0 >=
+            user.profile.max_ai_requests|mul:0.9 %}
+            <svg
+                class="w-6 h-6 text-red-500"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+            >
+                <path
+                    fill-rule="evenodd"
+                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                    clip-rule="evenodd"
+                ></path>
+            </svg>
+            {% else %}
+            <svg
+                class="w-6 h-6 text-amber-500"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+            >
+                <path
+                    fill-rule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    clip-rule="evenodd"
+                ></path>
+            </svg>
+            {% endif %}
+        </div>
+
+        <!-- Content -->
+        <div class="flex-1 min-w-0">
+            <!-- Title -->
+            <h3 class="text-sm font-medium text-gray-900 dark:text-white">
+                {% if shortcuts_percent >= 90 or
+                user.profile.monthly_ai_requests_used|default:0 >=
+                user.profile.max_ai_requests|mul:0.9 %} Limite quase atingido!
+                {% else %} Você está se aproximando dos seus limites {% endif %}
+            </h3>
+
+            <!-- Description -->
+            <div class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                {% if shortcuts_percent >= 90 %}
+                <p class="mb-2">
+                    <span class="font-medium text-red-600 dark:text-red-400">
+                        {{ shortcuts_percent|floatformat:0 }}% dos atalhos
+                        utilizados
+                    </span>
+                    ({{ shortcuts_count }}/{{ user.profile.max_shortcuts }})
+                </p>
+                {% elif shortcuts_percent >= 80 %}
+                <p class="mb-2">
+                    <span
+                        class="font-medium text-amber-600 dark:text-amber-400"
+                    >
+                        {{ shortcuts_percent|floatformat:0 }}% dos atalhos
+                        utilizados
+                    </span>
+                    ({{ shortcuts_count }}/{{ user.profile.max_shortcuts }})
+                </p>
+                {% endif %} {% with
+                ai_requests=user.profile.monthly_ai_requests_used|default:0
+                max_ai=user.profile.max_ai_requests %} {% if ai_requests >=
+                max_ai|mul:0.9 %}
+                <p class="mb-2">
+                    <span class="font-medium text-red-600 dark:text-red-400">
+                        {{ ai_requests|mul:100|div:max_ai|floatformat:0 }}% das
+                        requisições IA utilizadas este mês
+                    </span>
+                    ({{ ai_requests }}/{{ max_ai }})
+                </p>
+                {% elif ai_requests >= max_ai|mul:0.8 %}
+                <p class="mb-2">
+                    <span
+                        class="font-medium text-amber-600 dark:text-amber-400"
+                    >
+                        {{ ai_requests|mul:100|div:max_ai|floatformat:0 }}% das
+                        requisições IA utilizadas este mês
+                    </span>
+                    ({{ ai_requests }}/{{ max_ai }})
+                </p>
+                {% endif %} {% endwith %}
+
+                <p>
+                    {% if user.profile.plan == 'free' %} Faça upgrade para
+                    Premium e tenha acesso a 500 atalhos e 1.000 requisições IA
+                    por mês. {% else %} Faça upgrade para Enterprise e tenha
+                    acesso ilimitado a atalhos e requisições IA. {% endif %}
+                </p>
+            </div>
+
+            <!-- Benefits Preview -->
+            <div class="mt-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                    {% if user.profile.plan == 'free' %}
+                    <div
+                        class="flex items-center text-green-700 dark:text-green-400"
+                    >
+                        <svg
+                            class="w-3 h-3 mr-1"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd"
+                            ></path>
+                        </svg>
+                        500 atalhos
+                    </div>
+                    <div
+                        class="flex items-center text-green-700 dark:text-green-400"
+                    >
+                        <svg
+                            class="w-3 h-3 mr-1"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd"
+                            ></path>
+                        </svg>
+                        1.000 requisições IA/mês
+                    </div>
+                    <div
+                        class="flex items-center text-green-700 dark:text-green-400"
+                    >
+                        <svg
+                            class="w-3 h-3 mr-1"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd"
+                            ></path>
+                        </svg>
+                        Categorias personalizadas
+                    </div>
+                    <div
+                        class="flex items-center text-green-700 dark:text-green-400"
+                    >
+                        <svg
+                            class="w-3 h-3 mr-1"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd"
+                            ></path>
+                        </svg>
+                        Exportar/Importar atalhos
+                    </div>
+                    {% elif user.profile.plan == 'premium' %}
+                    <div
+                        class="flex items-center text-green-700 dark:text-green-400"
+                    >
+                        <svg
+                            class="w-3 h-3 mr-1"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd"
+                            ></path>
+                        </svg>
+                        Atalhos ilimitados
+                    </div>
+                    <div
+                        class="flex items-center text-green-700 dark:text-green-400"
+                    >
+                        <svg
+                            class="w-3 h-3 mr-1"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd"
+                            ></path>
+                        </svg>
+                        IA ilimitada
+                    </div>
+                    <div
+                        class="flex items-center text-green-700 dark:text-green-400"
+                    >
+                        <svg
+                            class="w-3 h-3 mr-1"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd"
+                            ></path>
+                        </svg>
+                        Integrações personalizadas
+                    </div>
+                    <div
+                        class="flex items-center text-green-700 dark:text-green-400"
+                    >
+                        <svg
+                            class="w-3 h-3 mr-1"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd"
+                            ></path>
+                        </svg>
+                        Suporte prioritário 24/7
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex-shrink-0 flex flex-col sm:flex-row gap-2">
+            <button
+                onclick="showPricingModal()"
+                class="inline-flex items-center px-3 py-2 border border-transparent text-xs font-medium rounded-md text-white bg-symplifika-primary hover:bg-symplifika-secondary transition-colors"
+            >
+                <svg
+                    class="w-3 h-3 mr-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 10l7-7m0 0l7 7m-7-7v18"
+                    ></path>
+                </svg>
+                {% if user.profile.plan == 'free' %}Upgrade Premium{% else
+                %}Upgrade Enterprise{% endif %}
+            </button>
+
+            <button
+                onclick="dismissUpgradeBanner()"
+                class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 text-xs font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+                <svg
+                    class="w-3 h-3 mr-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M6 18L18 6M6 6l12 12"
+                    ></path>
+                </svg>
+                Dispensar
+            </button>
+        </div>
+    </div>
+
+    <!-- Progress Bars -->
+    <div class="mt-4 space-y-2">
+        <!-- Shortcuts Progress -->
+        {% if user.profile.max_shortcuts != -1 %}
+        <div>
+            <div
+                class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"
+            >
+                <span>Atalhos</span>
+                <span
+                    >{{ shortcuts_count }}/{{ user.profile.max_shortcuts
+                    }}</span
+                >
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                <div
+                    class="h-1.5 rounded-full transition-all duration-300 {% if shortcuts_percent >= 90 %}bg-red-500{% elif shortcuts_percent >= 80 %}bg-amber-500{% else %}bg-symplifika-primary{% endif %}"
+                    style="width: {{ shortcuts_percent|floatformat:0 }}%"
+                ></div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- AI Requests Progress -->
+        {% if user.profile.max_ai_requests != -1 %} {% with
+        ai_requests=user.profile.monthly_ai_requests_used|default:0
+        max_ai=user.profile.max_ai_requests %}
+        <div>
+            <div
+                class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"
+            >
+                <span>IA este mês</span>
+                <span>{{ ai_requests }}/{{ max_ai }}</span>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                <div
+                    class="h-1.5 rounded-full transition-all duration-300 {% if ai_requests >= max_ai|mul:0.9 %}bg-red-500{% elif ai_requests >= max_ai|mul:0.7 %}bg-amber-500{% else %}bg-blue-500{% endif %}"
+                    style="width: {{ ai_requests|mul:100|div:max_ai|floatformat:0 }}%"
+                ></div>
+            </div>
+        </div>
+        {% endwith %} {% endif %}
+    </div>
+</div>
+{% endif %} {% endwith %} {% endif %} {% endwith %} {% endif %}
+
+<script>
+    function dismissUpgradeBanner() {
+        const banner = document.querySelector(".upgrade-banner");
+        if (banner) {
+            banner.style.transform = "translateX(100%)";
+            banner.style.opacity = "0";
+            setTimeout(() => {
+                banner.remove();
+            }, 300);
+
+            // Store dismissal in localStorage to avoid showing again for a while
+            localStorage.setItem(
+                "upgradeBannerDismissed",
+                Date.now().toString(),
+            );
+        }
+    }
+
+    // Check if banner was recently dismissed
+    document.addEventListener("DOMContentLoaded", function () {
+        const dismissedTime = localStorage.getItem("upgradeBannerDismissed");
+        if (dismissedTime) {
+            const timeDiff = Date.now() - parseInt(dismissedTime);
+            const dayInMs = 24 * 60 * 60 * 1000; // 24 hours
+
+            // Hide banner if dismissed less than 24 hours ago
+            if (timeDiff < dayInMs) {
+                const banner = document.querySelector(".upgrade-banner");
+                if (banner) {
+                    banner.style.display = "none";
+                }
+            }
+        }
+    });
+</script>

@@ -1,0 +1,457 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Preços - Symplifika{% endblock %}
+
+{% block meta_description %}Escolha o plano ideal para suas necessidades. Comece grátis ou faça upgrade para ter acesso a mais atalhos e funcionalidades avançadas.{% endblock %}
+
+{% block body_class %}bg-gray-50 dark:bg-gray-900{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-gradient-to-br from-symplifika-primary/10 to-symplifika-secondary/10 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+            Escolha o plano <span class="text-symplifika-primary">ideal</span>
+        </h1>
+        <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto mb-8">
+            Comece grátis e faça upgrade quando precisar de mais recursos. Todos os planos incluem nossa tecnologia de IA avançada.
+        </p>
+
+        <!-- Billing Toggle -->
+        <div class="inline-flex items-center bg-white dark:bg-gray-800 rounded-lg p-1 shadow-sm border border-gray-200 dark:border-gray-700">
+            <button onclick="toggleBilling('monthly')" id="monthlyToggle" class="px-6 py-2 rounded-md text-sm font-medium transition-colors billing-toggle active">
+                Mensal
+            </button>
+            <button onclick="toggleBilling('yearly')" id="yearlyToggle" class="px-6 py-2 rounded-md text-sm font-medium transition-colors billing-toggle">
+                Anual
+                <span class="ml-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Economize 17%</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Pricing Cards -->
+<div class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Free Plan -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-8 relative">
+                <div class="text-center mb-8">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Gratuito</h3>
+                    <div class="text-4xl font-bold text-gray-900 dark:text-white mb-1">
+                        R$ 0
+                    </div>
+                    <p class="text-gray-500 dark:text-gray-400">para sempre</p>
+                </div>
+
+                <ul class="space-y-4 mb-8">
+                    <li class="flex items-start">
+                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-600 dark:text-gray-300">Até 50 atalhos</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-600 dark:text-gray-300">50 requisições IA por mês</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-600 dark:text-gray-300">Expansão com IA</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-600 dark:text-gray-300">Categorias básicas</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-600 dark:text-gray-300">Suporte da comunidade</span>
+                    </li>
+                    <li class="flex items-start opacity-50">
+                        <svg class="w-5 h-5 text-gray-400 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-400">Exportar/Importar atalhos</span>
+                    </li>
+                </ul>
+
+                {% if user.is_authenticated and user.profile.plan == 'free' %}
+                <button class="w-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 font-semibold py-3 px-6 rounded-lg cursor-not-allowed">
+                    Plano Atual
+                </button>
+                {% elif not user.is_authenticated %}
+                <a href="{% url 'users:register' %}" class="w-full bg-symplifika-primary hover:bg-symplifika-secondary text-black font-semibold py-3 px-6 rounded-lg transition-colors block text-center">
+                    Começar Grátis
+                </a>
+                {% else %}
+                <a href="{% url 'users:subscription_management' %}" class="w-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-semibold py-3 px-6 rounded-lg transition-colors block text-center">
+                    Cancelar Assinatura
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- Premium Plan -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border-2 border-symplifika-primary p-8 relative transform scale-105">
+                <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <span class="bg-symplifika-primary text-black px-6 py-2 rounded-full text-sm font-semibold">
+                        Mais Popular
+                    </span>
+                </div>
+
+                <div class="text-center mb-8">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Premium</h3>
+                    <div class="text-4xl font-bold text-gray-900 dark:text-white mb-1">
+                        <span class="monthly-price">R$ 19,90</span>
+                        <span class="yearly-price hidden">R$ 16,50</span>
+                    </div>
+                    <p class="text-gray-500 dark:text-gray-400">
+                        <span class="monthly-price">por mês</span>
+                        <span class="yearly-price hidden">por mês (pago anualmente)</span>
+                    </p>
+                    <p class="yearly-price hidden text-sm text-green-600 dark:text-green-400 mt-1">
+                        Economize R$ 40,80 por ano
+                    </p>
+                </div>
+
+                <ul class="space-y-4 mb-8">
+                    <li class="flex items-start">
+                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-600 dark:text-gray-300"><strong>Até 500 atalhos</strong></span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-600 dark:text-gray-300"><strong>1.000 requisições IA por mês</strong></span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-600 dark:text-gray-300">Categorias personalizadas</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-600 dark:text-gray-300">Exportar/Importar atalhos</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-600 dark:text-gray-300">Suporte por email</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-600 dark:text-gray-300">Análise avançada</span>
+                    </li>
+                </ul>
+
+                {% if user.is_authenticated and user.profile.plan == 'premium' %}
+                <button class="w-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 font-semibold py-3 px-6 rounded-lg cursor-not-allowed">
+                    Plano Atual
+                </button>
+                {% elif user.is_authenticated %}
+                <a href="{% url 'users:plan_upgrade' %}?plan=premium" class="w-full bg-symplifika-primary hover:bg-symplifika-secondary text-black font-semibold py-3 px-6 rounded-lg transition-colors block text-center">
+                    Fazer Upgrade
+                </a>
+                {% else %}
+                <a href="{% url 'users:register' %}" class="w-full bg-symplifika-primary hover:bg-symplifika-secondary text-black font-semibold py-3 px-6 rounded-lg transition-colors block text-center">
+                    Começar Teste
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- Enterprise Plan -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-8 relative">
+                <div class="text-center mb-8">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Enterprise</h3>
+                    <div class="text-4xl font-bold text-gray-900 dark:text-white mb-1">
+                        <span class="monthly-price">R$ 49,90</span>
+                        <span class="yearly-price hidden">R$ 41,50</span>
+                    </div>
+                    <p class="text-gray-500 dark:text-gray-400">
+                        <span class="monthly-price">por mês</span>
+                        <span class="yearly-price hidden">por mês (pago anualmente)</span>
+                    </p>
+                    <p class="yearly-price hidden text-sm text-green-600 dark:text-green-400 mt-1">
+                        Economize R$ 100,80 por ano
+                    </p>
+                </div>
+
+                <ul class="space-y-4 mb-8">
+                    <li class="flex items-start">
+                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-600 dark:text-gray-300"><strong>Atalhos ilimitados</strong></span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-600 dark:text-gray-300"><strong>Requisições IA ilimitadas</strong></span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-600 dark:text-gray-300">Todas as funcionalidades Premium</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-600 dark:text-gray-300">Integrações personalizadas</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-600 dark:text-gray-300">Suporte prioritário 24/7</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-600 dark:text-gray-300">Gerente de conta dedicado</span>
+                    </li>
+                </ul>
+
+                {% if user.is_authenticated and user.profile.plan == 'enterprise' %}
+                <button class="w-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 font-semibold py-3 px-6 rounded-lg cursor-not-allowed">
+                    Plano Atual
+                </button>
+                {% elif user.is_authenticated %}
+                <a href="{% url 'users:plan_upgrade' %}?plan=enterprise" class="w-full bg-gray-900 dark:bg-white hover:bg-gray-700 dark:hover:bg-gray-100 text-white dark:text-black font-semibold py-3 px-6 rounded-lg transition-colors block text-center">
+                    Fazer Upgrade
+                </a>
+                {% else %}
+                <a href="{% url 'users:register' %}" class="w-full bg-gray-900 dark:bg-white hover:bg-gray-700 dark:hover:bg-gray-100 text-white dark:text-black font-semibold py-3 px-6 rounded-lg transition-colors block text-center">
+                    Entrar em Contato
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Feature Comparison Table -->
+<div class="py-16 bg-white dark:bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">
+            Comparação Detalhada
+        </h2>
+
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                        <th class="text-left py-4 text-gray-900 dark:text-white font-semibold">Funcionalidade</th>
+                        <th class="text-center py-4 text-gray-900 dark:text-white font-semibold">Gratuito</th>
+                        <th class="text-center py-4 text-gray-900 dark:text-white font-semibold">Premium</th>
+                        <th class="text-center py-4 text-gray-900 dark:text-white font-semibold">Enterprise</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-600 dark:text-gray-300">
+                    <tr class="border-b border-gray-100 dark:border-gray-700">
+                        <td class="py-4 font-medium">Número de atalhos</td>
+                        <td class="text-center py-4">50</td>
+                        <td class="text-center py-4">500</td>
+                        <td class="text-center py-4">Ilimitado</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 dark:border-gray-700">
+                        <td class="py-4 font-medium">Requisições IA/mês</td>
+                        <td class="text-center py-4">50</td>
+                        <td class="text-center py-4">1.000</td>
+                        <td class="text-center py-4">Ilimitado</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 dark:border-gray-700">
+                        <td class="py-4 font-medium">Expansão com IA</td>
+                        <td class="text-center py-4">✅</td>
+                        <td class="text-center py-4">✅</td>
+                        <td class="text-center py-4">✅</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 dark:border-gray-700">
+                        <td class="py-4 font-medium">Categorias personalizadas</td>
+                        <td class="text-center py-4">❌</td>
+                        <td class="text-center py-4">✅</td>
+                        <td class="text-center py-4">✅</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 dark:border-gray-700">
+                        <td class="py-4 font-medium">Exportar/Importar atalhos</td>
+                        <td class="text-center py-4">❌</td>
+                        <td class="text-center py-4">✅</td>
+                        <td class="text-center py-4">✅</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 dark:border-gray-700">
+                        <td class="py-4 font-medium">Análise avançada</td>
+                        <td class="text-center py-4">❌</td>
+                        <td class="text-center py-4">✅</td>
+                        <td class="text-center py-4">✅</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 dark:border-gray-700">
+                        <td class="py-4 font-medium">Integrações personalizadas</td>
+                        <td class="text-center py-4">❌</td>
+                        <td class="text-center py-4">❌</td>
+                        <td class="text-center py-4">✅</td>
+                    </tr>
+                    <tr class="border-b border-gray-100 dark:border-gray-700">
+                        <td class="py-4 font-medium">Suporte</td>
+                        <td class="text-center py-4">Comunidade</td>
+                        <td class="text-center py-4">Email</td>
+                        <td class="text-center py-4">24/7 + Gerente</td>
+                    </tr>
+                    <tr>
+                        <td class="py-4 font-medium">SLA</td>
+                        <td class="text-center py-4">-</td>
+                        <td class="text-center py-4">99%</td>
+                        <td class="text-center py-4">99.9%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- FAQ Section -->
+<div class="py-16 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">
+            Perguntas Frequentes
+        </h2>
+
+        <div class="space-y-8">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    Posso cancelar minha assinatura a qualquer momento?
+                </h3></div>
+                <p class="text-gray-600 dark:text-gray-400">
+                    Sim! Você pode cancelar sua assinatura a qualquer momento sem taxas de cancelamento. Seus dados e atalhos serão mantidos e você pode reativar quando quiser.
+                </p>
+            </div>
+
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    O que acontece com meus atalhos se eu cancelar?
+                </h3>
+                <p class="text-gray-600 dark:text-gray-400">
+                    Seus atalhos são mantidos no sistema, mas você terá acesso limitado conforme o plano gratuito. Atalhos excedentes ficam inativos até que você faça upgrade novamente.
+                </p>
+            </div>
+
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    Existe período de teste gratuito?
+                </h3>
+                <p class="text-gray-600 dark:text-gray-400">
+                    O plano gratuito funciona como um período de teste permanente. Você pode experimentar todas as funcionalidades básicas sem limitação de tempo.
+                </p>
+            </div>
+
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    Os métodos de pagamento são seguros?
+                </h3>
+                <p class="text-gray-600 dark:text-gray-400">
+                    Sim! Utilizamos criptografia de ponta e parceiros confiáveis para processar pagamentos. Não armazenamos dados de cartão de crédito em nossos servidores.
+                </p>
+            </div>
+
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    Posso fazer downgrade do meu plano?
+                </h3>
+                <p class="text-gray-600 dark:text-gray-400">
+                    Sim, você pode cancelar sua assinatura a qualquer momento e retornar ao plano gratuito. O downgrade será efetivado no final do período pago atual.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="py-16 bg-symplifika-primary">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl font-bold text-black mb-4">
+            Pronto para aumentar sua produtividade?
+        </h2>
+        <p class="text-lg text-black/80 mb-8">
+            Junte-se a milhares de usuários que já automatizaram suas tarefas com o Symplifika
+        </p>
+        {% if not user.is_authenticated %}
+        <a href="{% url 'users:register' %}" class="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-symplifika-primary bg-white hover:bg-gray-50 transition-colors">
+            Começar Grátis
+            <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+            </svg>
+        </a>
+        {% else %}
+            {% if user.profile.plan == 'free' %}
+            <a href="{% url 'users:plan_upgrade' %}" class="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-symplifika-primary bg-white hover:bg-gray-50 transition-colors">
+                Fazer Upgrade
+                <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                </svg>
+            </a>
+            {% else %}
+            <a href="{% url 'core:dashboard' %}" class="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-symplifika-primary bg-white hover:bg-gray-50 transition-colors">
+                Ir para Dashboard
+                <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                </svg>
+            </a>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleBilling(type) {
+    const monthlyBtn = document.getElementById('monthlyToggle');
+    const yearlyBtn = document.getElementById('yearlyToggle');
+    const monthlyPrices = document.querySelectorAll('.monthly-price');
+    const yearlyPrices = document.querySelectorAll('.yearly-price');
+
+    if (type === 'monthly') {
+        monthlyBtn.classList.add('active', 'bg-symplifika-primary', 'text-black');
+        monthlyBtn.classList.remove('text-gray-500', 'dark:text-gray-400');
+        yearlyBtn.classList.remove('active', 'bg-symplifika-primary', 'text-black');
+        yearlyBtn.classList.add('text-gray-500', 'dark:text-gray-400');
+
+        monthlyPrices.forEach(el => el.classList.remove('hidden'));
+        yearlyPrices.forEach(el => el.classList.add('hidden'));
+    } else {
+        yearlyBtn.classList.add('active', 'bg-symplifika-primary', 'text-black');
+        yearlyBtn.classList.remove('text-gray-500', 'dark:text-gray-400');
+        monthlyBtn.classList.remove('active', 'bg-symplifika-primary', 'text-black');
+        monthlyBtn.classList.add('text-gray-500', 'dark:text-gray-400');
+
+        monthlyPrices.forEach(el => el.classList.add('hidden'));
+        yearlyPrices.forEach(el => el.classList.remove('hidden'));
+    }
+}
+
+// Set initial state
+document.addEventListener('DOMContentLoaded', function() {
+    toggleBilling('monthly');
+});
+</script>
+{% endblock %}

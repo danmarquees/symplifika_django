@@ -1,0 +1,408 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gerenciar Assinatura - Symplifika{% endblock %}
+
+{% block meta_description %}Gerencie sua assinatura Symplifika, visualize histórico de pagamentos e altere configurações.{% endblock %}
+
+{% block body_class %}bg-symplifika-gradient bg-mesh min-h-screen{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-white mb-4">
+            Gerenciar <span class="text-symplifika-primary">Assinatura</span>
+        </h1>
+        <p class="text-gray-300">
+            Controle sua assinatura, visualize pagamentos e gerencie configurações
+        </p>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mb-6">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left Column - Subscription Info -->
+        <div class="lg:col-span-2 space-y-8">
+            <!-- Current Plan -->
+            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-white">Plano Atual</h3>
+                    {% if subscription_info.status == 'active' %}
+                    <span class="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-semibold">
+                        Ativo
+                    </span>
+                    {% elif subscription_info.status == 'cancelled' %}
+                    <span class="bg-red-500/20 text-red-400 px-3 py-1 rounded-full text-sm font-semibold">
+                        Cancelado
+                    </span>
+                    {% else %}
+                    <span class="bg-gray-500/20 text-gray-400 px-3 py-1 rounded-full text-sm font-semibold">
+                        {{ subscription_info.status|title }}
+                    </span>
+                    {% endif %}
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="text-3xl font-bold text-symplifika-primary mb-2">
+                            {% if current_plan == 'free' %}
+                                Gratuito
+                            {% elif current_plan == 'premium' %}
+                                Premium
+                            {% elif current_plan == 'enterprise' %}
+                                Enterprise
+                            {% endif %}
+                        </div>
+                        <p class="text-gray-300">
+                            {% if subscription_info.has_subscription and subscription_info.amount > 0 %}
+                                R$ {{ subscription_info.amount }}
+                                {% if subscription_info.billing_cycle == 'monthly' %}/mês{% else %}/ano{% endif %}
+                            {% else %}
+                                Sem custo
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    {% if subscription_info.has_subscription and subscription_info.next_billing_date %}
+                    <div>
+                        <div class="text-sm text-gray-400 mb-1">Próxima cobrança</div>
+                        <div class="text-white font-semibold">
+                            {{ subscription_info.next_billing_date|date:"d/m/Y" }}
+                        </div>
+                        {% if subscription_info.days_remaining %}
+                        <div class="text-sm text-gray-400">
+                            {{ subscription_info.days_remaining }} dias restantes
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Plan Features -->
+                <div class="mt-6">
+                    <h4 class="text-white font-semibold mb-3">Recursos do seu plano:</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex items-center text-gray-300">
+                            <svg class="w-4 h-4 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            {% if user.profile.max_shortcuts == -1 %}
+                                Atalhos ilimitados
+                            {% else %}
+                                {{ user.profile.max_shortcuts }} atalhos
+                            {% endif %}
+                        </div>
+                        <div class="flex items-center text-gray-300">
+                            <svg class="w-4 h-4 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            {% if user.profile.max_ai_requests == -1 %}
+                                IA ilimitada
+                            {% else %}
+                                {{ user.profile.max_ai_requests }} requisições IA/mês
+                            {% endif %}
+                        </div>
+                        {% if current_plan != 'free' %}
+                        <div class="flex items-center text-gray-300">
+                            <svg class="w-4 h-4 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Exportar/Importar atalhos
+                        </div>
+                        <div class="flex items-center text-gray-300">
+                            <svg class="w-4 h-4 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Suporte prioritário
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex flex-wrap gap-4 mt-6">
+                    {% if current_plan == 'free' %}
+                    <a
+                        href="{% url 'users:plan_upgrade' %}"
+                        class="bg-symplifika-primary hover:bg-symplifika-secondary text-black font-semibold py-2 px-6 rounded-lg transition-colors"
+                    >
+                        Fazer Upgrade
+                    </a>
+                    {% elif current_plan == 'premium' %}
+                    <a
+                        href="{% url 'users:plan_upgrade' %}"
+                        class="bg-symplifika-primary hover:bg-symplifika-secondary text-black font-semibold py-2 px-6 rounded-lg transition-colors"
+                    >
+                        Upgrade para Enterprise
+                    </a>
+                    {% endif %}
+
+                    {% if subscription_info.has_subscription and subscription_info.status == 'active' %}
+                    <button
+                        onclick="showCancelModal()"
+                        class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+                    >
+                        Cancelar Assinatura
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Usage Statistics -->
+            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-8">
+                <h3 class="text-xl font-bold text-white mb-6">Estatísticas de Uso</h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-symplifika-primary mb-1">
+                            {{ user.shortcuts.count }}
+                        </div>
+                        <div class="text-sm text-gray-400">Atalhos criados</div>
+                        <div class="w-full bg-gray-700 rounded-full h-2 mt-2">
+                            {% if user.profile.max_shortcuts != -1 %}
+                            <div
+                                class="bg-symplifika-primary h-2 rounded-full"
+                                style="width: {% widthratio user.shortcuts.count user.profile.max_shortcuts 100 %}%"
+                            ></div>
+                            {% else %}
+                            <div class="bg-symplifika-primary h-2 rounded-full w-full"></div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-symplifika-primary mb-1">
+                            {{ user.profile.ai_requests_used }}
+                        </div>
+                        <div class="text-sm text-gray-400">Requisições IA este mês</div>
+                        <div class="w-full bg-gray-700 rounded-full h-2 mt-2">
+                            {% if user.profile.max_ai_requests != -1 %}
+                            <div
+                                class="bg-symplifika-primary h-2 rounded-full"
+                                style="width: {% widthratio user.profile.ai_requests_used user.profile.max_ai_requests 100 %}%"
+                            ></div>
+                            {% else %}
+                            <div class="bg-symplifika-primary h-2 rounded-full w-full"></div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-symplifika-primary mb-1">
+                            {{ user.profile.time_saved_minutes }}
+                        </div>
+                        <div class="text-sm text-gray-400">Minutos economizados</div>
+                        <div class="text-xs text-gray-500 mt-1">
+                            {{ user.profile.time_saved_minutes|floatformat:0|add:0|div:60|floatformat:1 }} horas
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment History -->
+            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-8">
+                <h3 class="text-xl font-bold text-white mb-6">Histórico de Pagamentos</h3>
+
+                {% if payment_history %}
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-gray-600">
+                                <th class="text-left text-gray-400 font-semibold py-3">Data</th>
+                                <th class="text-left text-gray-400 font-semibold py-3">Valor</th>
+                                <th class="text-left text-gray-400 font-semibold py-3">Método</th>
+                                <th class="text-left text-gray-400 font-semibold py-3">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-600">
+                            {% for payment in payment_history %}
+                            <tr>
+                                <td class="py-3 text-white">
+                                    {{ payment.created_at|date:"d/m/Y" }}
+                                </td>
+                                <td class="py-3 text-white font-semibold">
+                                    R$ {{ payment.amount }}
+                                </td>
+                                <td class="py-3 text-gray-300">
+                                    {% if payment.payment_method == 'credit_card' %}Cartão de Crédito{% endif %}
+                                    {% if payment.payment_method == 'debit_card' %}Cartão de Débito{% endif %}
+                                    {% if payment.payment_method == 'pix' %}PIX{% endif %}
+                                    {% if payment.payment_method == 'boleto' %}Boleto{% endif %}
+                                </td>
+                                <td class="py-3">
+                                    {% if payment.status == 'completed' %}
+                                    <span class="bg-green-500/20 text-green-400 px-2 py-1 rounded text-sm">
+                                        Pago
+                                    </span>
+                                    {% elif payment.status == 'pending' %}
+                                    <span class="bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded text-sm">
+                                        Pendente
+                                    </span>
+                                    {% elif payment.status == 'failed' %}
+                                    <span class="bg-red-500/20 text-red-400 px-2 py-1 rounded text-sm">
+                                        Falhou
+                                    </span>
+                                    {% else %}
+                                    <span class="bg-gray-500/20 text-gray-400 px-2 py-1 rounded text-sm">
+                                        {{ payment.status|title }}
+                                    </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-8">
+                    <div class="text-gray-400 mb-4">
+                        <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <p>Nenhum pagamento realizado ainda</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right Column - Quick Actions -->
+        <div class="space-y-6">
+            <!-- Quick Stats -->
+            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+                <h4 class="text-white font-semibold mb-4">Resumo Rápido</h4>
+                <div class="space-y-4">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Plano:</span>
+                        <span class="text-white font-semibold">
+                            {% if current_plan == 'free' %}Gratuito{% endif %}
+                            {% if current_plan == 'premium' %}Premium{% endif %}
+                            {% if current_plan == 'enterprise' %}Enterprise{% endif %}
+                        </span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Status:</span>
+                        <span class="text-symplifika-primary font-semibold">
+                            {% if subscription_info.is_active %}Ativo{% else %}Inativo{% endif %}
+                        </span>
+                    </div>
+                    {% if subscription_info.has_subscription %}
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Renovação:</span>
+                        <span class="text-white">
+                            {{ subscription_info.billing_cycle|title }}
+                        </span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+                <h4 class="text-white font-semibold mb-4">Ações Rápidas</h4>
+                <div class="space-y-3">
+                    <a
+                        href="{% url 'users:plan_upgrade' %}"
+                        class="block w-full bg-symplifika-primary/20 hover:bg-symplifika-primary/30 text-symplifika-primary font-semibold py-2 px-4 rounded-lg transition-colors text-center"
+                    >
+                        Ver Planos
+                    </a>
+                    <a
+                        href="{% url 'users:profile' %}"
+                        class="block w-full bg-white/5 hover:bg-white/10 text-white font-semibold py-2 px-4 rounded-lg transition-colors text-center"
+                    >
+                        Editar Perfil
+                    </a>
+                    <a
+                        href="{% url 'core:support' %}"
+                        class="block w-full bg-white/5 hover:bg-white/10 text-white font-semibold py-2 px-4 rounded-lg transition-colors text-center"
+                    >
+                        Suporte
+                    </a>
+                </div>
+            </div>
+
+            <!-- Billing Information -->
+            {% if subscription_info.has_subscription %}
+            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+                <h4 class="text-white font-semibold mb-4">Informações de Cobrança</h4>
+                <div class="space-y-3">
+                    <div>
+                        <div class="text-sm text-gray-400">Valor mensal</div>
+                        <div class="text-white font-semibold">R$ {{ subscription_info.amount }}</div>
+                    </div>
+                    {% if subscription_info.next_billing_date %}
+                    <div>
+                        <div class="text-sm text-gray-400">Próxima cobrança</div>
+                        <div class="text-white font-semibold">
+                            {{ subscription_info.next_billing_date|date:"d/m/Y" }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div>
+                        <div class="text-sm text-gray-400">Método de pagamento</div>
+                        <div class="text-white">Cartão ****</div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Subscription Modal -->
+<div id="cancelModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-8 max-w-md mx-4">
+        <h3 class="text-xl font-bold text-white mb-4">Cancelar Assinatura</h3>
+        <p class="text-gray-300 mb-6">
+            Tem certeza que deseja cancelar sua assinatura? Você perderá acesso aos recursos premium no final do período atual.
+        </p>
+
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <input type="hidden" name="cancel_subscription" value="1">
+
+            <div class="flex space-x-4">
+                <button
+                    type="button"
+                    onclick="hideCancelModal()"
+                    class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+                >
+                    Manter Assinatura
+                </button>
+                <button
+                    type="submit"
+                    class="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+                >
+                    Sim, Cancelar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function showCancelModal() {
+    document.getElementById('cancelModal').classList.remove('hidden');
+}
+
+function hideCancelModal() {
+    document.getElementById('cancelModal').classList.add('hidden');
+}
+
+// Close modal on outside click
+document.getElementById('cancelModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        hideCancelModal();
+    }
+});
+</script>
+{% endblock %}

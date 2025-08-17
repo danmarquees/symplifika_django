@@ -13,7 +13,7 @@ app_name = 'shortcuts'
 
 urlpatterns = [
     # URLs do router
-    path('api/', include(router.urls)),
+    path('', include(router.urls)),
 
     # URLs customizadas adicionais se necessário
     path('api/shortcuts/search/', views.ShortcutViewSet.as_view({'post': 'search'}), name='shortcut-search'),

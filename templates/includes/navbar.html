@@ -1,4 +1,4 @@
-{% load static %}
+{% load static %} {% load custom_filters %}
 
 <nav
     class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 no-print"
@@ -76,14 +76,13 @@
                     Dashboard
                 </a>
                 <a
-                    href="#"
-                    onclick="navigateToPage('shortcuts')"
+                    href="{% url 'core:dashboard' %}#shortcuts"
                     class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
                     Atalhos
                 </a>
                 <a
-                    href="#"
+                    href="{% url 'core:profile' %}"
                     class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
                     Perfil
@@ -96,13 +95,13 @@
                     Início
                 </a>
                 <a
-                    href="#features"
+                    href="{% url 'core:index' %}#features"
                     class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
                     Recursos
                 </a>
                 <a
-                    href="#about"
+                    href="{% url 'core:about' %}"
                     class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
                     Sobre
@@ -112,6 +111,13 @@
 
             <!-- Right side buttons -->
             <div class="flex items-center space-x-4">
+                {% if user.is_authenticated %}
+                <!-- Plan Status Widget -->
+                <div class="hidden md:block">
+                    {% include 'includes/plan_status_widget.html' %}
+                </div>
+                {% endif %}
+
                 <!-- Theme toggle -->
                 <button
                     type="button"
@@ -167,13 +173,13 @@
                             </div>
                         </div>
                         <a
-                            href="#"
+                            href="{% url 'core:profile' %}"
                             class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                             Perfil
                         </a>
                         <a
-                            href="#"
+                            href="{% url 'core:settings' %}"
                             class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                             Configurações
@@ -197,6 +203,13 @@
                     </div>
                 </div>
                 {% else %}
+                <!-- Pricing Button -->
+                <a
+                    href="{% url 'core:pricing' %}"
+                    class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                    Preços
+                </a>
                 <!-- Login/Register buttons -->
                 <a
                     href="{% url 'users:login' %}"
@@ -228,14 +241,13 @@
                 Dashboard
             </a>
             <a
-                href="#"
-                onclick="navigateToPage('shortcuts')"
+                href="{% url 'core:dashboard' %}#shortcuts"
                 class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium"
             >
                 Atalhos
             </a>
             <a
-                href="#"
+                href="{% url 'core:profile' %}"
                 class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium"
             >
                 Perfil
@@ -248,18 +260,24 @@
                 Início
             </a>
             <a
-                href="#features"
+                href="{% url 'core:index' %}#features"
                 class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium"
             >
                 Recursos
             </a>
             <a
-                href="#about"
+                href="{% url 'core:about' %}"
                 class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium"
             >
                 Sobre
             </a>
             <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                <a
+                    href="{% url 'core:pricing' %}"
+                    class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                >
+                    Preços
+                </a>
                 <a
                     href="{% url 'users:login' %}"
                     class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium"
@@ -277,6 +295,9 @@
         </div>
     </div>
 </nav>
+
+<!-- Include Pricing Modal -->
+{% include 'includes/pricing_modal.html' %}
 
 <script>
     // Toggle user menu
@@ -306,32 +327,4 @@
             const mobileMenu = document.getElementById("mobile-menu");
             mobileMenu.classList.toggle("hidden");
         });
-
-    // Navigate to page function for SPA navigation
-    function navigateToPage(page) {
-        // Use the global app instance if available
-        if (window.app && typeof window.app.showPage === "function") {
-            window.app.showPage(page);
-        } else {
-            // Wait for app to be ready if not available immediately
-            const waitForApp = () => {
-                if (window.app && typeof window.app.showPage === "function") {
-                    window.app.showPage(page);
-                } else {
-                    // Fallback: try to trigger click on sidebar navigation
-                    const sidebarLink = document.querySelector(
-                        `[data-page="${page}"]`,
-                    );
-                    if (sidebarLink) {
-                        sidebarLink.click();
-                    } else {
-                        console.warn(`Unable to navigate to page: ${page}`);
-                    }
-                }
-            };
-
-            // Try again after a short delay
-            setTimeout(waitForApp, 100);
-        }
-    }
 </script>

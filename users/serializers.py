@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
-from .models import UserProfile
+from .models import UserProfile, PlanPricing, Subscription, Payment, PlanUpgradeRequest
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -277,3 +277,106 @@ class PlanUpgradeSerializer(serializers.Serializer):
             )
 
         return value
+
+
+class PlanPricingSerializer(serializers.ModelSerializer):
+    """Serializer para preços de planos"""
+    plan_display = serializers.CharField(source='get_plan_display', read_only=True)
+
+    class Meta:
+        model = PlanPricing
+        fields = [
+            'id', 'plan', 'plan_display', 'monthly_price', 'yearly_price',
+            'features', 'is_active', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+    """Serializer para assinaturas"""
+    user_username = serializers.CharField(source='user.username', read_only=True)
+    plan_display = serializers.CharField(source='get_plan_display', read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    billing_cycle_display = serializers.CharField(source='get_billing_cycle_display', read_only=True)
+    is_active = serializers.BooleanField(read_only=True)
+    days_remaining = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Subscription
+        fields = [
+            'id', 'user', 'user_username', 'plan', 'plan_display', 'status',
+            'status_display', 'billing_cycle', 'billing_cycle_display', 'start_date',
+            'end_date', 'next_billing_date', 'amount', 'is_active', 'days_remaining',
+            'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'is_active', 'days_remaining', 'created_at', 'updated_at']
+
+
+class PaymentSerializer(serializers.ModelSerializer):
+    """Serializer para pagamentos"""
+    user_username = serializers.CharField(source='user.username', read_only=True)
+    payment_method_display = serializers.CharField(source='get_payment_method_display', read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+
+    class Meta:
+        model = Payment
+        fields = [
+            'id', 'user', 'user_username', 'subscription', 'amount',
+            'payment_method', 'payment_method_display', 'status', 'status_display',
+            'transaction_id', 'paid_at', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
+
+class PlanUpgradeRequestSerializer(serializers.ModelSerializer):
+    """Serializer para solicitações de upgrade"""
+    user_username = serializers.CharField(source='user.username', read_only=True)
+    current_plan_display = serializers.CharField(source='get_current_plan_display', read_only=True)
+    requested_plan_display = serializers.CharField(source='get_requested_plan_display', read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    payment_method_display = serializers.CharField(source='get_payment_method_display', read_only=True)
+    billing_cycle_display = serializers.CharField(source='get_billing_cycle_display', read_only=True)
+
+    class Meta:
+        model = PlanUpgradeRequest
+        fields = [
+            'id', 'user', 'user_username', 'current_plan', 'current_plan_display',
+            'requested_plan', 'requested_plan_display', 'status', 'status_display',
+            'payment_method', 'payment_method_display', 'billing_cycle',
+            'billing_cycle_display', 'amount', 'notes', 'processed_by',
+            'processed_at', 'created_at', 'updated_at'
+        ]
+        read_only_fields = [
+            'id', 'current_plan_display', 'requested_plan_display', 'status_display',
+            'payment_method_display', 'billing_cycle_display', 'processed_by',
+            'processed_at', 'created_at', 'updated_at'
+        ]
+
+    def create(self, validated_data):
+        """Cria uma nova solicitação de upgrade"""
+        user = self.context['request'].user
+        validated_data['user'] = user
+        validated_data['current_plan'] = user.profile.plan
+        return super().create(validated_data)
+
+
+class PlanComparisonSerializer(serializers.Serializer):
+    """Serializer para comparação de planos"""
+    plan = serializers.CharField()
+    plan_display = serializers.CharField()
+    monthly_price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    yearly_price = serializers.DecimalField(max_digits=10, decimal_places=2, allow_null=True)
+    features = serializers.DictField()
+    max_shortcuts = serializers.IntegerField()
+    max_ai_requests = serializers.IntegerField()
+    is_current = serializers.BooleanField()
+    can_upgrade = serializers.BooleanField()
+
+
+class PaymentMethodSerializer(serializers.Serializer):
+    """Serializer para métodos de pagamento disponíveis"""
+    key = serializers.CharField()
+    name = serializers.CharField()
+    description = serializers.CharField()
+    icon = serializers.CharField()
+    is_available = serializers.BooleanField()

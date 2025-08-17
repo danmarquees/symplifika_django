@@ -1,18 +1,17 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from django.contrib.auth import login, logout
-from django.db.models import Sum, Count, Q
+from django.contrib.auth import login, logout, authenticate
+from django.contrib import messages
+from django.db.models import Sum, Count
 from django.utils import timezone
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from datetime import timedelta, datetime
+from datetime import timedelta
 import calendar
-from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate
 
 from .models import UserProfile
 from .serializers import (
@@ -21,6 +20,11 @@ from .serializers import (
     PasswordResetRequestSerializer, PasswordResetConfirmSerializer,
     AccountDeleteSerializer, PlanUpgradeSerializer
 )
+from .forms import (
+    UserProfileForm, UserUpdateForm, CustomUserCreationForm,
+    CustomPasswordChangeForm, PlanUpgradeForm, AccountDeleteForm
+)
+from .models import PlanUpgradeRequest
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -178,33 +182,165 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def upgrade_plan(self, request):
         """Faz upgrade do plano do usuário"""
-        serializer = PlanUpgradeSerializer(
-            data=request.data,
-            context={'request': request}
-        )
-        if serializer.is_valid():
-            plan = serializer.validated_data['plan']
-            profile = request.user.profile
+        from .services import PaymentService
 
-            # Atualiza limites baseado no plano
-            if plan == 'premium':
-                profile.max_shortcuts = 500
-                profile.max_ai_requests = 1000
-            elif plan == 'enterprise':
-                profile.max_shortcuts = -1  # Ilimitado
-                profile.max_ai_requests = 10000
+        payment_service = PaymentService()
 
-            profile.plan = plan
-            profile.save()
+        try:
+            target_plan = request.data.get('plan')
+            payment_method = request.data.get('payment_method', 'credit_card')
+            billing_cycle = request.data.get('billing_cycle', 'monthly')
+
+            if not target_plan:
+                return Response(
+                    {'error': 'Plano é obrigatório'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Criar solicitação de upgrade
+            upgrade_request = payment_service.create_upgrade_request(
+                user=request.user,
+                target_plan=target_plan,
+                payment_method=payment_method,
+                billing_cycle=billing_cycle
+            )
+
+            # Para desenvolvimento, aprovar automaticamente
+            # Em produção, isso seria feito após confirmação do pagamento
+            if request.data.get('auto_approve', False):
+                payment_service.process_payment(upgrade_request)
+
+                return Response({
+                    'message': f'Plano atualizado para {target_plan} com sucesso!',
+                    'upgrade_request_id': upgrade_request.id,
+                    'new_plan': target_plan,
+                    'status': 'completed'
+                })
+            else:
+                return Response({
+                    'message': 'Solicitação de upgrade criada com sucesso!',
+                    'upgrade_request_id': upgrade_request.id,
+                    'amount': upgrade_request.amount,
+                    'payment_method': payment_method,
+                    'status': 'pending'
+                })
+
+        except ValueError as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            return Response(
+                {'error': 'Erro interno do servidor'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    @action(detail=False, methods=['get'])
+    def plan_pricing(self, request):
+        """Retorna preços dos planos"""
+        from .services import PaymentService
+
+        payment_service = PaymentService()
+        plans = payment_service.get_plan_comparison(request.user)
+
+        return Response(plans)
+
+    @action(detail=False, methods=['get'])
+    def subscription_info(self, request):
+        """Retorna informações da assinatura do usuário"""
+        from .services import PaymentService
+
+        payment_service = PaymentService()
+        subscription_info = payment_service.get_user_subscription_info(request.user)
+
+        return Response(subscription_info)
+
+    @action(detail=False, methods=['get'])
+    def payment_methods(self, request):
+        """Retorna métodos de pagamento disponíveis"""
+        from .services import PaymentService
+
+        payment_service = PaymentService()
+        payment_methods = payment_service.get_available_payment_methods()
+
+        return Response(payment_methods)
+
+    @action(detail=False, methods=['get'])
+    def payment_history(self, request):
+        """Retorna histórico de pagamentos do usuário"""
+        from .services import PaymentService
+
+        payment_service = PaymentService()
+        payments = payment_service.get_user_payment_history(request.user)
+
+        from .serializers import PaymentSerializer
+        serializer = PaymentSerializer(payments, many=True)
+
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['post'])
+    def cancel_subscription(self, request):
+        """Cancela a assinatura do usuário"""
+        from .services import PaymentService
+
+        try:
+            payment_service = PaymentService()
+            payment_service.cancel_subscription(request.user)
 
             return Response({
-                'message': f'Plano atualizado para {plan}',
-                'plan': plan,
-                'max_shortcuts': profile.max_shortcuts,
-                'max_ai_requests': profile.max_ai_requests
+                'message': 'Assinatura cancelada com sucesso',
+                'new_plan': 'free'
             })
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response(
+                {'error': 'Erro ao cancelar assinatura'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    @action(detail=False, methods=['post'])
+    def process_payment(self, request):
+        """Processa pagamento de upgrade"""
+        from .services import PaymentService
+        from .models import PlanUpgradeRequest
+
+        try:
+            upgrade_request_id = request.data.get('upgrade_request_id')
+            payment_data = request.data.get('payment_data', {})
+
+            if not upgrade_request_id:
+                return Response(
+                    {'error': 'ID da solicitação de upgrade é obrigatório'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            upgrade_request = PlanUpgradeRequest.objects.get(
+                id=upgrade_request_id,
+                user=request.user,
+                status='pending'
+            )
+
+            payment_service = PaymentService()
+            payment = payment_service.process_payment(upgrade_request, payment_data)
+
+            return Response({
+                'message': 'Pagamento processado com sucesso!',
+                'payment_id': payment.id,
+                'transaction_id': payment.transaction_id,
+                'new_plan': upgrade_request.requested_plan
+            })
+
+        except PlanUpgradeRequest.DoesNotExist:
+            return Response(
+                {'error': 'Solicitação de upgrade não encontrada'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            return Response(
+                {'error': 'Erro ao processar pagamento'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     @action(detail=False, methods=['post'])
     def reset_monthly_counters(self, request):
@@ -477,7 +613,7 @@ def profile_update_view(request):
         return redirect('users:login')
 
     user = request.user
-    profile = user.userprofile
+    profile = user.profile
 
     if request.method == 'POST':
         form = UserProfileForm(request.POST, instance=profile)
@@ -498,7 +634,7 @@ def profile_delete_view(request):
         return redirect('users:login')
 
     user = request.user
-    profile = user.userprofile
+    profile = user.profile
 
     if request.method == 'POST':
         user.delete()
@@ -508,16 +644,142 @@ def profile_delete_view(request):
         return render(request, 'auth/profile_delete.html', {'user': user})
 
 def profile_delete_confirm_view(request):
-    """Confirma a exclusão do perfil do usuário"""
+    """Confirmação de exclusão do perfil"""
     if not request.user.is_authenticated:
         return redirect('users:login')
 
     user = request.user
-    profile = user.userprofile
+    profile = user.profile
 
     if request.method == 'POST':
         user.delete()
-        messages.success(request, 'Perfil excluído com sucesso!')
+        logout(request)
+        messages.success(request, 'Conta excluída com sucesso.')
         return redirect('core:index')
     else:
         return render(request, 'auth/profile_delete_confirm.html', {'user': user})
+
+
+def plan_upgrade_view(request):
+    """View para upgrade de plano"""
+    if not request.user.is_authenticated:
+        return redirect('users:login')
+
+    from .services import PaymentService
+
+    payment_service = PaymentService()
+
+    if request.method == 'POST':
+        form = PlanUpgradeForm(request.user, request.POST)
+        if form.is_valid():
+            try:
+                target_plan = form.cleaned_data['plan']
+                payment_method = form.cleaned_data['payment_method']
+
+                upgrade_request = payment_service.create_upgrade_request(
+                    user=request.user,
+                    target_plan=target_plan,
+                    payment_method=payment_method
+                )
+
+                messages.success(request, 'Solicitação de upgrade criada com sucesso!')
+                return redirect('users:plan_upgrade_payment', upgrade_id=upgrade_request.id)
+
+            except ValueError as e:
+                messages.error(request, str(e))
+        else:
+            messages.error(request, 'Por favor, corrija os erros abaixo.')
+    else:
+        form = PlanUpgradeForm(request.user)
+
+    # Dados para o template
+    plans = payment_service.get_plan_comparison(request.user)
+    payment_methods = payment_service.get_available_payment_methods()
+    subscription_info = payment_service.get_user_subscription_info(request.user)
+
+    context = {
+        'form': form,
+        'plans': plans,
+        'payment_methods': payment_methods,
+        'subscription_info': subscription_info,
+        'current_plan': request.user.profile.plan
+    }
+
+    return render(request, 'users/plan_upgrade.html', context)
+
+
+def plan_upgrade_payment_view(request, upgrade_id):
+    """View para pagamento do upgrade"""
+    if not request.user.is_authenticated:
+        return redirect('users:login')
+
+    try:
+        upgrade_request = PlanUpgradeRequest.objects.get(
+            id=upgrade_id,
+            user=request.user,
+            status='pending'
+        )
+    except PlanUpgradeRequest.DoesNotExist:
+        messages.error(request, 'Solicitação de upgrade não encontrada.')
+        return redirect('users:plan_upgrade')
+
+    if request.method == 'POST':
+        # Simular processamento de pagamento
+        from .services import PaymentService
+
+        try:
+            payment_service = PaymentService()
+            payment = payment_service.process_payment(upgrade_request)
+
+            messages.success(request, f'Pagamento processado com sucesso! Seu plano foi atualizado para {upgrade_request.requested_plan}.')
+            return redirect('users:profile')
+
+        except Exception as e:
+            messages.error(request, 'Erro ao processar pagamento. Tente novamente.')
+
+    context = {
+        'upgrade_request': upgrade_request,
+        'payment_methods': PaymentService().get_available_payment_methods()
+    }
+
+    return render(request, 'users/plan_upgrade_payment.html', context)
+
+
+def subscription_management_view(request):
+    """View para gerenciamento de assinatura"""
+    if not request.user.is_authenticated:
+        return redirect('users:login')
+
+    from .services import PaymentService
+
+    payment_service = PaymentService()
+    subscription_info = payment_service.get_user_subscription_info(request.user)
+    payment_history = payment_service.get_user_payment_history(request.user)[:10]  # Últimos 10
+
+    if request.method == 'POST' and 'cancel_subscription' in request.POST:
+        try:
+            payment_service.cancel_subscription(request.user)
+            messages.success(request, 'Assinatura cancelada com sucesso.')
+            return redirect('users:subscription_management')
+        except Exception as e:
+            messages.error(request, 'Erro ao cancelar assinatura.')
+
+    context = {
+        'subscription_info': subscription_info,
+        'payment_history': payment_history,
+        'current_plan': request.user.profile.plan
+    }
+
+    return render(request, 'users/subscription_management.html', context)
+
+def settings_view(request):
+    """View para configurações do usuário"""
+    if not request.user.is_authenticated:
+        return redirect('users:login')
+
+    context = {
+        'user': request.user,
+        'profile': request.user.profile
+    }
+
+    return render(request, 'users/settings.html', context)

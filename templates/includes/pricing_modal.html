@@ -1,0 +1,390 @@
+{% load static %}
+{% load custom_filters %}
+
+<!-- Pricing Modal -->
+<div id="pricingModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+            <!-- Modal Header -->
+            <div class="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 rounded-t-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+                            Escolha seu <span class="text-symplifika-primary">Plano</span>
+                        </h2>
+                        <p class="text-gray-600 dark:text-gray-400 mt-1">
+                            Desbloqueie todo o potencial do Symplifika
+                        </p>
+                    </div>
+                    <button onclick="closePricingModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Current Plan Info (for authenticated users) -->
+            {% if user.is_authenticated %}
+            <div class="p-6 bg-gray-50 dark:bg-gray-700/50">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="font-semibold text-gray-900 dark:text-white">Plano Atual</h3>
+                        <p class="text-gray-600 dark:text-gray-400">
+                            {% if user.profile.plan == 'free' %}
+                                Gratuito
+                            {% elif user.profile.plan == 'premium' %}
+                                Premium
+                            {% elif user.profile.plan == 'enterprise' %}
+                                Enterprise
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Atalhos utilizados</p>
+                        <p class="font-semibold text-gray-900 dark:text-white">
+                            {{ user.shortcuts.count }} /
+                            {% if user.profile.max_shortcuts == -1 %}
+                                ∞
+                            {% else %}
+                                {{ user.profile.max_shortcuts }}
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Billing Toggle -->
+            <div class="p-6 text-center">
+                <div class="inline-flex items-center bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+                    <button onclick="toggleBilling('monthly')" id="monthlyBtn" class="px-4 py-2 rounded-md text-sm font-medium transition-colors billing-toggle active">
+                        Mensal
+                    </button>
+                    <button onclick="toggleBilling('yearly')" id="yearlyBtn" class="px-4 py-2 rounded-md text-sm font-medium transition-colors billing-toggle">
+                        Anual
+                        <span class="ml-1 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">-17%</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pricing Cards -->
+            <div class="p-6 pt-0">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Free Plan -->
+                    <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6 relative">
+                        <div class="text-center mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Gratuito</h3>
+                            <div class="text-3xl font-bold text-gray-900 dark:text-white">
+                                R$ 0
+                            </div>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm">para sempre</p>
+                        </div>
+
+                        <ul class="space-y-3 mb-6">
+                            <li class="flex items-center text-gray-600 dark:text-gray-300">
+                                <svg class="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                50 atalhos
+                            </li>
+                            <li class="flex items-center text-gray-600 dark:text-gray-300">
+                                <svg class="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                50 requisições IA/mês
+                            </li>
+                            <li class="flex items-center text-gray-600 dark:text-gray-300">
+                                <svg class="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                Categorias básicas
+                            </li>
+                            <li class="flex items-center text-gray-600 dark:text-gray-300">
+                                <svg class="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                Suporte da comunidade
+                            </li>
+                        </ul>
+
+                        {% if user.is_authenticated and user.profile.plan == 'free' %}
+                        <button class="w-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 font-semibold py-2 px-4 rounded-lg cursor-not-allowed">
+                            Plano Atual
+                        </button>
+                        {% elif not user.is_authenticated %}
+                        <a href="{% url 'users:register' %}" class="w-full bg-symplifika-primary hover:bg-symplifika-secondary text-black font-semibold py-2 px-4 rounded-lg transition-colors block text-center">
+                            Começar Grátis
+                        </a>
+                        {% else %}
+                        <button onclick="downgradePlan()" class="w-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-semibold py-2 px-4 rounded-lg transition-colors">
+                            Cancelar Assinatura
+                        </button>
+                        {% endif %}
+                    </div>
+
+                    <!-- Premium Plan -->
+                    <div class="bg-white dark:bg-gray-900 rounded-lg border-2 border-symplifika-primary p-6 relative transform scale-105">
+                        <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                            <span class="bg-symplifika-primary text-black px-4 py-1 rounded-full text-sm font-semibold">
+                                Mais Popular
+                            </span>
+                        </div>
+
+                        <div class="text-center mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Premium</h3>
+                            <div class="text-3xl font-bold text-gray-900 dark:text-white">
+                                <span class="monthly-price">R$ 19,90</span>
+                                <span class="yearly-price hidden">R$ 16,50</span>
+                            </div>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm">
+                                <span class="monthly-price">por mês</span>
+                                <span class="yearly-price hidden">por mês (pago anualmente)</span>
+                            </p>
+                        </div>
+
+                        <ul class="space-y-3 mb-6">
+                            <li class="flex items-center text-gray-600 dark:text-gray-300">
+                                <svg class="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                500 atalhos
+                            </li>
+                            <li class="flex items-center text-gray-600 dark:text-gray-300">
+                                <svg class="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                1.000 requisições IA/mês
+                            </li>
+                            <li class="flex items-center text-gray-600 dark:text-gray-300">
+                                <svg class="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                Categorias personalizadas
+                            </li>
+                            <li class="flex items-center text-gray-600 dark:text-gray-300">
+                                <svg class="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                Exportar/Importar atalhos
+                            </li>
+                            <li class="flex items-center text-gray-600 dark:text-gray-300">
+                                <svg class="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                Suporte por email
+                            </li>
+                        </ul>
+
+                        {% if user.is_authenticated and user.profile.plan == 'premium' %}
+                        <button class="w-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 font-semibold py-2 px-4 rounded-lg cursor-not-allowed">
+                            Plano Atual
+                        </button>
+                        {% elif user.is_authenticated %}
+                        <button onclick="upgradePlan('premium')" class="w-full bg-symplifika-primary hover:bg-symplifika-secondary text-black font-semibold py-2 px-4 rounded-lg transition-colors">
+                            Fazer Upgrade
+                        </button>
+                        {% else %}
+                        <a href="{% url 'users:register' %}" class="w-full bg-symplifika-primary hover:bg-symplifika-secondary text-black font-semibold py-2 px-4 rounded-lg transition-colors block text-center">
+                            Começar Teste
+                        </a>
+                        {% endif %}
+                    </div>
+
+                    <!-- Enterprise Plan -->
+                    <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6 relative">
+                        <div class="text-center mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Enterprise</h3>
+                            <div class="text-3xl font-bold text-gray-900 dark:text-white">
+                                <span class="monthly-price">R$ 49,90</span>
+                                <span class="yearly-price hidden">R$ 41,50</span>
+                            </div>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm">
+                                <span class="monthly-price">por mês</span>
+                                <span class="yearly-price hidden">por mês (pago anualmente)</span>
+                            </p>
+                        </div>
+
+                        <ul class="space-y-3 mb-6">
+                            <li class="flex items-center text-gray-600 dark:text-gray-300">
+                                <svg class="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                Atalhos ilimitados
+                            </li>
+                            <li class="flex items-center text-gray-600 dark:text-gray-300">
+                                <svg class="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                Requisições IA ilimitadas
+                            </li>
+                            <li class="flex items-center text-gray-600 dark:text-gray-300">
+                                <svg class="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                Todas as funcionalidades Premium
+                            </li>
+                            <li class="flex items-center text-gray-600 dark:text-gray-300">
+                                <svg class="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                Integrações personalizadas
+                            </li>
+                            <li class="flex items-center text-gray-600 dark:text-gray-300">
+                                <svg class="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                Suporte prioritário 24/7
+                            </li>
+                            <li class="flex items-center text-gray-600 dark:text-gray-300">
+                                <svg class="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                Gerente de conta dedicado
+                            </li>
+                        </ul>
+
+                        {% if user.is_authenticated and user.profile.plan == 'enterprise' %}
+                        <button class="w-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 font-semibold py-2 px-4 rounded-lg cursor-not-allowed">
+                            Plano Atual
+                        </button>
+                        {% elif user.is_authenticated %}
+                        <button onclick="upgradePlan('enterprise')" class="w-full bg-gray-900 dark:bg-white hover:bg-gray-700 dark:hover:bg-gray-100 text-white dark:text-black font-semibold py-2 px-4 rounded-lg transition-colors">
+                            Fazer Upgrade
+                        </button>
+                        {% else %}
+                        <a href="{% url 'users:register' %}" class="w-full bg-gray-900 dark:bg-white hover:bg-gray-700 dark:hover:bg-gray-100 text-white dark:text-black font-semibold py-2 px-4 rounded-lg transition-colors block text-center">
+                            Entrar em Contato
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Comparison -->
+            <div class="p-6 border-t border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 text-center">
+                    Comparação Detalhada
+                </h3>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-gray-200 dark:border-gray-700">
+                                <th class="text-left py-3 text-gray-900 dark:text-white font-medium">Funcionalidade</th>
+                                <th class="text-center py-3 text-gray-900 dark:text-white font-medium">Gratuito</th>
+                                <th class="text-center py-3 text-gray-900 dark:text-white font-medium">Premium</th>
+                                <th class="text-center py-3 text-gray-900 dark:text-white font-medium">Enterprise</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-600 dark:text-gray-300">
+                            <tr class="border-b border-gray-100 dark:border-gray-700">
+                                <td class="py-3">Número de atalhos</td>
+                                <td class="text-center py-3">50</td>
+                                <td class="text-center py-3">500</td>
+                                <td class="text-center py-3">Ilimitado</td>
+                            </tr>
+                            <tr class="border-b border-gray-100 dark:border-gray-700">
+                                <td class="py-3">Requisições IA/mês</td>
+                                <td class="text-center py-3">50</td>
+                                <td class="text-center py-3">1.000</td>
+                                <td class="text-center py-3">Ilimitado</td>
+                            </tr>
+                            <tr class="border-b border-gray-100 dark:border-gray-700">
+                                <td class="py-3">Categorias personalizadas</td>
+                                <td class="text-center py-3">❌</td>
+                                <td class="text-center py-3">✅</td>
+                                <td class="text-center py-3">✅</td>
+                            </tr>
+                            <tr class="border-b border-gray-100 dark:border-gray-700">
+                                <td class="py-3">Exportar/Importar</td>
+                                <td class="text-center py-3">❌</td>
+                                <td class="text-center py-3">✅</td>
+                                <td class="text-center py-3">✅</td>
+                            </tr>
+                            <tr class="border-b border-gray-100 dark:border-gray-700">
+                                <td class="py-3">Integrações personalizadas</td>
+                                <td class="text-center py-3">❌</td>
+                                <td class="text-center py-3">❌</td>
+                                <td class="text-center py-3">✅</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3">Suporte</td>
+                                <td class="text-center py-3">Comunidade</td>
+                                <td class="text-center py-3">Email</td>
+                                <td class="text-center py-3">24/7 + Gerente</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showPricingModal() {
+    document.getElementById('pricingModal').classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+}
+
+function closePricingModal() {
+    document.getElementById('pricingModal').classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+}
+
+function toggleBilling(type) {
+    const monthlyBtn = document.getElementById('monthlyBtn');
+    const yearlyBtn = document.getElementById('yearlyBtn');
+    const monthlyPrices = document.querySelectorAll('.monthly-price');
+    const yearlyPrices = document.querySelectorAll('.yearly-price');
+
+    if (type === 'monthly') {
+        monthlyBtn.classList.add('active', 'bg-white', 'dark:bg-gray-600', 'text-gray-900', 'dark:text-white');
+        monthlyBtn.classList.remove('text-gray-500', 'dark:text-gray-400');
+        yearlyBtn.classList.remove('active', 'bg-white', 'dark:bg-gray-600', 'text-gray-900', 'dark:text-white');
+        yearlyBtn.classList.add('text-gray-500', 'dark:text-gray-400');
+
+        monthlyPrices.forEach(el => el.classList.remove('hidden'));
+        yearlyPrices.forEach(el => el.classList.add('hidden'));
+    } else {
+        yearlyBtn.classList.add('active', 'bg-white', 'dark:bg-gray-600', 'text-gray-900', 'dark:text-white');
+        yearlyBtn.classList.remove('text-gray-500', 'dark:text-gray-400');
+        monthlyBtn.classList.remove('active', 'bg-white', 'dark:bg-gray-600', 'text-gray-900', 'dark:text-white');
+        monthlyBtn.classList.add('text-gray-500', 'dark:text-gray-400');
+
+        monthlyPrices.forEach(el => el.classList.add('hidden'));
+        yearlyPrices.forEach(el => el.classList.remove('hidden'));
+    }
+}
+
+function upgradePlan(plan) {
+    {% if user.is_authenticated %}
+        window.location.href = "{% url 'users:plan_upgrade' %}?plan=" + plan;
+    {% else %}
+        window.location.href = "{% url 'users:register' %}";
+    {% endif %}
+}
+
+function downgradePlan() {
+    {% if user.is_authenticated %}
+        if (confirm('Tem certeza que deseja cancelar sua assinatura? Você manterá o acesso até o final do período pago.')) {
+            window.location.href = "{% url 'users:subscription_management' %}";
+        }
+    {% endif %}
+}
+
+// Close modal when clicking outside
+document.getElementById('pricingModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closePricingModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closePricingModal();
+    }
+});
+</script>

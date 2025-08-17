@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.html import format_html
 from django.urls import reverse
-from .models import UserProfile
+from .models import UserProfile, PlanPricing, Subscription, Payment, PlanUpgradeRequest
 
 
 class UserProfileInline(admin.StackedInline):
@@ -38,6 +38,7 @@ class UserAdmin(BaseUserAdmin):
     ]
     list_filter = BaseUserAdmin.list_filter + ('profile__plan',)
 
+    @admin.display(description='Plano')
     def get_plan(self, obj):
         if hasattr(obj, 'profile'):
             plan_colors = {
@@ -52,15 +53,14 @@ class UserAdmin(BaseUserAdmin):
                 obj.profile.get_plan_display()
             )
         return '-'
-    get_plan.short_description = 'Plano'
 
+    @admin.display(description='Atalhos Ativos')
     def get_shortcuts_count(self, obj):
         count = obj.shortcuts.filter(is_active=True).count()
         if count > 0:
             url = reverse('admin:shortcuts_shortcut_changelist') + f'?user__id__exact={obj.id}'
             return format_html('<a href="{}">{}</a>', url, count)
         return count
-    get_shortcuts_count.short_description = 'Atalhos Ativos'
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('profile')
@@ -102,6 +102,7 @@ class UserProfileAdmin(admin.ModelAdmin):
         }),
     )
 
+    @admin.display(description='Plano')
     def plan_display(self, obj):
         plan_colors = {
             'free': '#6c757d',
@@ -114,27 +115,27 @@ class UserProfileAdmin(admin.ModelAdmin):
             color,
             obj.get_plan_display()
         )
-    plan_display.short_description = 'Plano'
 
+    @admin.display(description='Atalhos Ativos')
     def shortcuts_count(self, obj):
         count = obj.user.shortcuts.filter(is_active=True).count()
         if count > 0:
             url = reverse('admin:shortcuts_shortcut_changelist') + f'?user__id__exact={obj.user.id}'
             return format_html('<a href="{}">{}</a>', url, count)
         return count
-    shortcuts_count.short_description = 'Atalhos Ativos'
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('user')
 
     actions = ['reset_ai_counters', 'upgrade_to_premium']
 
+    @admin.action(description='Resetar contadores mensais de IA')
     def reset_ai_counters(self, request, queryset):
         for profile in queryset:
             profile.reset_monthly_counters()
         self.message_user(request, f'Contadores de IA resetados para {queryset.count()} usuários.')
-    reset_ai_counters.short_description = 'Resetar contadores mensais de IA'
 
+    @admin.action(description='Promover para Premium')
     def upgrade_to_premium(self, request, queryset):
         updated = 0
         for profile in queryset:
@@ -145,7 +146,138 @@ class UserProfileAdmin(admin.ModelAdmin):
                 profile.save()
                 updated += 1
         self.message_user(request, f'{updated} usuários foram promovidos para Premium.')
-    upgrade_to_premium.short_description = 'Promover para Premium'
+
+
+@admin.register(PlanPricing)
+class PlanPricingAdmin(admin.ModelAdmin):
+    list_display = ['plan', 'monthly_price', 'yearly_price', 'is_active', 'created_at']
+    list_filter = ['plan', 'is_active', 'created_at']
+    readonly_fields = ['created_at', 'updated_at']
+
+    fieldsets = (
+        ('Plano', {
+            'fields': ('plan', 'is_active')
+        }),
+        ('Preços', {
+            'fields': ('monthly_price', 'yearly_price')
+        }),
+        ('Funcionalidades', {
+            'fields': ('features',)
+        }),
+        ('Metadados', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+
+@admin.register(Subscription)
+class SubscriptionAdmin(admin.ModelAdmin):
+    list_display = ['user', 'plan', 'status', 'billing_cycle', 'amount', 'next_billing_date', 'is_active_display']
+    list_filter = ['plan', 'status', 'billing_cycle', 'created_at']
+    search_fields = ['user__username', 'user__email']
+    readonly_fields = ['created_at', 'updated_at', 'is_active_display', 'days_remaining_display']
+
+    fieldsets = (
+        ('Usuário', {
+            'fields': ('user',)
+        }),
+        ('Assinatura', {
+            'fields': ('plan', 'status', 'billing_cycle', 'amount')
+        }),
+        ('Datas', {
+            'fields': ('start_date', 'end_date', 'next_billing_date')
+        }),
+        ('Status', {
+            'fields': ('is_active_display', 'days_remaining_display'),
+            'classes': ('collapse',)
+        }),
+        ('Metadados', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+    @admin.display(description='Ativa', boolean=True)
+    def is_active_display(self, obj):
+        return obj.is_active
+
+    @admin.display(description='Dias Restantes')
+    def days_remaining_display(self, obj):
+        return f"{obj.days_remaining} dias"
+
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    list_display = ['user', 'amount', 'payment_method', 'status', 'paid_at', 'created_at']
+    list_filter = ['payment_method', 'status', 'created_at', 'paid_at']
+    search_fields = ['user__username', 'user__email', 'transaction_id']
+    readonly_fields = ['created_at', 'updated_at']
+
+    fieldsets = (
+        ('Informações Básicas', {
+            'fields': ('user', 'subscription', 'amount')
+        }),
+        ('Pagamento', {
+            'fields': ('payment_method', 'status', 'transaction_id', 'paid_at')
+        }),
+        ('Gateway', {
+            'fields': ('gateway_response',),
+            'classes': ('collapse',)
+        }),
+        ('Metadados', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('user', 'subscription')
+
+
+@admin.register(PlanUpgradeRequest)
+class PlanUpgradeRequestAdmin(admin.ModelAdmin):
+    list_display = ['user', 'current_plan', 'requested_plan', 'status', 'amount', 'created_at']
+    list_filter = ['current_plan', 'requested_plan', 'status', 'payment_method', 'created_at']
+    search_fields = ['user__username', 'user__email']
+    readonly_fields = ['created_at', 'updated_at']
+
+    fieldsets = (
+        ('Solicitação', {
+            'fields': ('user', 'current_plan', 'requested_plan', 'status')
+        }),
+        ('Pagamento', {
+            'fields': ('payment_method', 'billing_cycle', 'amount')
+        }),
+        ('Processamento', {
+            'fields': ('processed_by', 'processed_at', 'notes')
+        }),
+        ('Metadados', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+    actions = ['approve_requests', 'reject_requests']
+
+    @admin.action(description='Aprovar solicitações selecionadas')
+    def approve_requests(self, request, queryset):
+        approved = 0
+        for upgrade_request in queryset.filter(status='pending'):
+            upgrade_request.approve(processed_by=request.user)
+            approved += 1
+        self.message_user(request, f'{approved} solicitações foram aprovadas.')
+
+    @admin.action(description='Rejeitar solicitações selecionadas')
+    def reject_requests(self, request, queryset):
+        rejected = 0
+        for upgrade_request in queryset.filter(status='pending'):
+            upgrade_request.reject(processed_by=request.user)
+            rejected += 1
+        self.message_user(request, f'{rejected} solicitações foram rejeitadas.')
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('user', 'processed_by')
 
 
 # Desregistra o UserAdmin padrão e registra o customizado

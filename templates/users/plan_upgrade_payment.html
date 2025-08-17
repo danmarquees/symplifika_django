@@ -1,0 +1,377 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pagamento - Symplifika{% endblock %}
+
+{% block meta_description %}Finalize o pagamento do seu upgrade de plano Symplifika.{% endblock %}
+
+{% block body_class %}bg-symplifika-gradient bg-mesh min-h-screen{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-white mb-4">
+            Finalizar <span class="text-symplifika-primary">Pagamento</span>
+        </h1>
+        <p class="text-gray-300">
+            Você está quase lá! Complete o pagamento para ativar seu novo plano.
+        </p>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mb-6">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Payment Summary -->
+    <div class="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Left Column - Order Summary -->
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-8">
+            <h3 class="text-xl font-bold text-white mb-6">Resumo do Pedido</h3>
+
+            <div class="space-y-4 mb-6">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-300">Plano Atual:</span>
+                    <span class="text-white font-semibold">
+                        {% if upgrade_request.current_plan == 'free' %}Gratuito{% endif %}
+                        {% if upgrade_request.current_plan == 'premium' %}Premium{% endif %}
+                        {% if upgrade_request.current_plan == 'enterprise' %}Enterprise{% endif %}
+                    </span>
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-300">Novo Plano:</span>
+                    <span class="text-symplifika-primary font-semibold">
+                        {% if upgrade_request.requested_plan == 'premium' %}Premium{% endif %}
+                        {% if upgrade_request.requested_plan == 'enterprise' %}Enterprise{% endif %}
+                    </span>
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-300">Ciclo de Cobrança:</span>
+                    <span class="text-white">
+                        {% if upgrade_request.billing_cycle == 'monthly' %}Mensal{% else %}Anual{% endif %}
+                    </span>
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-300">Método de Pagamento:</span>
+                    <span class="text-white">
+                        {% if upgrade_request.payment_method == 'credit_card' %}Cartão de Crédito{% endif %}
+                        {% if upgrade_request.payment_method == 'debit_card' %}Cartão de Débito{% endif %}
+                        {% if upgrade_request.payment_method == 'pix' %}PIX{% endif %}
+                        {% if upgrade_request.payment_method == 'boleto' %}Boleto Bancário{% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <hr class="border-gray-600 my-6">
+
+            <div class="flex justify-between items-center text-xl font-bold">
+                <span class="text-white">Total:</span>
+                <span class="text-symplifika-primary">R$ {{ upgrade_request.amount }}</span>
+            </div>
+
+            <!-- Plan Benefits -->
+            <div class="mt-8">
+                <h4 class="text-white font-semibold mb-4">Benefícios do seu novo plano:</h4>
+                <ul class="space-y-2">
+                    {% if upgrade_request.requested_plan == 'premium' %}
+                    <li class="flex items-center text-gray-300">
+                        <svg class="w-4 h-4 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        500 atalhos
+                    </li>
+                    <li class="flex items-center text-gray-300">
+                        <svg class="w-4 h-4 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        1.000 requisições IA/mês
+                    </li>
+                    <li class="flex items-center text-gray-300">
+                        <svg class="w-4 h-4 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        Importar/Exportar atalhos
+                    </li>
+                    <li class="flex items-center text-gray-300">
+                        <svg class="w-4 h-4 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        Suporte prioritário
+                    </li>
+                    {% elif upgrade_request.requested_plan == 'enterprise' %}
+                    <li class="flex items-center text-gray-300">
+                        <svg class="w-4 h-4 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        Atalhos ilimitados
+                    </li>
+                    <li class="flex items-center text-gray-300">
+                        <svg class="w-4 h-4 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        IA ilimitada
+                    </li>
+                    <li class="flex items-center text-gray-300">
+                        <svg class="w-4 h-4 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        Todas as funcionalidades Premium
+                    </li>
+                    <li class="flex items-center text-gray-300">
+                        <svg class="w-4 h-4 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        Integrações personalizadas
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Right Column - Payment Form -->
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-8">
+            <h3 class="text-xl font-bold text-white mb-6">Dados do Pagamento</h3>
+
+            {% if upgrade_request.payment_method == 'credit_card' or upgrade_request.payment_method == 'debit_card' %}
+            <!-- Credit/Debit Card Form -->
+            <form method="post" id="paymentForm" class="space-y-6">
+                {% csrf_token %}
+
+                <div>
+                    <label class="block text-white font-semibold mb-2">Número do Cartão</label>
+                    <input
+                        type="text"
+                        name="card_number"
+                        placeholder="1234 5678 9012 3456"
+                        class="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:border-symplifika-primary focus:outline-none"
+                        maxlength="19"
+                        required
+                    >
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Validade</label>
+                        <input
+                            type="text"
+                            name="card_expiry"
+                            placeholder="MM/AA"
+                            class="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:border-symplifika-primary focus:outline-none"
+                            maxlength="5"
+                            required
+                        >
+                    </div>
+                    <div>
+                        <label class="block text-white font-sem</div>ibold mb-2">CVV</label>
+                        <input
+                            type="text"
+                            name="card_cvv"
+                            placeholder="123"
+                            class="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:border-symplifika-primary focus:outline-none"
+                            maxlength="4"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-white font-semibold mb-2">Nome no Cartão</label>
+                    <input
+                        type="text"
+                        name="card_name"
+                        placeholder="Nome como está no cartão"
+                        class="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:border-symplifika-primary focus:outline-none"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label class="block text</div>-white font-semibold mb-2">CPF</label>
+                    <input
+                        type="text"
+                        name="cpf"
+                        placeholder="000.000.000-00"
+                        class="w-full bg-white/5 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:border-symplifika-primary focus:outline-none"
+                        maxlength="14"
+                        required
+                    >
+                </div>
+
+                <button
+                    type="submit"
+                    class="w-full bg-symplifika-primary hover:bg-symplifika-secondary text-black font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center"
+                    id="payButton"
+                >
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                    Pagar R$ {{ upgrade_request.amount }}
+                </button>
+            </form>
+
+            {% elif upgrade_request.payment_method == 'pix' %}
+            <!-- PIX Payment -->
+            <div class="text-center">
+                <div class="bg-white p-8 rounded-lg mb-6">
+                    <div class="w-48 h-48 mx-auto bg-gray-200 rounded-lg flex items-center justify-center">
+                        <span class="text-gray-500 text-sm">QR Code do PIX</span>
+                    </div>
+                </div>
+
+                <p class="text-gray-300 mb-4">
+                    Escaneie o QR Code acima com o app do seu banco ou copie o código PIX abaixo:
+                </p>
+
+                <div class="bg-white/5 rounded-lg p-4 mb-6">
+                    <code class="text-sm text-white break-all" id="pixCode">
+                        00020126580014BR.GOV.BCB.PIX0136{{ upgrade_request.id|stringformat:"032d" }}5204000053039865802BR5925Symplifika Tecnologia LTDA6009SAO PAULO62070503***6304{{ upgrade_request.amount|floatformat:0 }}
+                    </code>
+                    <button
+                        onclick="copyPixCode()"
+                        class="mt-3 text-symplifika-primary hover:text-symplifika-secondary transition-colors"
+                    >
+                        Copiar código PIX
+                    </button>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <button
+                        type="submit"
+                        class="bg-symplifika-primary hover:bg-symplifika-secondary text-black font-semibold py-4 px-8 rounded-lg transition-colors"
+                    >
+                        Confirmar Pagamento PIX
+                    </button>
+                </form>
+
+                <p class="text-gray-400 text-sm mt-4">
+                    Após o pagamento, seu plano será ativado automaticamente.
+                </p>
+            </div>
+
+            {% elif upgrade_request.payment_method == 'boleto' %}
+            <!-- Boleto Payment -->
+            <div class="text-center">
+                <div class="bg-symplifika-primary/20 rounded-lg p-6 mb-6">
+                    <svg class="w-16 h-16 text-symplifika-primary mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <h4 class="text-white font-semibold text-lg">Boleto Bancário</h4>
+                    <p class="text-gray-300 mt-2">
+                        Vencimento: {{ upgrade_request.created_at|date:"d/m/Y" }}
+                    </p>
+                </div>
+
+                <form method="post" class="space-y-4">
+                    {% csrf_token %}
+                    <button
+                        type="submit"
+                        class="w-full bg-symplifika-primary hover:bg-symplifika-secondary text-black font-semibold py-4 px-6 rounded-lg transition-colors mb-4"
+                    >
+                        Gerar Boleto Bancário
+                    </button>
+                </form>
+
+                <p class="text-gray-400 text-sm">
+                    O boleto será gerado e você poderá imprimir ou pagar online.
+                    <br>
+                    Prazo de vencimento: 3 dias úteis
+                </p>
+            </div>
+            {% endif %}
+
+            <!-- Security Notice -->
+            <div class="bg-green-500/10 border border-green-500/20 rounded-lg p-4 mt-6">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="text-green-400 text-sm font-semibold">Pagamento 100% Seguro</span>
+                </div>
+                <p class="text-green-300 text-xs mt-1">
+                    Seus dados são protegidos com criptografia SSL de 256 bits
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back to Plans -->
+    <div class="text-center mt-8">
+        <a
+            href="{% url 'users:plan_upgrade' %}"
+            class="text-gray-400 hover:text-white transition-colors"
+        >
+            ← Voltar para escolha de planos
+        </a>
+    </div>
+</div>
+
+<script>
+// Format card number
+document.addEventListener('DOMContentLoaded', function() {
+    const cardNumberInput = document.querySelector('input[name="card_number"]');
+    if (cardNumberInput) {
+        cardNumberInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formattedValue;
+        });
+    }
+
+    // Format expiry date
+    const expiryInput = document.querySelector('input[name="card_expiry"]');
+    if (expiryInput) {
+        expiryInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value;
+        });
+    }
+
+    // Format CPF
+    const cpfInput = document.querySelector('input[name="cpf"]');
+    if (cpfInput) {
+        cpfInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            e.target.value = value;
+        });
+    }
+});
+
+function copyPixCode() {
+    const pixCode = document.getElementById('pixCode').textContent;
+    navigator.clipboard.writeText(pixCode.trim()).then(function() {
+        alert('Código PIX copiado para a área de transferência!');
+    });
+}
+
+// Handle form submission
+const paymentForm = document.getElementById('paymentForm');
+if (paymentForm) {
+    paymentForm.addEventListener('submit', function(e) {
+        const payButton = document.getElementById('payButton');
+        payButton.innerHTML = `
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Processando...
+        `;
+        payButton.disabled = true;
+    });
+}
+</script>
+{% endblock %}

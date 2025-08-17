@@ -685,6 +685,115 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
             </div>
         </div>
 
+        <!-- Modal: Criar/Editar Categoria -->
+        <div
+            id="createCategoryModal"
+            class="modal fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 hidden"
+        >
+            <div
+                class="modal-content bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-md p-8 relative"
+            >
+                <form id="createCategoryForm" autocomplete="off">
+                    <input type="hidden" id="categoryId" name="category_id" />
+                    <h2
+                        id="categoryModalTitle"
+                        class="text-2xl font-bold mb-6 text-gray-900 dark:text-white"
+                    >
+                        Nova Categoria
+                    </h2>
+                    <div class="mb-4">
+                        <label
+                            for="categoryName"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                            >Nome</label
+                        >
+                        <input
+                            type="text"
+                            id="categoryName"
+                            name="name"
+                            required
+                            class="form-input w-full"
+                            maxlength="100"
+                        />
+                    </div>
+                    <div class="mb-4">
+                        <label
+                            for="categoryDescription"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                            >Descrição</label
+                        >
+                        <textarea
+                            id="categoryDescription"
+                            name="description"
+                            class="form-input w-full"
+                            rows="2"
+                            maxlength="255"
+                        ></textarea>
+                    </div>
+                    <div class="mb-6">
+                        <label
+                            for="categoryColor"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                            >Cor</label
+                        >
+                        <div class="flex items-center space-x-2">
+                            <input
+                                type="color"
+                                id="categoryColor"
+                                name="color"
+                                value="#007bff"
+                                class="w-10 h-10 p-0 border-0 rounded"
+                            />
+                            <input
+                                type="text"
+                                id="categoryColorText"
+                                value="#007bff"
+                                maxlength="7"
+                                class="form-input w-24"
+                            />
+                        </div>
+                    </div>
+                    <div class="flex justify-end space-x-2">
+                        <button
+                            type="button"
+                            class="btn btn-outline"
+                            onclick="Symplifika.Modal.close('createCategoryModal')"
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            type="submit"
+                            id="submitCategoryBtn"
+                            class="btn btn-primary flex items-center space-x-2"
+                        >
+                            <span id="submitCategoryText">Criar Categoria</span>
+                            <span id="submitCategoryLoading" class="hidden ml-2"
+                                >Salvando...</span
+                            >
+                        </button>
+                    </div>
+                </form>
+                <button
+                    type="button"
+                    class="absolute top-3 right-3 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                    onclick="Symplifika.Modal.close('createCategoryModal')"
+                >
+                    <svg
+                        class="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"
+                        />
+                    </svg>
+                </button>
+            </div>
+        </div>
         <!-- Statistics Page -->
         <div id="statisticsPage" class="page hidden flex-1 overflow-y-auto">
             <div class="p-8">
@@ -1042,10 +1151,7 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                                 />
                             </div>
                             <div class="flex justify-end">
-                                <button
-                                    type="submit"
-                                    class="btn btn-primary"
-                                >
+                                <button type="submit" class="btn btn-primary">
                                     Salvar Perfil
                                 </button>
                             </div>
@@ -1067,31 +1173,45 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                                     Tema
                                 </label>
                                 <div class="grid grid-cols-3 gap-3">
-                                    <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    <label
+                                        class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
+                                    >
                                         <input
                                             type="radio"
                                             name="theme"
                                             value="light"
                                             class="sr-only"
                                         />
-                                        <div class="flex items-center space-x-3">
-                                            <div class="w-4 h-4 bg-white border-2 border-gray-300 rounded-full"></div>
+                                        <div
+                                            class="flex items-center space-x-3"
+                                        >
+                                            <div
+                                                class="w-4 h-4 bg-white border-2 border-gray-300 rounded-full"
+                                            ></div>
                                             <span class="text-sm">Claro</span>
                                         </div>
                                     </label>
-                                    <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    <label
+                                        class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
+                                    >
                                         <input
                                             type="radio"
                                             name="theme"
                                             value="dark"
                                             class="sr-only"
                                         />
-                                        <div class="flex items-center space-x-3">
-                                            <div class="w-4 h-4 bg-gray-800 border-2 border-gray-300 rounded-full"></div>
+                                        <div
+                                            class="flex items-center space-x-3"
+                                        >
+                                            <div
+                                                class="w-4 h-4 bg-gray-800 border-2 border-gray-300 rounded-full"
+                                            ></div>
                                             <span class="text-sm">Escuro</span>
                                         </div>
                                     </label>
-                                    <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    <label
+                                        class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
+                                    >
                                         <input
                                             type="radio"
                                             name="theme"
@@ -1099,8 +1219,12 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                                             class="sr-only"
                                             checked
                                         />
-                                        <div class="flex items-center space-x-3">
-                                            <div class="w-4 h-4 bg-gradient-to-r from-white to-gray-800 border-2 border-gray-300 rounded-full"></div>
+                                        <div
+                                            class="flex items-center space-x-3"
+                                        >
+                                            <div
+                                                class="w-4 h-4 bg-gradient-to-r from-white to-gray-800 border-2 border-gray-300 rounded-full"
+                                            ></div>
                                             <span class="text-sm">Auto</span>
                                         </div>
                                     </label>
@@ -1108,13 +1232,20 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                             </div>
 
                             <div>
-                                <label class="flex items-center justify-between">
+                                <label
+                                    class="flex items-center justify-between"
+                                >
                                     <div>
-                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        <span
+                                            class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                        >
                                             Notificações de Atalhos
                                         </span>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">
-                                            Mostrar notificação quando um atalho é usado
+                                        <p
+                                            class="text-xs text-gray-500 dark:text-gray-400"
+                                        >
+                                            Mostrar notificação quando um atalho
+                                            é usado
                                         </p>
                                     </div>
                                     <input
@@ -1126,13 +1257,20 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                             </div>
 
                             <div>
-                                <label class="flex items-center justify-between">
+                                <label
+                                    class="flex items-center justify-between"
+                                >
                                     <div>
-                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        <span
+                                            class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                        >
                                             Backup Automático
                                         </span>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">
-                                            Fazer backup dos atalhos automaticamente
+                                        <p
+                                            class="text-xs text-gray-500 dark:text-gray-400"
+                                        >
+                                            Fazer backup dos atalhos
+                                            automaticamente
                                         </p>
                                     </div>
                                     <input
@@ -1149,7 +1287,9 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                                     Idioma
                                 </label>
                                 <select class="form-input">
-                                    <option value="pt-BR" selected>Português (Brasil)</option>
+                                    <option value="pt-BR" selected>
+                                        Português (Brasil)
+                                    </option>
                                     <option value="en-US">English (US)</option>
                                     <option value="es-ES">Español</option>
                                 </select>
@@ -1167,51 +1307,84 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    <span
+                                        class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                    >
                                         Criar novo atalho
                                     </span>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                                    <p
+                                        class="text-xs text-gray-500 dark:text-gray-400"
+                                    >
                                         Abrir modal para criar novo atalho
                                     </p>
                                 </div>
                                 <div class="flex items-center space-x-1">
-                                    <kbd class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded">Ctrl</kbd>
+                                    <kbd
+                                        class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded"
+                                        >Ctrl</kbd
+                                    >
                                     <span class="text-gray-400">+</span>
-                                    <kbd class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded">N</kbd>
+                                    <kbd
+                                        class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded"
+                                        >N</kbd
+                                    >
                                 </div>
                             </div>
 
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    <span
+                                        class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                    >
                                         Buscar atalhos
                                     </span>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                                    <p
+                                        class="text-xs text-gray-500 dark:text-gray-400"
+                                    >
                                         Focar no campo de busca
                                     </p>
                                 </div>
                                 <div class="flex items-center space-x-1">
-                                    <kbd class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded">Ctrl</kbd>
+                                    <kbd
+                                        class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded"
+                                        >Ctrl</kbd
+                                    >
                                     <span class="text-gray-400">+</span>
-                                    <kbd class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded">F</kbd>
+                                    <kbd
+                                        class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded"
+                                        >F</kbd
+                                    >
                                 </div>
                             </div>
 
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    <span
+                                        class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                    >
                                         Alternar tema
                                     </span>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                                    <p
+                                        class="text-xs text-gray-500 dark:text-gray-400"
+                                    >
                                         Alternar entre tema claro e escuro
                                     </p>
                                 </div>
                                 <div class="flex items-center space-x-1">
-                                    <kbd class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded">Ctrl</kbd>
+                                    <kbd
+                                        class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded"
+                                        >Ctrl</kbd
+                                    >
                                     <span class="text-gray-400">+</span>
-                                    <kbd class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded">Shift</kbd>
+                                    <kbd
+                                        class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded"
+                                        >Shift</kbd
+                                    >
                                     <span class="text-gray-400">+</span>
-                                    <kbd class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded">T</kbd>
+                                    <kbd
+                                        class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded"
+                                        >T</kbd
+                                    >
                                 </div>
                             </div>
                         </div>
@@ -1226,13 +1399,20 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                         </h3>
                         <div class="space-y-6">
                             <div>
-                                <label class="flex items-center justify-between">
+                                <label
+                                    class="flex items-center justify-between"
+                                >
                                     <div>
-                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        <span
+                                            class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                        >
                                             Coleta de Analytics
                                         </span>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">
-                                            Ajude-nos a melhorar compartilhando dados anônimos de uso
+                                        <p
+                                            class="text-xs text-gray-500 dark:text-gray-400"
+                                        >
+                                            Ajude-nos a melhorar compartilhando
+                                            dados anônimos de uso
                                         </p>
                                     </div>
                                     <input
@@ -1250,8 +1430,11 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                                 >
                                     Limpar Todos os Dados
                                 </button>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                    Esta ação não pode ser desfeita. Faça um backup antes.
+                                <p
+                                    class="text-xs text-gray-500 dark:text-gray-400 mt-2"
+                                >
+                                    Esta ação não pode ser desfeita. Faça um
+                                    backup antes.
                                 </p>
                             </div>
                         </div>
@@ -1266,17 +1449,34 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                         </h3>
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-600 dark:text-gray-400">Versão</span>
-                                <span class="text-sm font-medium text-gray-900 dark:text-white">1.0.0</span>
+                                <span
+                                    class="text-sm text-gray-600 dark:text-gray-400"
+                                    >Versão</span
+                                >
+                                <span
+                                    class="text-sm font-medium text-gray-900 dark:text-white"
+                                    >1.0.0</span
+                                >
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-600 dark:text-gray-400">Última atualização</span>
-                                <span class="text-sm font-medium text-gray-900 dark:text-white">Janeiro 2024</span>
+                                <span
+                                    class="text-sm text-gray-600 dark:text-gray-400"
+                                    >Última atualização</span
+                                >
+                                <span
+                                    class="text-sm font-medium text-gray-900 dark:text-white"
+                                    >Janeiro 2024</span
+                                >
                             </div>
-                            <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
-                                <p class="text-sm text-gray-600 dark:text-gray-400">
-                                    Symplifika é uma ferramenta para gerenciar atalhos de texto e automações.
-                                    Desenvolvido com ❤️ para aumentar sua produtividade.
+                            <div
+                                class="pt-4 border-t border-gray-200 dark:border-gray-700"
+                            >
+                                <p
+                                    class="text-sm text-gray-600 dark:text-gray-400"
+                                >
+                                    Symplifika é uma ferramenta para gerenciar
+                                    atalhos de texto e automações. Desenvolvido
+                                    com ❤️ para aumentar sua produtividade.
                                 </p>
                             </div>
                         </div>
@@ -1293,11 +1493,13 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
     class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden"
 >
     <div
-        class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4"
+        class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto"
     >
-        <div class="flex items-center justify-between p-6 border-b">
+        <div
+            class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700"
+        >
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                Criar Novo Atalho
+                <span id="shortcutModalTitle">Criar Novo Atalho</span>
             </h3>
             <button
                 type="button"
@@ -1315,53 +1517,521 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
             </button>
         </div>
 
-        <form id="createShortcutForm" class="space-y-4">
+        <form id="createShortcutForm" class="p-6 space-y-6">
             {% csrf_token %}
-            <div>
-                <label
-                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                    >Palavra-chave</label
-                >
-                <input
-                    type="text"
-                    name="keyword"
-                    required
-                    class="form-input"
-                    placeholder="ex: email"
-                />
+            <input type="hidden" name="shortcut_id" id="shortcutId" />
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Trigger -->
+                <div>
+                    <label
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                    >
+                        Gatilho <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <span
+                            class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500 dark:text-gray-400 text-sm font-mono"
+                        >
+                            //
+                        </span>
+                        <input
+                            type="text"
+                            name="trigger"
+                            id="shortcutTrigger"
+                            required
+                            class="form-input pl-8"
+                            placeholder="email-boasvindas"
+                            pattern="[a-zA-Z0-9\-_]+"
+                            title="Use apenas letras, números, hífens e underscores"
+                        />
+                    </div>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        Ex: email-boasvindas, resposta-suporte
+                    </p>
+                </div>
+
+                <!-- Title -->
+                <div>
+                    <label
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                    >
+                        Título <span class="text-red-500">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        name="title"
+                        id="shortcutTitle"
+                        required
+                        class="form-input"
+                        placeholder="Email de boas-vindas"
+                    />
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        Nome descritivo para o atalho
+                    </p>
+                </div>
             </div>
+
+            <!-- Expansion Type -->
+            <div>
+                <label
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3"
+                >
+                    Tipo de Expansão
+                </label>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="expansion-type-option">
+                        <input
+                            type="radio"
+                            name="expansion_type"
+                            value="static"
+                            id="type_static"
+                            class="sr-only"
+                            checked
+                        />
+                        <label
+                            for="type_static"
+                            class="expansion-type-label flex flex-col p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-colors"
+                        >
+                            <div class="flex items-center justify-between mb-2">
+                                <span
+                                    class="text-sm font-medium text-gray-900 dark:text-white"
+                                    >Texto Fixo</span
+                                >
+                                <svg
+                                    class="w-5 h-5 text-green-500"
+                                    fill="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    />
+                                </svg>
+                            </div>
+                            <span
+                                class="text-xs text-gray-500 dark:text-gray-400"
+                            >
+                                Texto que não muda
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="expansion-type-option">
+                        <input
+                            type="radio"
+                            name="expansion_type"
+                            value="dynamic"
+                            id="type_dynamic"
+                            class="sr-only"
+                        />
+                        <label
+                            for="type_dynamic"
+                            class="expansion-type-label flex flex-col p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-colors"
+                        >
+                            <div class="flex items-center justify-between mb-2">
+                                <span
+                                    class="text-sm font-medium text-gray-900 dark:text-white"
+                                    >Dinâmico</span
+                                >
+                                <svg
+                                    class="w-5 h-5 text-orange-500"
+                                    fill="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                            </div>
+                            <span
+                                class="text-xs text-gray-500 dark:text-gray-400"
+                            >
+                                Com variáveis substituíveis
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="expansion-type-option">
+                        <input
+                            type="radio"
+                            name="expansion_type"
+                            value="ai_enhanced"
+                            id="type_ai"
+                            class="sr-only"
+                        />
+                        <label
+                            for="type_ai"
+                            class="expansion-type-label flex flex-col p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-colors"
+                        >
+                            <div class="flex items-center justify-between mb-2">
+                                <span
+                                    class="text-sm font-medium text-gray-900 dark:text-white"
+                                    >IA Enhanced</span
+                                >
+                                <svg
+                                    class="w-5 h-5 text-purple-500"
+                                    fill="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                                    />
+                                </svg>
+                            </div>
+                            <span
+                                class="text-xs text-gray-500 dark:text-gray-400"
+                            >
+                                Expandido com IA
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
             <div>
                 <label
                     class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                    >Texto expandido</label
                 >
+                    Conteúdo <span class="text-red-500">*</span>
+                </label>
                 <textarea
                     name="content"
+                    id="shortcutContent"
                     required
-                    class="form-input h-24"
-                    placeholder="Digite o texto que será inserido..."
+                    rows="6"
+                    class="form-input"
+                    placeholder="Digite o texto que será inserido ou base para IA..."
                 ></textarea>
+                <div class="mt-2 flex justify-between items-center">
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                        <span id="contentHelp"
+                            >Digite o texto que será inserido quando usar o
+                            atalho</span
+                        >
+                    </p>
+                    <span id="charCount" class="text-xs text-gray-400"
+                        >0 caracteres</span
+                    >
+                </div>
             </div>
-            <div>
+
+            <!-- AI Prompt (only for AI enhanced) -->
+            <div id="aiPromptSection" class="hidden">
                 <label
                     class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                    >Categoria</label
                 >
-                <select name="category" class="form-input">
-                    <option value="">Sem categoria</option>
-                    <!-- Categories will be populated via JavaScript -->
-                </select>
+                    Prompt para IA
+                </label>
+                <textarea
+                    name="ai_prompt"
+                    id="aiPrompt"
+                    rows="3"
+                    class="form-input"
+                    placeholder="Instruções específicas para a IA expandir este conteúdo..."
+                ></textarea>
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    Ex: "Expanda em uma proposta comercial completa e
+                    profissional"
+                </p>
             </div>
-            <div class="flex justify-end space-x-3 pt-4">
+
+            <!-- Variables (only for dynamic) -->
+            <div id="variablesSection" class="hidden">
+                <label
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
+                    Variáveis
+                </label>
+                <div id="variablesList" class="space-y-2">
+                    <!-- Variables will be added dynamically -->
+                </div>
+                <button
+                    type="button"
+                    id="addVariableBtn"
+                    class="mt-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                >
+                    + Adicionar Variável
+                </button>
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    Use {nome_da_variavel} no conteúdo. Ex: "Olá {nome},
+                    bem-vindo à {empresa}!"
+                </p>
+            </div>
+
+            <!-- Category -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                    >
+                        Categoria
+                    </label>
+                    <div class="flex space-x-2">
+                        <select
+                            name="category"
+                            id="shortcutCategory"
+                            class="form-input flex-1"
+                        >
+                            <option value="">Sem categoria</option>
+                            <!-- Categories will be populated via JavaScript -->
+                        </select>
+                        <button
+                            type="button"
+                            onclick="Symplifika.Modal.open('createCategoryModal')"
+                            class="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
+                            title="Criar nova categoria"
+                        >
+                            <svg
+                                class="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 4v16m8-8H4"
+                                />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                    >
+                        Status
+                    </label>
+                    <div class="flex items-center space-x-3">
+                        <input
+                            type="checkbox"
+                            name="is_active"
+                            id="shortcutActive"
+                            checked
+                            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <label
+                            for="shortcutActive"
+                            class="text-sm text-gray-700 dark:text-gray-300"
+                        >
+                            Ativo
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div
+                class="flex justify-end space-x-3 pt-6 border-t border-gray-200 dark:border-gray-700"
+            >
                 <button
                     type="button"
                     onclick="Symplifika.Modal.close('createShortcutModal')"
-                    class="btn btn-outline border-gray-300 text-gray-700 hover:bg-gray-50"
+                    class="btn btn-outline border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                 >
                     Cancelar
                 </button>
-                <button type="submit" class="btn btn-primary">
-                    Criar Atalho
+                <button
+                    type="submit"
+                    id="submitShortcutBtn"
+                    class="btn btn-primary"
+                >
+                    <span id="submitShortcutText">Criar Atalho</span>
+                    <svg
+                        id="submitShortcutLoading"
+                        class="hidden animate-spin -mr-1 ml-3 h-4 w-4 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                    >
+                        <circle
+                            class="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            stroke-width="4"
+                        ></circle>
+                        <path
+                            class="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                    </svg>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Create Category Modal -->
+<div
+    id="createCategoryModal"
+    class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden"
+>
+    <div
+        class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4"
+    >
+        <div
+            class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700"
+        >
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                <span id="categoryModalTitle">Nova Categoria</span>
+            </h3>
+            <button
+                type="button"
+                onclick="Symplifika.Modal.close('createCategoryModal')"
+                class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M6 18L18 6M6 6l12 12"
+                    />
+                </svg>
+            </button>
+        </div>
+
+        <form id="createCategoryForm" class="p-6 space-y-4">
+            {% csrf_token %}
+            <input type="hidden" name="category_id" id="categoryId" />
+
+            <div>
+                <label
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
+                    Nome <span class="text-red-500">*</span>
+                </label>
+                <input
+                    type="text"
+                    name="name"
+                    id="categoryName"
+                    required
+                    class="form-input"
+                    placeholder="Email, Código, Documentos..."
+                />
+            </div>
+
+            <div>
+                <label
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
+                    Descrição
+                </label>
+                <textarea
+                    name="description"
+                    id="categoryDescription"
+                    rows="3"
+                    class="form-input"
+                    placeholder="Descrição opcional da categoria..."
+                ></textarea>
+            </div>
+
+            <div>
+                <label
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
+                    Cor
+                </label>
+                <div class="flex space-x-2 items-center">
+                    <input
+                        type="color"
+                        name="color"
+                        id="categoryColor"
+                        value="#007bff"
+                        class="w-12 h-10 border border-gray-300 dark:border-gray-600 rounded"
+                    />
+                    <div class="flex-1">
+                        <input
+                            type="text"
+                            id="categoryColorText"
+                            value="#007bff"
+                            class="form-input text-sm font-mono"
+                            placeholder="#007bff"
+                        />
+                    </div>
+                </div>
+                <div class="mt-2 flex space-x-1">
+                    <button
+                        type="button"
+                        class="color-preset w-6 h-6 rounded border border-gray-300"
+                        style="background-color: #007bff"
+                        data-color="#007bff"
+                    ></button>
+                    <button
+                        type="button"
+                        class="color-preset w-6 h-6 rounded border border-gray-300"
+                        style="background-color: #28a745"
+                        data-color="#28a745"
+                    ></button>
+                    <button
+                        type="button"
+                        class="color-preset w-6 h-6 rounded border border-gray-300"
+                        style="background-color: #dc3545"
+                        data-color="#dc3545"
+                    ></button>
+                    <button
+                        type="button"
+                        class="color-preset w-6 h-6 rounded border border-gray-300"
+                        style="background-color: #ffc107"
+                        data-color="#ffc107"
+                    ></button>
+                    <button
+                        type="button"
+                        class="color-preset w-6 h-6 rounded border border-gray-300"
+                        style="background-color: #17a2b8"
+                        data-color="#17a2b8"
+                    ></button>
+                    <button
+                        type="button"
+                        class="color-preset w-6 h-6 rounded border border-gray-300"
+                        style="background-color: #6f42c1"
+                        data-color="#6f42c1"
+                    ></button>
+                    <button
+                        type="button"
+                        class="color-preset w-6 h-6 rounded border border-gray-300"
+                        style="background-color: #e83e8c"
+                        data-color="#e83e8c"
+                    ></button>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-3 pt-4">
+                <button
+                    type="button"
+                    onclick="Symplifika.Modal.close('createCategoryModal')"
+                    class="btn btn-outline border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                >
+                    Cancelar
+                </button>
+                <button
+                    type="submit"
+                    id="submitCategoryBtn"
+                    class="btn btn-primary"
+                >
+                    <span id="submitCategoryText">Criar Categoria</span>
+                    <svg
+                        id="submitCategoryLoading"
+                        class="hidden animate-spin -mr-1 ml-3 h-4 w-4 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                    >
+                        <circle
+                            class="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            stroke-width="4"
+                        ></circle>
+                        <path
+                            class="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                    </svg>
                 </button>
             </div>
         </form>

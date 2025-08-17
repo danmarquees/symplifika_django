@@ -95,7 +95,7 @@ min-h-screen px-4 py-20{% endblock %} {% block content %}
     <div class="bg-black/80 backdrop-blur-sm p-8 rounded-2xl shadow-2xl">
         <form
             method="post"
-            action="{% url 'auth:register' %}"
+            action="{% url 'users:register' %}"
             class="space-y-6"
             data-validate
             id="registerForm"
@@ -412,7 +412,7 @@ min-h-screen px-4 py-20{% endblock %} {% block content %}
         <div class="text-center">
             <p class="text-gray-400 text-sm mb-3">Já tem uma conta?</p>
             <a
-                href="{% url 'auth:login' %}"
+                href="{% url 'users:login' %}"
                 class="btn btn-outline border-symplifika-secondary text-symplifika-secondary hover:bg-symplifika-secondary hover:text-black w-full"
             >
                 Fazer Login

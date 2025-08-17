@@ -1,0 +1,50 @@
+{
+  "manifest_version": 3,
+  "name": "Symplifika - Atalhos de Texto Inteligentes",
+  "version": "1.0.0",
+  "description": "Expanda atalhos de texto automaticamente em qualquer site com inteligência artificial",
+
+  "permissions": ["storage", "activeTab", "scripting"],
+
+  "host_permissions": ["http://localhost:8000/*", "https://*.symplifika.com/*"],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_end"
+    }
+  ],
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Symplifika - Atalhos de Texto",
+    "default_icon": {
+      "16": "https://upload.wikimedia.org/wikipedia/commons/4/48/Markdown-mark.png",
+      "32": "https://upload.wikimedia.org/wikipedia/commons/4/48/Markdown-mark.png",
+      "48": "https://upload.wikimedia.org/wikipedia/commons/4/48/Markdown-mark.png",
+      "128": "https://upload.wikimedia.org/wikipedia/commons/4/48/Markdown-mark.png"
+    }
+  },
+
+  "options_page": "options.html",
+
+  "icons": {
+    "16": "https://upload.wikimedia.org/wikipedia/commons/4/48/Markdown-mark.png",
+    "32": "https://upload.wikimedia.org/wikipedia/commons/4/48/Markdown-mark.png",
+    "48": "https://upload.wikimedia.org/wikipedia/commons/4/48/Markdown-mark.png",
+    "128": "https://upload.wikimedia.org/wikipedia/commons/4/48/Markdown-mark.png"
+  },
+
+  "web_accessible_resources": [
+    {
+      "resources": ["popup.html", "options.html", "icons/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

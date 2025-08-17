@@ -15,6 +15,11 @@ urlpatterns = [
     path('auth/login/', views.login_template_view, name='login'),
     path('auth/logout/', views.logout_template_view, name='logout'),
 
+    # Plan Management (HTML Templates)
+    path('plan/upgrade/', views.plan_upgrade_view, name='plan_upgrade'),
+    path('plan/upgrade/payment/<int:upgrade_id>/', views.plan_upgrade_payment_view, name='plan_upgrade_payment'),
+    path('subscription/', views.subscription_management_view, name='subscription_management'),
+
     # Autenticação (API)
     path('api/auth/register/', views.register, name='api-register'),
     path('api/auth/login/', views.login_view, name='api-login'),
@@ -39,5 +44,11 @@ urlpatterns = [
 
     # URLs customizadas para perfil
     path('api/profile/upgrade-plan/', views.UserProfileViewSet.as_view({'post': 'upgrade_plan'}), name='profile-upgrade-plan'),
+    path('api/profile/plan-pricing/', views.UserProfileViewSet.as_view({'get': 'plan_pricing'}), name='profile-plan-pricing'),
+    path('api/profile/subscription-info/', views.UserProfileViewSet.as_view({'get': 'subscription_info'}), name='profile-subscription-info'),
+    path('api/profile/payment-methods/', views.UserProfileViewSet.as_view({'get': 'payment_methods'}), name='profile-payment-methods'),
+    path('api/profile/payment-history/', views.UserProfileViewSet.as_view({'get': 'payment_history'}), name='profile-payment-history'),
+    path('api/profile/cancel-subscription/', views.UserProfileViewSet.as_view({'post': 'cancel_subscription'}), name='profile-cancel-subscription'),
+    path('api/profile/process-payment/', views.UserProfileViewSet.as_view({'post': 'process_payment'}), name='profile-process-payment'),
     path('api/profile/reset-monthly-counters/', views.UserProfileViewSet.as_view({'post': 'reset_monthly_counters'}), name='profile-reset-counters'),
 ]

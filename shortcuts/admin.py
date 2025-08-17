@@ -12,19 +12,19 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ['name', 'description', 'user__username']
     readonly_fields = ['created_at', 'updated_at']
 
+    @admin.display(description='Cor')
     def color_display(self, obj):
         return format_html(
             '<span style="color: {}; font-weight: bold;">● {}</span>',
             obj.color,
             obj.color
         )
-    color_display.short_description = 'Cor'
 
+    @admin.display(description='Atalhos Ativos')
     def shortcuts_count(self, obj):
         count = obj.shortcuts.filter(is_active=True).count()
         url = reverse('admin:shortcuts_shortcut_changelist') + f'?category__id__exact={obj.id}'
         return format_html('<a href="{}">{} atalhos</a>', url, count)
-    shortcuts_count.short_description = 'Atalhos Ativos'
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('user')
@@ -73,15 +73,15 @@ class ShortcutAdmin(admin.ModelAdmin):
 
     actions = ['activate_shortcuts', 'deactivate_shortcuts']
 
+    @admin.action(description='Ativar atalhos selecionados')
     def activate_shortcuts(self, request, queryset):
         updated = queryset.update(is_active=True)
         self.message_user(request, f'{updated} atalhos foram ativados.')
-    activate_shortcuts.short_description = 'Ativar atalhos selecionados'
 
+    @admin.action(description='Desativar atalhos selecionados')
     def deactivate_shortcuts(self, request, queryset):
         updated = queryset.update(is_active=False)
         self.message_user(request, f'{updated} atalhos foram desativados.')
-    deactivate_shortcuts.short_description = 'Desativar atalhos selecionados'
 
 
 @admin.register(ShortcutUsage)
@@ -117,10 +117,11 @@ class AIEnhancementLogAdmin(admin.ModelAdmin):
         }),
     )
 
+    @admin.display(description='Tempo de Processamento')
     def processing_time_display(self, obj):
         return f'{obj.processing_time:.2f}s'
-    processing_time_display.short_description = 'Tempo de Processamento'
 
+    @admin.display(description='Preview do Conteúdo')
     def content_preview(self, obj):
         original_preview = obj.original_content[:50] + '...' if len(obj.original_content) > 50 else obj.original_content
         enhanced_preview = obj.enhanced_content[:50] + '...' if len(obj.enhanced_content) > 50 else obj.enhanced_content
@@ -130,7 +131,6 @@ class AIEnhancementLogAdmin(admin.ModelAdmin):
             original_preview,
             enhanced_preview
         )
-    content_preview.short_description = 'Preview do Conteúdo'
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('shortcut')

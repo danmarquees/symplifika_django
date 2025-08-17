@@ -7,6 +7,14 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
+# Importações DRF para o endpoint de estatísticas
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.response import Response
+
+from .models import SystemStats
+from .serializers import SystemStatsSerializer
+
 
 def frontend_app(request):
     """Serve the main frontend application"""
@@ -189,3 +197,22 @@ def faq(request):
 def help(request):
     """Help view"""
     return render(request, 'help.html')
+
+
+def pricing(request):
+    """Pricing view"""
+    return render(request, 'pricing.html')
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def statistics_view(request):
+    """
+    Endpoint para retornar as estatísticas mais recentes do sistema.
+    """
+    stats = SystemStats.objects.order_by('-date').first()
+    if not stats:
+        # Gera estatísticas se não houver registro
+        stats = SystemStats.update_daily_stats()
+    serializer = SystemStatsSerializer(stats)
+    return Response(serializer.data)
