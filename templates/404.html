@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Página não encontrada - Symplifika{% endblock %}
+
+{% block meta_description %}A página que você procura não foi encontrada. Volte ao Symplifika e continue aproveitando nossas automações.{% endblock %}
+
+{% block html_class %}dark{% endblock %}
+
+{% block body_class %}bg-gray-50 dark:bg-gray-900 min-h-screen{% endblock %}
+
+{% block navigation %}
+{% include 'includes/navbar.html' %}
+{% endblock %}
+
+{% block main_class %}flex items-center justify-center min-h-screen px-4{% endblock %}
+
+{% block content %}
+<div class="text-center max-w-lg mx-auto">
+    <!-- Error illustration -->
+    <div class="mb-8">
+        <svg class="w-32 h-32 mx-auto text-symplifika-primary/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.291-1.007-5.691-2.566M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+    </div>
+
+    <!-- Error code -->
+    <div class="mb-6">
+        <h1 class="text-8xl font-bold text-symplifika-primary mb-2">404</h1>
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+            Página não encontrada
+        </h2>
+        <p class="text-gray-600 dark:text-gray-300 text-lg">
+            Ops! A página que você está procurando não existe ou foi movida.
+        </p>
+    </div>
+
+    <!-- Suggestions -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            O que você pode fazer:
+        </h3>
+        <ul class="text-left space-y-2 text-gray-600 dark:text-gray-300">
+            <li class="flex items-center">
+                <svg class="w-4 h-4 text-symplifika-primary mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+                Verificar se o endereço foi digitado corretamente
+            </li>
+            <li class="flex items-center">
+                <svg class="w-4 h-4 text-symplifika-primary mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+                Voltar à página anterior usando o botão do navegador
+            </li>
+            <li class="flex items-center">
+                <svg class="w-4 h-4 text-symplifika-primary mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+                Usar a navegação para encontrar o que procura
+            </li>
+        </ul>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="{% url 'core:index' %}" class="btn btn-primary px-6 py-3">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            Voltar ao Início
+        </a>
+
+        {% if user.is_authenticated %}
+        <a href="{% url 'core:dashboard' %}" class="btn btn-outline border-symplifika-primary text-symplifika-primary hover:bg-symplifika-primary hover:text-white px-6 py-3">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+            Ir para Dashboard
+        </a>
+        {% endif %}
+
+        <button onclick="history.back()" class="btn btn-outline border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 px-6 py-3">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"/>
+            </svg>
+            Voltar
+        </button>
+    </div>
+
+    <!-- Search box -->
+    <div class="mt-8">
+        <p class="text-gray-600 dark:text-gray-300 mb-4">Ou procure pelo que você precisa:</p>
+        <form action="{% url 'core:search' %}" method="GET" class="relative max-w-md mx-auto">
+            <input type="text"
+                   name="q"
+                   placeholder="Buscar atalhos, categorias..."
+                   class="form-input pr-12 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+            <button type="submit" class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-symplifika-primary">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+            </button>
+        </form>
+    </div>
+
+    <!-- Quick links -->
+    <div class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Links úteis:</p>
+        <div class="flex flex-wrap justify-center gap-4 text-sm">
+            <a href="{% url 'core:index' %}" class="text-symplifika-primary hover:text-symplifika-accent transition-colors">
+                Página Inicial
+            </a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'shortcuts:list' %}" class="text-symplifika-primary hover:text-symplifika-accent transition-colors">
+                Meus Atalhos
+            </a>
+            <a href="{% url 'users:profile' %}" class="text-symplifika-primary hover:text-symplifika-accent transition-colors">
+                Meu Perfil
+            </a>
+            {% else %}
+            <a href="{% url 'auth:login' %}" class="text-symplifika-primary hover:text-symplifika-accent transition-colors">
+                Fazer Login
+            </a>
+            <a href="{% url 'auth:register' %}" class="text-symplifika-primary hover:text-symplifika-accent transition-colors">
+                Criar Conta
+            </a>
+            {% endif %}
+            <a href="#" class="text-symplifika-primary hover:text-symplifika-accent transition-colors">
+                Ajuda
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-focus on search input
+    const searchInput = document.querySelector('input[name="q"]');
+    if (searchInput) {
+        setTimeout(() => {
+            searchInput.focus();
+        }, 500);
+    }
+
+    // Track 404 errors for analytics (if implemented)
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'page_view', {
+            page_title: '404 Not Found',
+            page_location: window.location.href,
+            custom_map: {
+                'dimension1': 'error_page'
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

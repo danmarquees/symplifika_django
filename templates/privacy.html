@@ -1,0 +1,366 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Política de Privacidade | Symplifika{% endblock %}
+
+{% block meta_description %}Política de privacidade do Symplifika - como protegemos seus dados{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+            </div>
+            <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">Política de Privacidade</h1>
+            <p class="text-xl text-gray-600 dark:text-gray-400">
+                Sua privacidade é importante para nós. Saiba como coletamos, usamos e protegemos seus dados.
+            </p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-4">
+                Última atualização: {{ "now"|date:"d/m/Y" }}
+            </p>
+        </div>
+
+        <!-- Quick Summary -->
+        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold text-blue-800 dark:text-blue-400 mb-4">📋 Resumo Rápido</h2>
+            <ul class="space-y-2 text-blue-700 dark:text-blue-300">
+                <li>• Coletamos apenas dados necessários para oferecer nossos serviços</li>
+                <li>• Nunca vendemos seus dados pessoais para terceiros</li>
+                <li>• Você tem controle total sobre suas informações</li>
+                <li>• Utilizamos criptografia para proteger seus dados</li>
+                <li>• Você pode solicitar a exclusão de seus dados a qualquer momento</li>
+            </ul>
+        </div>
+
+        <!-- Content -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 space-y-8">
+
+            <!-- 1. Informações que Coletamos -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">1. Informações que Coletamos</h2>
+
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">1.1 Informações Fornecidas por Você</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400 mb-6">
+                    <li><strong>Dados da conta:</strong> Nome, email, senha (criptografada)</li>
+                    <li><strong>Dados do perfil:</strong> Foto, biografia, preferências</li>
+                    <li><strong>Dados de uso:</strong> Atalhos criados, configurações personalizadas</li>
+                    <li><strong>Comunicações:</strong> Mensagens de suporte, feedback</li>
+                </ul>
+
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">1.2 Informações Coletadas Automaticamente</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400 mb-6">
+                    <li><strong>Dados técnicos:</strong> Endereço IP, tipo de navegador, sistema operacional</li>
+                    <li><strong>Dados de uso:</strong> Páginas visitadas, tempo de uso, funcionalidades utilizadas</li>
+                    <li><strong>Cookies:</strong> Para melhorar a experiência e manter suas preferências</li>
+                </ul>
+            </section>
+
+            <!-- 2. Como Usamos suas Informações -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">2. Como Usamos suas Informações</h2>
+                <ul class="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400">
+                    <li><strong>Prestação de serviços:</strong> Fornecer e manter as funcionalidades da plataforma</li>
+                    <li><strong>Personalização:</strong> Adaptar a experiência às suas preferências</li>
+                    <li><strong>Comunicação:</strong> Enviar notificações importantes e responder ao suporte</li>
+                    <li><strong>Melhorias:</strong> Analisar uso para aprimorar nossos serviços</li>
+                    <li><strong>Segurança:</strong> Detectar e prevenir atividades fraudulentas</li>
+                    <li><strong>Cumprimento legal:</strong> Atender obrigações legais quando necessário</li>
+                </ul>
+            </section>
+
+            <!-- 3. Compartilhamento de Informações -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">3. Compartilhamento de Informações</h2>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">
+                    <strong>Nós NÃO vendemos seus dados pessoais.</strong> Compartilhamos informações apenas nas seguintes situações:
+                </p>
+                <ul class="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400">
+                    <li><strong>Prestadores de serviços:</strong> Empresas que nos ajudam a operar a plataforma (hospedagem, analytics)</li>
+                    <li><strong>Obrigações legais:</strong> Quando exigido por lei ou autoridades competentes</li>
+                    <li><strong>Proteção de direitos:</strong> Para proteger nossos direitos, propriedade ou segurança</li>
+                    <li><strong>Consentimento:</strong> Quando você autoriza expressamente o compartilhamento</li>
+                </ul>
+            </section>
+
+            <!-- 4. Proteção de Dados -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">4. Proteção de Dados</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Medidas Técnicas</h3>
+                        <ul class="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+                            <li>Criptografia SSL/TLS</li>
+                            <li>Senhas criptografadas</li>
+                            <li>Servidores seguros</li>
+                            <li>Backups regulares</li>
+                            <li>Monitoramento de segurança</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Medidas Organizacionais</h3>
+                        <ul class="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+                            <li>Acesso restrito aos dados</li>
+                            <li>Treinamento da equipe</li>
+                            <li>Políticas de segurança</li>
+                            <li>Auditoria regular</li>
+                            <li>Resposta a incidentes</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. Seus Direitos -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">5. Seus Direitos</h2>
+                <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-green-800 dark:text-green-400 mb-4">Você tem direito a:</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <ul class="space-y-2 text-green-700 dark:text-green-300">
+                            <li>✓ <strong>Acesso:</strong> Ver quais dados temos sobre você</li>
+                            <li>✓ <strong>Correção:</strong> Corrigir dados incorretos</li>
+                            <li>✓ <strong>Exclusão:</strong> Solicitar remoção de seus dados</li>
+                            <li>✓ <strong>Portabilidade:</strong> Exportar seus dados</li>
+                        </ul>
+                        <ul class="space-y-2 text-green-700 dark:text-green-300">
+                            <li>✓ <strong>Limitação:</strong> Restringir o processamento</li>
+                            <li>✓ <strong>Oposição:</strong> Opor-se ao processamento</li>
+                            <li>✓ <strong>Revogação:</strong> Retirar consentimento</li>
+                            <li>✓ <strong>Reclamação:</strong> Apresentar queixa às autoridades</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. Cookies -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">6. Cookies e Tecnologias Similares</h2>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">
+                    Utilizamos cookies para melhorar sua experiência. Você pode gerenciar suas preferências:
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Essenciais</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Necessários para o funcionamento básico</p>
+                    </div>
+                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Funcionais</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Lembram suas preferências e configurações</p>
+                    </div>
+                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Analytics</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Ajudam a entender como você usa o site</p>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <button class="bg-symplifika-primary text-white px-4 py-2 rounded-lg hover:bg-symplifika-accent transition-colors">
+                        Gerenciar Cookies
+                    </button>
+                </div>
+            </section>
+
+            <!-- 7. Retenção de Dados -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">7. Retenção de Dados</h2>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">
+                    Mantemos seus dados pelo tempo necessário para:
+                </p>
+                <ul class="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400">
+                    <li>Fornecer nossos serviços enquanto sua conta estiver ativa</li>
+                    <li>Cumprir obrigações legais (geralmente 5 anos)</li>
+                    <li>Resolver disputas e fazer cumprir nossos acordos</li>
+                    <li>Dados anonimizados podem ser mantidos para análises estatísticas</li>
+                </ul>
+            </section>
+
+            <!-- 8. Transferências Internacionais -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">8. Transferências Internacionais</h2>
+                <p class="text-gray-600 dark:text-gray-400">
+                    Seus dados são processados principalmente no Brasil. Caso sejam transferidos para outros países,
+                    garantimos proteção adequada através de cláusulas contratuais padrão e certificações de segurança.
+                </p>
+            </section>
+
+            <!-- 9. Menores de Idade -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">9. Menores de Idade</h2>
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+                    <p class="text-yellow-800 dark:text-yellow-400">
+                        <strong>⚠️ Importante:</strong> Nossos serviços são destinados a pessoas com 18 anos ou mais.
+                        Não coletamos intencionalmente dados de menores de 18 anos sem consentimento dos pais ou responsáveis.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 10. Alterações na Política -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">10. Alterações nesta Política</h2>
+                <p class="text-gray-600 dark:text-gray-400">
+                    Podemos atualizar esta política periodicamente. Notificaremos sobre mudanças significativas por email
+                    ou através de aviso em nosso site. A versão atualizada entrará em vigor na data indicada no topo desta página.
+                </p>
+            </section>
+
+            <!-- Contact Information -->
+            <section class="border-t border-gray-200 dark:border-gray-700 pt-8">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">📞 Entre em Contato</h2>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">
+                    Para questões sobre privacidade, exercer seus direitos ou esclarecer dúvidas:
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Contato Geral</h3>
+                        <p class="text-gray-600 dark:text-gray-400">
+                            Email: <a href="mailto:privacidade@symplifika.com" class="text-symplifika-primary hover:underline">privacidade@symplifika.com</a><br>
+                            Telefone: +55 (11) 9999-9999
+                        </p>
+                    </div>
+                    <div>
+                        <h3 class="</div>font-semibold text-gray-900 dark:text-white mb-2">Encarregado de Dados (DPO)</h3>
+                        <p class="text-gray-600 dark:text-gray-400">
+                            Email: <a href="mailto:dpo@symplifika.com" class="text-symplifika-primary hover:underline">dpo@symplifika.com</a><br>
+                            Para questões específicas sobre LGPD
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mt-8 text-center space-y-4">
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'core:settings' %}"
+                   class="bg-symplifika-primary text-white px-6 py-3 rounded-lg hover:bg-symplifika-accent transition-colors font-medium">
+                    Gerenciar Dados
+                </a>
+                <a href="{% url 'core:contact' %}"
+                   class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium">
+                    Fale Conosco
+                </a>
+                <button onclick="window.print()"
+                        class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors font-medium">
+                    Imprimir Política
+                </button>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                Esta política está em conformidade com a LGPD (Lei Geral de Proteção de Dados) e GDPR
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Cookie management modal
+function showCookieSettings() {
+    // Implementation for cookie settings modal
+    alert('Configurações de cookies serão implementadas');
+}
+
+// Print friendly version
+function preparePrint() {
+    window.addEventListener('beforeprint', function() {
+        document.body.classList.add('print-mode');
+    });
+
+    window.addEventListener('afterprint', function() {
+        document.body.classList.remove('print-mode');
+    });
+}
+
+// Highlight sections based on URL hash
+function highlightSection() {
+    const hash = window.location.hash;
+    if (hash) {
+        const section = document.querySelector(hash);
+        if (section) {
+            section.style.backgroundColor = '#f0f9ff';
+            section.style.padding = '1rem';
+            section.style.borderRadius = '0.5rem';
+            section.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+}
+
+// Add table of contents
+function addTableOfContents() {
+    const sections = document.querySelectorAll('section h2');
+    if (sections.length > 0) {
+        const tocContainer = document.createElement('div');
+        tocContainer.className = 'bg-gray-50 dark:bg-gray-700 rounded-lg p-6 mb-8';
+        tocContainer.innerHTML = '<h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">📋 Índice</h3>';
+
+        const tocList = document.createElement('ul');
+        tocList.className = 'space-y-2';
+
+        sections.forEach((section, index) => {
+            const li = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = `#section-${index}`;
+            link.className = 'text-symplifika-primary hover:underline';
+            link.textContent = section.textContent;
+            li.appendChild(link);
+            tocList.appendChild(li);
+
+            // Add ID to section
+            section.parentElement.id = `section-${index}`;
+        });
+
+        tocContainer.appendChild(tocList);
+
+        // Insert before first section
+        const firstSection = document.querySelector('section');
+        firstSection.parentNode.insertBefore(tocContainer, firstSection);
+    }
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    preparePrint();
+    highlightSection();
+    addTableOfContents();
+});
+
+// Add reading progress indicator
+window.addEventListener('scroll', function() {
+    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrolled = (winScroll / height) * 100;
+
+    let progressBar = document.getElementById('reading-progress');
+    if (!progressBar) {
+        progressBar = document.createElement('div');
+        progressBar.id = 'reading-progress';
+        progressBar.className = 'fixed top-0 left-0 w-full h-1 bg-symplifika-primary z-50 transition-all duration-300';
+        document.body.appendChild(progressBar);
+    }
+
+    progressBar.style.width = scrolled + '%';
+});
+</script>
+
+<style>
+@media print {
+    .print-mode {
+        font-size: 12px;
+    }
+
+    .print-mode nav,
+    .print-mode footer,
+    .print-mode button {
+        display: none !important;
+    }
+
+    .print-mode .bg-gradient-to-r {
+        background: #f3f4f6 !important;
+        color: #000 !important;
+    }
+}
+</style>
+{% endblock %}

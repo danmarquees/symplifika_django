@@ -1,0 +1,282 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Suporte | Symplifika{% endblock %}
+
+{% block meta_description %}Central de suporte do Symplifika - tire suas dúvidas e obtenha ajuda{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">Central de Suporte</h1>
+            <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                Estamos aqui para ajudar! Encontre respostas rápidas ou entre em contato conosco.
+            </p>
+        </div>
+
+        <!-- Quick Help Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">FAQ</h3>
+                <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">Perguntas mais frequentes</p>
+                <a href="{% url 'core:faq' %}" class="text-symplifika-primary hover:text-symplifika-accent font-medium text-sm">
+                    Ver perguntas →
+                </a>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Guias</h3>
+                <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">Tutoriais passo a passo</p>
+                <a href="{% url 'core:help' %}" class="text-symplifika-primary hover:text-symplifika-accent font-medium text-sm">
+                    Ver guias →
+                </a>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Chat</h3>
+                <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">Suporte ao vivo</p>
+                <button onclick="startChat()" class="text-symplifika-primary hover:text-symplifika-accent font-medium text-sm">
+                    Iniciar chat →
+                </button>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                <div class="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Email</h3>
+                <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">Contato direto</p>
+                <a href="{% url 'core:contact' %}" class="text-symplifika-primary hover:text-symplifika-accent font-medium text-sm">
+                    Enviar email →
+                </a>
+            </div>
+        </div>
+
+        <!-- Search Knowledge Base -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+                Buscar na Base de Conhecimento
+            </h2>
+            <div class="max-w-2xl mx-auto">
+                <div class="relative">
+                    <input type="text"
+                           id="search-input"
+                           placeholder="Digite sua dúvida ou palavra-chave..."
+                           class="w-full px-4 py-3 pl-12 pr-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                    <svg class="w-5 h-5 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <div id="search-results" class="mt-4 space-y-2"></div>
+            </div>
+        </div>
+
+        <!-- Popular Topics -->
+        <div class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+                Tópicos Populares
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Getting Started -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                        <svg class="w-6 h-6 inline mr-2 text-symplifika-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        Primeiros Passos
+                    </h3>
+                    <ul class="space-y-3">
+                        <li></li>
+                            <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-symplifika-primary transition-colors">
+                                Como criar meu primeiro atalho
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-symplifika-primary transition-colors">
+                                Configurando seu perfil
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class</li>="text-gray-600 dark:text-gray-400 hover:text-symplifika-primary transition-colors">
+                                Entendendo os planos
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-symplifika-primary transition-colors">
+                                Dicas de produtividade
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Technical Issues -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                        <svg class="w-6 h-6 inline mr-2 text-symplifika-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        Problemas Técnicos
+                    </h3>
+                    <ul class="space-y-3">
+                        <li>
+                            <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-symplifika-primary transition-colors">
+                                Atalho não está funcionando
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class</li>="text-gray-600 dark:text-gray-400 hover:text-symplifika-primary transition-colors">
+                                Problemas de sincronização
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-symplifika-primary transition-colors">
+                                Erro ao salvar configurações
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-symplifika-primary transition-colors">
+                                Recuperar atalhos excluídos
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Support -->
+        <div class="bg-gradient-to-r from-symplifika-primary to-symplifika-accent rounded-lg shadow-lg p-8 text-center text-white">
+            <h2 class="text-2xl font-bold mb-4">Ainda precisa de ajuda?</h2>
+            <p class="text-lg mb-6 opacity-90">
+                Nossa equipe de suporte está pronta para ajudar você
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'core:contact' %}"
+                   class="bg-white text-symplifika-primary px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors">
+                    Enviar Mensagem
+                </a>
+                <button onclick="startChat()"
+                        class="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-medium hover:bg-white hover:text-symplifika-primary transition-colors">
+                    Chat ao Vivo
+                </button>
+            </div>
+        </div>
+
+        <!-- System Status -->
+        <div class="mt-12 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                Status do Sistema
+            </h2>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                    <span class="text-gray-700 dark:text-gray-300">Todos os sistemas operacionais</span>
+                </div>
+                <a href="#" class="text-symplifika-primary hover:text-symplifika-accent text-sm">
+                    Ver página de status →
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chat Widget (hidden by default) -->
+<div id="chatWidget" class="fixed bottom-4 right-4 w-80 h-96 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 hidden">
+    <div class="bg-symplifika-primary text-white p-4 rounded-t-lg flex justify-between items-center">
+        <h3 class="font-semibold">Suporte ao Vivo</h3>
+        <button onclick="closeChat()" class="text-white hover:text-gray-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+    </div>
+    <div class="p-4 h-72 overflow-y-auto">
+        <div class="text-center text-gray-500 dark:text-gray-400 text-sm">
+            Conectando com um agente...
+        </div>
+    </div>
+    <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+        <div class="flex">
+            <input type="text" placeholder="Digite sua mensagem..."
+                   class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-symplifika-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+            <button class="bg-symplifika-primary text-white px-4 py-2 rounded-r-lg hover:bg-symplifika-accent">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Search functionality
+document.getElementById('search-input').addEventListener('input', function() {
+    const query = this.value.trim();
+    const resultsContainer = document.getElementById('search-results');
+
+    if (query.length < 3) {
+        resultsContainer.innerHTML = '';
+        return;
+    }
+
+    // Simulate search results
+    const mockResults = [
+        'Como criar um atalho personalizado',
+        'Configurar notificações',
+        'Alterar plano de assinatura',
+        'Exportar dados do perfil',
+        'Solucionar problemas de sincronização'
+    ].filter(item => item.toLowerCase().includes(query.toLowerCase()));
+
+    if (mockResults.length > 0) {
+        resultsContainer.innerHTML = mockResults.map(result =>
+            `<div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                <span class="text-gray-700 dark:text-gray-300">${result}</span>
+            </div>`
+        ).join('');
+    } else {
+        resultsContainer.innerHTML = '<div class="p-3 text-gray-500 dark:text-gray-400 text-center">Nenhum resultado encontrado</div>';
+    }
+});
+
+// Chat functionality
+function startChat() {
+    document.getElementById('chatWidget').classList.remove('hidden');
+}
+
+function closeChat() {
+    document.getElementById('chatWidget').classList.add('hidden');
+}
+
+// Auto-hide search results when clicking outside
+document.addEventListener('click', function(e) {
+    const searchInput = document.getElementById('search-input');
+    const searchResults = document.getElementById('search-results');
+
+    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+        searchResults.innerHTML = '';
+    }
+});
+</script>
+{% endblock %}

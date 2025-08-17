@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Excluir Avatar | Symplifika{% endblock %}
+
+{% block meta_description %}Confirme a exclusão do seu avatar no Symplifika{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div class="max-w-md mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center space-x-4 mb-4">
+                <a href="{% url 'core:profile' %}"
+                   class="text-symplifika-primary hover:text-symplifika-accent transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </a>
+                <div>
+                    <h1</div> class="text-2xl font-bold text-gray-900 dark:text-white">Excluir Avatar</h1>
+                </div>
+            </div>
+            <p class="text-gray-600 dark:text-gray-400">
+                Confirme a exclusão do seu avatar atual
+            </p>
+        </div>
+
+        <!-- Confirmation Card -->
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+            <!-- Warning Icon -->
+            <div class="flex justify-center mb-6">
+                <div class="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
+                    <svg class="w-8 h-8 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Current Avatar Display -->
+            <div class="text-center mb-6">
+                <div class="relative inline-block">
+                    {% if user.userprofile.avatar %}
+                        <img class="w-24 h-24 rounded-full border-4 border-gray-300 object-cover"
+                             src="{{ user.userprofile.avatar.url }}"
+                             alt="Avatar atual">
+                    {% else %}
+                        <div class="w-24 h-24 rounded-full border-4 border-gray-300 bg-symplifika-primary flex items-center justify-center">
+                            <span class="text-2xl font-bold text-white">
+                                {{ user.first_name.0|default:user.username.0|upper }}
+                            </span>
+                        </div>
+                    {% endif %}
+
+                    <!-- Delete overlay -->
+                    <div class="absolute inset-0 bg-red-500 bg-opacity-50 rounded-full flex items-center justify-center">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </div>
+                </div>
+                <p class="mt-4 text-gray-600 dark:text-gray-400">Este avatar será removido</p>
+            </div>
+
+            <!-- Confirmation Message -->
+            <div class="text-center mb-6">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    Tem certeza que deseja excluir seu avatar?
+                </h2>
+                <p class="text-gray-600 dark:text-gray-400 text-sm">
+                    Esta ação não pode ser desfeita. Após a exclusão, um avatar padrão será exibido em seu perfil.
+                </p>
+            </div>
+
+            <!-- What happens next -->
+            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+                <h3 class="text-sm font-medium text-blue-800 dark:text-blue-400 mb-2">
+                    O que acontecerá após a exclusão:
+                </h3>
+                <ul class="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                    <li>• Seu avatar atual será permanentemente removido</li>
+                    <li>• Um avatar padrão com suas iniciais será exibido</li>
+                    <li>• Você poderá definir um novo avatar a qualquer momento</li>
+                </ul>
+            </div>
+
+            <!-- Action Buttons -->
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button type="submit"
+                            onclick="return confirmDelete()"
+                            class="flex-1 bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        Sim, Excluir Avatar
+                    </button>
+
+                    <a href="{% url 'core:profile' %}"
+                       class="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium text-center focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+
+            <!-- Alternative Actions -->
+            <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 text-center">
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                    Ou você pode:
+                </p>
+                <div class="flex flex-col sm:flex-row gap-2 justify-center">
+                    <a href="{% url 'core:change-avatar' %}"
+                       class="text-symplifika-primary hover:text-symplifika-accent text-sm font-medium">
+                        Escolher um novo avatar
+                    </a>
+                    <span class="hidden sm:inline text-gray-400">•</span>
+                    <a href="{% url 'core:edit-profile' %}"
+                       class="text-symplifika-primary hover:text-symplifika-accent text-sm font-medium">
+                        Editar perfil completo
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Safety Notice -->
+        <div class="mt-6 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <div class="flex">
+                <svg class="w-5 h-5 text-gray-400 mt-0.5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div>
+                    <h3 class="text</div>-sm font-medium text-gray-900 dark:text-white">Informação</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        Sua conta permanecerá ativa e todas as outras informações do perfil serão mantidas.
+                        Apenas a imagem do avatar será removida.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function confirmDelete() {
+    const userConfirmation = confirm(
+        'ATENÇÃO: Tem certeza absoluta que deseja excluir seu avatar?\n\n' +
+        'Esta ação não pode ser desfeita e o arquivo será permanentemente removido.'
+    );
+
+    if (userConfirmation) {
+        // Show loading state
+        const submitBtn = document.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+
+        submitBtn.innerHTML = `
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Excluindo...
+        `;
+        submitBtn.disabled = true;
+
+        return true;
+    }
+
+    return false;
+}
+
+// Handle form submission errors
+document.querySelector('form').addEventListener('submit', function(e) {
+    // This would typically be handled by Django, but we can add client-side validation
+    const hasAvatar = {{ user.userprofile.avatar|yesno:"true,false" }};
+
+    if (!hasAvatar) {
+        e.preventDefault();
+        alert('Você não possui um avatar para excluir.');
+        window.location.href = '{% url "core:profile" %}';
+    }
+});
+
+// Auto-focus on page load for accessibility
+window.addEventListener('DOMContentLoaded', function() {
+    // Focus on the cancel button by default (safer option)
+    const cancelBtn = document.querySelector('a[href*="profile"]');
+    if (cancelBtn) {
+        cancelBtn.focus();
+    }
+});
+</script>
+{% endblock %}

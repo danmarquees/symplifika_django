@@ -1,0 +1,241 @@
+<!--prettier-ignore--->
+{% extends 'base.html' %} {% load static %} {% block title %}Login -
+Symplifika{% endblock %} {% block meta_description %}Faça login na sua conta
+Symplifika e acesse suas automações personalizadas.
+<!--prettier-ignore--->
+{% endblock %} {% block html_class %}dark {% endblock %}
+<!--prettier-ignore -->
+{% block body_class %}
+bg-symplifika-gradient bg-mesh min-h-screen{% endblock %}
+<!--prettier-ignore--->
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pages/auth.css' %}" />
+{% endblock %} {% block navigation %}
+<!-- Simplified navigation for auth pages -->
+<nav class="absolute top-0 left-0 right-0 z-10 p-6">
+    <div class="flex justify-between items-center">
+        <a
+            href="{% url 'core:index' %}"
+            class="flex items-center space-x-2 text-black hover:text-black/80 transition-colors"
+        >
+            <svg
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                class="text-black"
+            >
+                <path
+                    d="M16.8857 3.11429C13.8857 0.114286 9 1 6 4C3 7 2.11429 11.8857 5.11429 14.8857C8.11429 17.8857 13 19 16 16C19 13 19.8857 8.11429 16.8857 5.11429"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+                <path
+                    d="M7.11426 20.8857C10.1143 23.8857 15 23 18 20C21 17 21.8857 12.1143 18.8857 9.11428C15.8857 6.11428 11 5 8 8C5 11 4.11426 15.8857 7.11426 18.8857"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+            </svg>
+            <span class="text-xl font-bold">symplifika</span>
+        </a>
+
+        <!-- Theme toggle -->
+        <button
+            type="button"
+            class="p-2 text-black/70 hover:text-black rounded-md focus:outline-none focus:ring-2 focus:ring-black/20"
+            data-theme-toggle
+            title="Alternar tema"
+        >
+            <span class="theme-icon">🌙</span>
+        </button>
+    </div>
+</nav>
+{% endblock %} {% block main_class %}flex items-center justify-center
+min-h-screen px-4{% endblock %} {% block content %}
+<div class="w-full max-w-md">
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <div class="flex items-center justify-center gap-3 mb-4">
+            <svg
+                width="48"
+                height="48"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                class="text-black"
+            >
+                <path
+                    d="M16.8857 3.11429C13.8857 0.114286 9 1 6 4C3 7 2.11429 11.8857 5.11429 14.8857C8.11429 17.8857 13 19 16 16C19 13 19.8857 8.11429 16.8857 5.11429"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+                <path
+                    d="M7.11426 20.8857C10.1143 23.8857 15 23 18 20C21 17 21.8857 12.1143 18.8857 9.11428C15.8857 6.11428 11 5 8 8C5 11 4.11426 15.8857 7.11426 18.8857"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+            </svg>
+            <h1 class="text-4xl font-extrabold text-black">symplifika</h1>
+        </div>
+        <p class="text-black/80 text-lg">
+            Entre na sua conta para acessar suas automações
+        </p>
+    </div>
+
+    <!-- Login Form -->
+    <div class="auth-form-container p-8 rounded-2xl shadow-2xl">
+        <form
+            method="post"
+            action="{% url 'users:login' %}"
+            class="space-y-6"
+            data-validate
+        >
+            {% csrf_token %}
+
+            <!-- Error Messages -->
+            {% if form.non_field_errors %}
+            <div
+                class="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-lg text-sm"
+            >
+                <!--prettier-ignore--->
+                {% for error in form.non_field_errors %} {{ error }}
+                <!--prettier-ignore--->
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Username/Email Field -->
+            <div class="form-field">
+                <label
+                    for="{{ form.username.id_for_label }}"
+                    class="block text-sm font-medium text-gray-300 mb-2"
+                >
+                    {{ form.username.label }}
+                </label>
+                <input
+                    type="text"
+                    name="{{ form.username.name }}"
+                    id="{{ form.username.id_for_label }}"
+                    value="{{ form.username.value|default:'' }}"
+                    class="form-input"
+                    placeholder="Digite seu username ou email"
+                    required
+                />
+                {% if form.username.errors %}
+                <div class="text-red-400 text-sm mt-1">
+                    {% for error in form.username.errors %} {{ error }}
+                    <!--prettier-ignore--->
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Password Field -->
+            <div class="form-field">
+                <label
+                    for="{{ form.password.id_for_label }}"
+                    class="block text-sm font-medium text-gray-300 mb-2"
+                >
+                    {{ form.password.label }}
+                </label>
+                <div class="relative">
+                    <input
+                        type="password"
+                        name="{{ form.password.name }}"
+                        id="{{ form.password.id_for_label }}"
+                        class="form-input pr-12"
+                        placeholder="Digite sua senha"
+                        required
+                    />
+                </div>
+                {% if form.password.errors %}
+                <div class="text-red-400 text-sm mt-1">
+                    {% for error in form.password.errors %} {{ error }}
+                    <!--prettier-ignore--->
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Remember Me -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <input
+                        type="checkbox"
+                        name="remember_me"
+                        id="remember_me"
+                        class="remember-checkbox w-4 h-4 rounded focus:ring-2"
+                    />
+                    <label for="remember_me" class="ml-2 text-sm text-gray-300">
+                        Lembrar de mim
+                    </label>
+                </div>
+
+                <a href="#" class="auth-link text-sm transition-colors">
+                    Esqueceu a senha?
+                </a>
+            </div>
+
+            <!-- Submit Button -->
+            <button
+                type="submit"
+                class="w-full auth-submit-btn text-lg py-3 shadow-lg"
+                id="loginBtn"
+            >
+                <span id="loginBtnText">Entrar na Conta</span>
+                <div id="loginSpinner" class="hidden spinner ml-2"></div>
+            </button>
+
+            <!-- Redirect field -->
+            {% if redirect_field_value %}
+            <input
+                type="hidden"
+                name="{{ redirect_field_name }}"
+                value="{{ redirect_field_value }}"
+            />
+            {% endif %}
+        </form>
+
+        <!-- Divider -->
+        <div class="relative flex py-6 items-center">
+            <div class="flex-grow border-t border-gray-600"></div>
+            <span class="flex-shrink mx-4 text-gray-400 text-sm">ou</span>
+            <div class="flex-grow border-t border-gray-600"></div>
+        </div>
+
+        <!-- Register Link -->
+        <div class="text-center">
+            <p class="text-gray-400 text-sm mb-3">Ainda não tem uma conta?</p>
+            <a
+                href="{% url 'users:register' %}"
+                class="btn btn-outline border-symplifika-secondary text-symplifika-secondary hover:bg-symplifika-secondary hover:text-black w-full"
+            >
+                Criar Nova Conta
+            </a>
+        </div>
+    </div>
+
+    <!-- Demo Credentials -->
+    <div class="demo-credentials">
+        <p class="text-white/80 text-sm mb-2">Credenciais de demonstração:</p>
+        <div class="flex justify-center space-x-2">
+            <button onclick="fillDemoCredentials()" class="demo-btn">
+                demo / demo123
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %} {% block footer %}
+<!-- No footer on auth pages -->
+{% endblock %} {% block extra_js %}
+<script src="{% static 'js/pages/auth.js' %}"></script>
+{% endblock %}

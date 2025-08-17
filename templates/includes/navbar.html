@@ -1,0 +1,337 @@
+{% load static %}
+
+<nav
+    class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 no-print"
+>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <!-- Logo and brand -->
+            <div class="flex items-center">
+                <!-- Mobile menu button -->
+                <button
+                    type="button"
+                    class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-symplifika-primary mr-2"
+                    data-sidebar-toggle
+                    aria-expanded="false"
+                >
+                    <span class="sr-only">Abrir menu principal</span>
+                    <svg
+                        class="h-6 w-6"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16"
+                        />
+                    </svg>
+                </button>
+
+                <!-- Logo -->
+                <a
+                    href="{% url 'core:index' %}"
+                    class="flex items-center space-x-2"
+                >
+                    <svg
+                        width="32"
+                        height="32"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="text-symplifika-primary"
+                    >
+                        <path
+                            d="M16.8857 3.11429C13.8857 0.114286 9 1 6 4C3 7 2.11429 11.8857 5.11429 14.8857C8.11429 17.8857 13 19 16 16C19 13 19.8857 8.11429 16.8857 5.11429"
+                            stroke="currentColor"
+                            stroke-width="2.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        />
+                        <path
+                            d="M7.11426 20.8857C10.1143 23.8857 15 23 18 20C21 17 21.8857 12.1143 18.8857 9.11428C15.8857 6.11428 11 5 8 8C5 11 4.11426 15.8857 7.11426 18.8857"
+                            stroke="currentColor"
+                            stroke-width="2.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        />
+                    </svg>
+                    <span
+                        class="text-xl font-bold text-gray-900 dark:text-white"
+                        >symplifika</span
+                    >
+                </a>
+            </div>
+
+            <!-- Navigation links (desktop) -->
+            <div class="hidden md:flex md:items-center md:space-x-8">
+                {% if user.is_authenticated %}
+                <a
+                    href="{% url 'core:dashboard' %}"
+                    class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                    Dashboard
+                </a>
+                <a
+                    href="#"
+                    onclick="navigateToPage('shortcuts')"
+                    class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                    Atalhos
+                </a>
+                <a
+                    href="#"
+                    class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                    Perfil
+                </a>
+                {% else %}
+                <a
+                    href="{% url 'core:index' %}"
+                    class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                    Início
+                </a>
+                <a
+                    href="#features"
+                    class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                    Recursos
+                </a>
+                <a
+                    href="#about"
+                    class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                    Sobre
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- Right side buttons -->
+            <div class="flex items-center space-x-4">
+                <!-- Theme toggle -->
+                <button
+                    type="button"
+                    class="p-2 text-gray-400 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-symplifika-primary"
+                    data-theme-toggle
+                    title="Alternar tema"
+                >
+                    <span class="theme-icon">🌙</span>
+                </button>
+
+                {% if user.is_authenticated %}
+                <!-- User menu -->
+                <div class="relative">
+                    <button
+                        type="button"
+                        class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-symplifika-primary"
+                        id="user-menu-button"
+                        aria-expanded="false"
+                        onclick="toggleUserMenu()"
+                    >
+                        <span class="sr-only">Abrir menu do usuário</span>
+                        {% if user.profile.avatar %}
+                        <img
+                            class="h-8 w-8 rounded-full object-cover"
+                            src="{{ user.profile.avatar.url }}"
+                            alt="{{ user.get_full_name|default:user.username }}"
+                        />
+                        {% else %}
+                        <div
+                            class="h-8 w-8 rounded-full bg-symplifika-primary flex items-center justify-center"
+                        >
+                            <span class="text-white font-medium text-sm">
+                                <!--prettier-ignore -->
+                                {{user.first_name|first|default:user.username|first|upper}}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </button>
+
+                    <!-- User dropdown menu -->
+                    <div
+                        class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700"
+                        id="user-menu"
+                    >
+                        <div
+                            class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 border-b border-gray-200 dark:border-gray-700"
+                        >
+                            <div class="font-medium">
+                                {{ user.get_full_name|default:user.username }}
+                            </div>
+                            <div class="text-gray-500 dark:text-gray-400">
+                                {{ user.email }}
+                            </div>
+                        </div>
+                        <a
+                            href="#"
+                            class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        >
+                            Perfil
+                        </a>
+                        <a
+                            href="#"
+                            class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        >
+                            Configurações
+                        </a>
+                        <div
+                            class="border-t border-gray-200 dark:border-gray-700"
+                        ></div>
+                        <form
+                            method="post"
+                            action="{% url 'users:logout' %}"
+                            class="block"
+                        >
+                            {% csrf_token %}
+                            <button
+                                type="submit"
+                                class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                            >
+                                Sair
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
+                <!-- Login/Register buttons -->
+                <a
+                    href="{% url 'users:login' %}"
+                    class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                    Entrar
+                </a>
+                <a
+                    href="{% url 'users:register' %}"
+                    class="btn btn-primary text-sm"
+                >
+                    Registrar
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile navigation menu -->
+    <div class="md:hidden hidden" id="mobile-menu">
+        <div
+            class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700"
+        >
+            {% if user.is_authenticated %}
+            <a
+                href="{% url 'core:dashboard' %}"
+                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+            >
+                Dashboard
+            </a>
+            <a
+                href="#"
+                onclick="navigateToPage('shortcuts')"
+                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+            >
+                Atalhos
+            </a>
+            <a
+                href="#"
+                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+            >
+                Perfil
+            </a>
+            {% else %}
+            <a
+                href="{% url 'core:index' %}"
+                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+            >
+                Início
+            </a>
+            <a
+                href="#features"
+                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+            >
+                Recursos
+            </a>
+            <a
+                href="#about"
+                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+            >
+                Sobre
+            </a>
+            <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                <a
+                    href="{% url 'users:login' %}"
+                    class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                >
+                    Entrar
+                </a>
+                <a
+                    href="{% url 'users:register' %}"
+                    class="btn btn-primary block mx-3 mt-2 text-center"
+                >
+                    Registrar
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<script>
+    // Toggle user menu
+    function toggleUserMenu() {
+        const menu = document.getElementById("user-menu");
+        menu.classList.toggle("hidden");
+    }
+
+    // Close user menu when clicking outside
+    document.addEventListener("click", function (event) {
+        const userMenuButton = document.getElementById("user-menu-button");
+        const userMenu = document.getElementById("user-menu");
+
+        if (
+            userMenu &&
+            !userMenu.contains(event.target) &&
+            !userMenuButton.contains(event.target)
+        ) {
+            userMenu.classList.add("hidden");
+        }
+    });
+
+    // Toggle mobile menu
+    document
+        .querySelector("[data-sidebar-toggle]")
+        .addEventListener("click", function () {
+            const mobileMenu = document.getElementById("mobile-menu");
+            mobileMenu.classList.toggle("hidden");
+        });
+
+    // Navigate to page function for SPA navigation
+    function navigateToPage(page) {
+        // Use the global app instance if available
+        if (window.app && typeof window.app.showPage === "function") {
+            window.app.showPage(page);
+        } else {
+            // Wait for app to be ready if not available immediately
+            const waitForApp = () => {
+                if (window.app && typeof window.app.showPage === "function") {
+                    window.app.showPage(page);
+                } else {
+                    // Fallback: try to trigger click on sidebar navigation
+                    const sidebarLink = document.querySelector(
+                        `[data-page="${page}"]`,
+                    );
+                    if (sidebarLink) {
+                        sidebarLink.click();
+                    } else {
+                        console.warn(`Unable to navigate to page: ${page}`);
+                    }
+                }
+            };
+
+            // Try again after a short delay
+            setTimeout(waitForApp, 100);
+        }
+    }
+</script>
