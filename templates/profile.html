@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Perfil - {{ user.get_full_name|default:user.username }} | Symplifika{% endblock %}
+
+{% block meta_description %}Gerencie seu perfil no Symplifika - visualize e edite suas informações pessoais{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Meu Perfil</h1>
+            <p class="mt-2 text-gray-600 dark:text-gray-400">Gerencie suas informações pessoais e configurações de conta</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Profile Card -->
+            <div class="lg:col-span-1">
+                <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+                    <!-- Avatar Section -->
+                    <div class="text-center mb-6">
+                        <div class="relative inline-block">
+                            {% if user.userprofile.avatar %}
+                                <img class="profile-avatar rounded-full border-4 border-symplifika-primary"
+                                     src="{{ user.userprofile.avatar.url }}"
+                                     alt="Avatar de {{ user.get_full_name|default:user.username }}">
+                            {% else %}
+                                <div class="profile-avatar rounded-full border-4 border-symplifika-primary bg-symplifika-primary flex items-center justify-center">
+                                    <span class="text-4xl font-bold text-white">
+                                        {{ user.first_name.0|default:user.username.0|upper }}
+                                    </span>
+                                </div>
+                            {% endif %}
+                            <a href="{% url 'core:change-avatar' %}"
+                               class="absolute bottom-0 right-0 bg-symplifika-primary text-white p-2 rounded-full hover:bg-symplifika-accent transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                </svg>
+                            </a>
+                        </div>
+                        <h2 class="mt-4 text-xl font-semibold text-gray-900 dark:text-white">
+                            {{ user.get_full_name|default:user.username }}
+                        </h2>
+                        <p class="text-gray-600 dark:text-gray-400">{{ user.email }}</p>
+                        {% if user.userprofile.plan %}
+                            <span class="inline-block mt-2 px-3 py-1 text-xs font-semibold bg-symplifika-primary text-white rounded-full">
+                                Plano {{ user.userprofile.get_plan_display }}
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="grid grid-cols-2 gap-4 text-center">
+                        <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                            <div class="text-2xl font-bold text-symplifika-primary">
+                                {{ user.userprofile.shortcuts_created|default:0 }}
+                            </div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">Atalhos Criados</div>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                            <div class="text-2xl font-bold text-symplifika-primary">
+                                {{ user.userprofile.shortcuts_used_this_month|default:0 }}
+                            </div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">Usos este Mês</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Information -->
+            <div class="lg:col-span-2">
+                <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+                    <!-- Tab Navigation -->
+                    <div class="border-b border-gray-200 dark:border-gray-700">
+                        <nav class="-mb-px flex space-x-8 px-6">
+                            <button onclick="showTab('info')"
+                                    class="tab-btn active border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                                    data-tab="info">
+                                Informações Pessoais
+                            </button>
+                            <button onclick="showTab('security')"
+                                    class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                                    data-tab="security">
+                                Segurança
+                            </button>
+                            <button onclick="showTab('preferences')"
+                                    class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                                    data-tab="preferences">
+                                Preferências
+                            </button>
+                        </nav>
+                    </div>
+
+                    <!-- Tab Contents -->
+                    <div class="p-6">
+                        <!-- Personal Information Tab -->
+                        <div id="info-tab" class="tab-content">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Nome Completo
+                                    </label>
+                                    <p class="text-gray-900 dark:text-white">
+                                        {{ user.get_full_name|default:"Não informado" }}
+                                    </p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Nome de Usuário
+                                    </label>
+                                    <p class="text-gray-900 dark:text-white">{{ user.username }}</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Email
+                                    </label>
+                                    <p class="text-gray-900 dark:text-white">{{ user.email }}</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Data de Cadastro
+                                    </label>
+                                    <p class="text-gray-900 dark:text-white">{{ user.date_joined|date:"d/m/Y" }}</p>
+                                </div>
+                                {% if user.userprofile.bio %}
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Biografia
+                                    </label>
+                                    <p class="text-gray-900 dark:text-white">{{ user.userprofile.bio }}</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="mt-6">
+                                <a href="{% url 'core:edit-profile' %}"
+                                   class="bg-symplifika-primary text-white px-4 py-2 rounded-lg hover:bg-symplifika-accent transition-colors">
+                                    Editar Informações
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Security Tab -->
+                        <div id="security-tab" class="tab-content hidden">
+                            <div class="space-y-6">
+                                <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Senha</h3>
+                                    <p class="text-gray-600 dark:text-gray-400 mb-4">
+                                        Última alteração: {{ user.last_login|date:"d/m/Y" }}
+                                    </p>
+                                    <a href="{% url 'core:change-password' %}"
+                                       class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors">
+                                        Alterar Senha
+                                    </a>
+                                </div>
+                                <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Sessões Ativas</h3>
+                                    <p class="text-gray-600 dark:text-gray-400 mb-4">
+                                        Último acesso: {{ user.last_login|date:"d/m/Y H:i" }}
+                                    </p>
+                                    <button class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
+                                        Encerrar Todas as Sessões
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Preferences Tab -->
+                        <div id="preferences-tab" class="tab-content hidden">
+                            <div class="space-y-6">
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Notificações</h3>
+                                    <div class="space-y-3">
+                                        <label class="flex items-center">
+                                            <input type="checkbox" class="mr-3" checked>
+                                            <span class="text-gray-700 dark:text-gray-300">Notificações por email</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" class="mr-3">
+                                            <span class="text-gray-700 dark:text-gray-300">Notificações push</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Tema</h3>
+                                    <select class="block w-full max-w-xs border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                        <option>Sistema</option>
+                                        <option>Claro</option>
+                                        <option>Escuro</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function showTab(tabName) {
+    // Hide all tab contents
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.add('hidden');
+    });
+
+    // Remove active class from all buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active', 'border-symplifika-primary', 'text-symplifika-primary');
+        btn.classList.add('border-transparent', 'text-gray-500');
+    });
+
+    // Show selected tab
+    document.getElementById(tabName + '-tab').classList.remove('hidden');
+
+    // Add active class to selected button
+    const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
+    activeBtn.classList.add('active', 'border-symplifika-primary', 'text-symplifika-primary');
+    activeBtn.classList.remove('border-transparent', 'text-gray-500');
+}
+</script>
+{% endblock %}

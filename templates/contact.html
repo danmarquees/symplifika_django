@@ -1,0 +1,383 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contato | Symplifika{% endblock %}
+
+{% block meta_description %}Entre em contato com a equipe do Symplifika{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">Entre em Contato</h1>
+            <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                Estamos aqui para ajudar! Entre em contato conosco através dos canais abaixo ou envie uma mensagem.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <!-- Contact Information -->
+            <div class="space-y-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Informações de Contato</h2>
+
+                    <div class="space-y-6">
+                        <!-- Email -->
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-symplifika-primary rounded-lg flex items-center justify-center mr-4">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">Email</h3>
+                                <p class="text-gray-600 dark:text-gray-400 mb-2">Nossa equipe responde em até 24 horas</p>
+                                <a href="mailto:contato@symplifika.com" class="text-symplifika-primary hover:text-symplifika-accent font-medium">
+                                    contato@symplifika.com
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Support -->
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mr-4">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">Suporte Técnico</h3>
+                                <p class="text-gray-600 dark:text-gray-400 mb-2">Para problemas técnicos e bugs</p>
+                                <a href="mailto:suporte@symplifika.com" class="text-blue-500 hover:text-blue-600 font-medium">
+                                    suporte@symplifika.com
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Business -->
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mr-4">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2V6z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-</div>semibold text-gray-900 dark:text-white mb-1">Parcerias</h3>
+                                <p class="text-gray-600 dark:text-gray-400 mb-2">Oportunidades de negócio e parcerias</p>
+                                <a href="mailto:parceria@symplifika.com" class="text-purple-500 hover:text-purple-600 font-medium">
+                                    parceria@symplifika.com
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Social Media -->
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-pink-500 rounded-lg flex items-center justify-center mr-4">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10M7 4v16a1 1 0 001 1h8a1 1 0 001-1V4M7 8h10M7 12h10M7 16h10"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">Redes Sociais</h3>
+                                <p class="text-gray-600 dark:text-gray-400 mb-2">Siga-nos para novidades e dicas</p>
+                                <div class="flex space-x-3">
+                                    <a href="#" class="text-blue-600 hover:text-blue-700">Twitter</a>
+                                    <a href="#" class="text-blue-800 hover:text-blue-900">LinkedIn</a>
+                                    <a href="#" class="text-gray-800 hover:text-gray-900">GitHub</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ Link -->
+                <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-blue-800 dark:text-blue-400 mb-2">Perguntas Frequentes</h3>
+                    <p class="text-blue-700 dark:text-blue-300 text-sm mb-4">
+                        Antes de entrar em contato, verifique se sua dúvida já foi respondida em nossa FAQ.
+                    </p>
+                    <a href="{% url 'core:faq' %}" class="text-blue-600 hover:text-blue-700 font-medium text-sm">
+                        Ver FAQ →
+                    </a>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-8">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Envie uma Mensagem</h2>
+
+                <form method="post" id="contactForm" class="space-y-6">
+                    {% csrf_token %}
+
+                    <!-- User Info Display -->
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 flex items-center">
+                        {% if user.userprofile.avatar %}
+                            <img class="w-10 h-10 rounded-full object-cover mr-3"
+                                 src="{{ user.userprofile.avatar.url }}"
+                                 alt="Seu avatar">
+                        {% else %}
+                            <div class="w-10 h-10 rounded-full bg-symplifika-primary flex items-center justify-center mr-3">
+                                <span class="text-white font-bold text-sm">{{ user.first_name.0|default:user.username.0|upper }}</span>
+                            </div>
+                        {% endif %}
+                        <div></div>
+                            <p class="font-medium text-gray-900 dark:text-white text-sm">{{ user.get_full_name|default:user.username }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ user.email }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Subject -->
+                    <div></div>
+                        <label for="subject" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Assunto *
+                        </label>
+                        <input type="text"
+                               id="subject"
+                               name="subject"
+                               required
+                               placeholder="Descreva brevemente o motivo do contato"
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                    </div>
+
+                    <!-- Category -->
+                    <div>
+                        <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Categoria *
+                        </label>
+                        <select id="category" name="category" required
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                            <option value="">Selecione uma categoria</option>
+                            <option value="support">Suporte Técnico</option>
+                            <option value="billing">Cobrança/Planos</option>
+                            <option value="feature">Sugestão de Funcionalidade</option>
+                            <option value="bug">Reportar Bug</option>
+                            <option value="partnership">Parceria/Negócios</option>
+                            <option value="general">Geral</option>
+                        </select>
+                    </div>
+
+                    <!-- Priority -->
+                    <div>
+                        <label for="priority" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Prioridade
+                        </label>
+                        <select id="priority" name="priority"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                            <option value="low">Baixa - Não é urgente</option>
+                            <option value="medium" selected>Média - Resposta em 2-3 dias</option>
+                            <option value="high">Alta - Resposta em 24 horas</option>
+                            <option value="urgent">Urgente - Resposta imediata</option>
+                        </select>
+                    </div>
+
+                    <!-- Message -->
+                    <div>
+                        <label for="message" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Mensagem *
+                        </label>
+                        <textarea id="message"
+                                  name="message"
+                                  rows="6"
+                                  required
+                                  placeholder="Descreva detalhadamente sua dúvida, problema ou sugestão..."
+                                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"></textarea>
+                        <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                            <span id="char-count">0</span>/2000 caracteres
+                        </div>
+                    </div>
+
+                    <!-- Attachments -->
+                    <div>
+                        <label for="attachments" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Anexos (opcional)
+                        </label>
+                        <input type="file"
+                               id="attachments"
+                               name="attachments"
+                               multiple
+                               accept="image/*,.pdf,.doc,.docx,.txt"
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                            Imagens, PDFs, documentos (máx. 5MB cada)
+                        </p>
+                    </div>
+
+                    <!-- Contact Permission -->
+                    <div class="flex items-start">
+                        <input type="checkbox" id="contact_permission" name="contact_permission" checked
+                               class="mt-1 mr-3 focus:ring-symplifika-primary">
+                        <label for="contact_permission" class="text-sm text-gray-700 dark:text-gray-300">
+                            Autorizo o contato da equipe Symplifika através do email cadastrado para esclarecimentos adicionais sobre esta mensagem.
+                        </label>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button type="submit"
+                                class="flex-1 bg-symplifika-primary text-white px-6 py-3 rounded-lg hover:bg-symplifika-accent transition-colors font-medium">
+                            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                            </svg>
+                            Enviar Mensagem
+                        </button>
+                        <button type="button"
+                                onclick="clearContactForm()"
+                                class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium">
+                            Limpar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Response Time Info -->
+        <div class="mt-12 bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Tempos de Resposta</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mx-auto mb-2">
+                        <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-medium text-gray-900 dark:text-white">Urgente</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Até 2 horas</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center mx-auto mb-2">
+                        <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-medium text-gray-900 dark:text-white">Alta</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Até 24 horas</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mx-auto mb-2">
+                        <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-medium text-gray-900 dark:text-white">Média</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">2-3 dias úteis</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mx-auto mb-2">
+                        <svg class="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-medium text-gray-900 dark:text-white">Baixa</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Até 1 semana</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Character counter
+document.getElementById('message').addEventListener('input', function() {
+    const count = this.value.length;
+    const counter = document.getElementById('char-count');
+    counter.textContent = count;
+
+    if (count > 2000) {
+        counter.classList.add('text-red-500');
+        this.value = this.value.substring(0, 2000);
+    } else {
+        counter.classList.remove('text-red-500');
+    }
+});
+
+// Form validation
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    const subject = document.getElementById('subject').value.trim();
+    const message = document.getElementById('message').value.trim();
+    const category = document.getElementById('category').value;
+
+    if (!subject || !message || !category) {
+        e.preventDefault();
+        alert('Por favor, preencha todos os campos obrigatórios.');
+        return;
+    }
+
+    // Show loading state
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = `
+        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Enviando...
+    `;
+    submitBtn.disabled = true;
+});
+
+// File upload validation
+document.getElementById('attachments').addEventListener('change', function() {
+    const files = this.files;
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    for (let file of files) {
+        if (file.size > maxSize) {
+            alert(`O arquivo "${file.name}" é muito grande. Máximo permitido: 5MB`);
+            this.value = '';
+            break;
+        }
+    }
+});
+
+// Clear form function
+function clearContactForm() {
+    if (confirm('Tem certeza que deseja limpar o formulário?')) {
+        document.getElementById('contactForm').reset();
+        document.getElementById('char-count').textContent = '0';
+    }
+}
+
+// Auto-save draft functionality
+let draftTimeout;
+function saveDraft() {
+    clearTimeout(draftTimeout);
+    draftTimeout = setTimeout(() => {
+        const formData = {
+            subject: document.getElementById('subject').value,
+            category: document.getElementById('category').value,
+            priority: document.getElementById('priority').value,
+            message: document.getElementById('message').value
+        };
+        localStorage.setItem('contact_draft', JSON.stringify(formData));
+    }, 1000);
+}
+
+// Load draft on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const draft = localStorage.getItem('contact_draft');
+    if (draft) {
+        const data = JSON.parse(draft);
+        if (data.subject) document.getElementById('subject').value = data.subject;
+        if (data.category) document.getElementById('category').value = data.category;
+        if (data.priority) document.getElementById('priority').value = data.priority;
+        if (data.message) {
+            document.getElementById('message').value = data.message;
+            document.getElementById('char-count').textContent = data.message.length;
+        }
+    }
+});
+
+// Add event listeners for auto-save
+['subject', 'category', 'priority', 'message'].forEach(id => {
+    document.getElementById(id).addEventListener('input', saveDraft);
+});
+
+// Clear draft on successful submission
+document.getElementById('contactForm').addEventListener('submit', function() {
+    localStorage.removeItem('contact_draft');
+});
+</script>
+{% endblock %}

@@ -1,0 +1,1376 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Dashboard -
+Symplifika{% endblock %} {% block meta_description %}Gerencie seus atalhos e
+automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
+<!--prettier-ignore -->
+{% endblock %} {% block body_class %}bg-gray-100 dark:bg-gray-900{% endblock %}
+<!--prettier-ignore -->
+{% block navigation %} {% include 'includes/navbar.html' %} {% endblock %}
+<!--prettier-ignore -->
+{% block main_class %}{% endblock %} {% block content %}
+<div class="flex h-screen pt-16">
+    <!-- Sidebar -->
+    <aside
+        class="sidebar w-64 bg-white dark:bg-gray-800 shadow-sm border-r border-gray-200 dark:border-gray-700"
+    >
+        <!-- User Info -->
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex items-center space-x-3">
+                {% if user.profile.avatar %}
+                <img
+                    class="w-10 h-10 rounded-full object-cover"
+                    src="{{ user.profile.avatar.url }}"
+                    alt="{{ user.get_full_name|default:user.username }}"
+                />
+                {% else %}
+                <div
+                    class="w-10 h-10 bg-symplifika-primary rounded-full flex items-center justify-center"
+                >
+                    <!-- prettier-ignore -->
+                    <span class="text-white font-semibold text-sm">
+                        {{user.first_name|first|default:user.username|first|upper}}
+                    </span>
+                </div>
+                {% endif %}
+                <div class="flex-1 min-w-0">
+                    <p
+                        class="text-sm font-semibold text-gray-900 dark:text-white truncate"
+                    >
+                        {{ user.get_full_name|default:user.username }}
+                    </p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                        Plano Free
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="flex-1 p-4 space-y-2">
+            <a
+                href="#"
+                data-page="dashboard"
+                class="sidebar-item nav-item active flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-colors"
+            >
+                <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2V7zm8 0V5a2 2 0 012-2h4a2 2 0 012 2v2M7 7V5a2 2 0 012-2h2a2 2 0 012 2v2"
+                    />
+                </svg>
+                <span>Dashboard</span>
+            </a>
+
+            <a
+                href="#"
+                data-page="shortcuts"
+                class="sidebar-item nav-item flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-colors"
+            >
+                <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
+                </svg>
+                <span>Atalhos</span>
+            </a>
+
+            <a
+                href="#"
+                data-page="categories"
+                class="sidebar-item nav-item flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-colors"
+            >
+                <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                    />
+                </svg>
+                <span>Categorias</span>
+            </a>
+
+            <a
+                href="#"
+                data-page="statistics"
+                class="sidebar-item nav-item flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-colors"
+            >
+                <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                    />
+                </svg>
+                <span>Estatísticas</span>
+            </a>
+
+            <a
+                href="#"
+                data-page="import-export"
+                class="sidebar-item nav-item flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-colors"
+            >
+                <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                    />
+                </svg>
+                <span>Importar/Exportar</span>
+            </a>
+
+            <a
+                href="#"
+                data-page="settings"
+                class="sidebar-item nav-item flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-colors"
+            >
+                <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                    />
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                </svg>
+                <span>Configurações</span>
+            </a>
+        </nav>
+
+        <!-- Sidebar Footer -->
+        <div
+            class="p-4 border-t border-gray-200 dark:border-gray-700 space-y-2"
+        >
+            <button
+                class="w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors"
+                data-theme-toggle
+            >
+                <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                    />
+                </svg>
+                <span>Tema</span>
+            </button>
+
+            <form method="post" action="#" class="w-full">
+                {% csrf_token %}
+                <button
+                    type="submit"
+                    class="w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                >
+                    <svg
+                        class="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                        />
+                    </svg>
+                    <span>Sair</span>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Dashboard Overview Page -->
+        <div id="dashboardPage" class="page flex-1 overflow-y-auto">
+            <div class="p-8">
+                <!-- Header -->
+                <header class="mb-8">
+                    <h1
+                        class="text-3xl font-bold text-gray-900 dark:text-white"
+                    >
+                        Dashboard
+                    </h1>
+                    <p class="text-gray-600 dark:text-gray-300 mt-1">
+                        Visão geral dos seus atalhos e atividades
+                    </p>
+                </header>
+
+                <!-- Quick Stats -->
+                <div
+                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+                >
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700"
+                    >
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p
+                                    class="text-sm font-medium text-gray-600 dark:text-gray-400"
+                                >
+                                    Total de Atalhos
+                                </p>
+                                <p
+                                    class="text-3xl font-bold text-gray-900 dark:text-white"
+                                    id="dashboardTotalShortcuts"
+                                >
+                                    0
+                                </p>
+                            </div>
+                            <div
+                                class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center"
+                            >
+                                <svg
+                                    class="w-6 h-6 text-blue-600 dark:text-blue-400"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M13 10V3L4 14h7v7l9-11h-7z"
+                                    />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700"
+                    >
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p
+                                    class="text-sm font-medium text-gray-600 dark:text-gray-400"
+                                >
+                                    Usos Hoje
+                                </p>
+                                <p
+                                    class="text-3xl font-bold text-gray-900 dark:text-white"
+                                    id="dashboardTodayUsages"
+                                >
+                                    0
+                                </p>
+                            </div>
+                            <div
+                                class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center"
+                            >
+                                <svg
+                                    class="w-6 h-6 text-green-600 dark:text-green-400"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                                    />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700"
+                    >
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p
+                                    class="text-sm font-medium text-gray-600 dark:text-gray-400"
+                                >
+                                    Categorias
+                                </p>
+                                <p
+                                    class="text-3xl font-bold text-gray-900 dark:text-white"
+                                    id="dashboardTotalCategories"
+                                >
+                                    0
+                                </p>
+                            </div>
+                            <div
+                                class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center"
+                            >
+                                <svg
+                                    class="w-6 h-6 text-purple-600 dark:text-purple-400"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                                    />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700"
+                    >
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p
+                                    class="text-sm font-medium text-gray-600 dark:text-gray-400"
+                                >
+                                    Total de Usos
+                                </p>
+                                <p
+                                    class="text-3xl font-bold text-gray-900 dark:text-white"
+                                    id="dashboardTotalUsages"
+                                >
+                                    0
+                                </p>
+                            </div>
+                            <div
+                                class="w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center"
+                            >
+                                <svg
+                                    class="w-6 h-6 text-orange-600 dark:text-orange-400"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                                    />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700"
+                    >
+                        <h3
+                            class="text-lg font-semibold text-gray-900 dark:text-white mb-4"
+                        >
+                            Ações Rápidas
+                        </h3>
+                        <div class="space-y-3">
+                            <button
+                                onclick="window.app && window.app.openCreateShortcutModal()"
+                                class="w-full btn btn-primary text-left flex items-center space-x-3"
+                            >
+                                <svg
+                                    class="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                                    />
+                                </svg>
+                                <span>Criar Novo Atalho</span>
+                            </button>
+
+                            <button
+                                onclick="window.app && window.app.openCreateCategoryModal()"
+                                class="w-full btn btn-outline border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 text-left flex items-center space-x-3"
+                            >
+                                <svg
+                                    class="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                                    />
+                                </svg>
+                                <span>Nova Categoria</span>
+                            </button>
+
+                            <button
+                                onclick="window.app && window.app.showPage('statistics')"
+                                class="w-full btn btn-outline border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 text-left flex items-center space-x-3"
+                            >
+                                <svg
+                                    class="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                                    />
+                                </svg>
+                                <span>Ver Estatísticas</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700"
+                    >
+                        <h3
+                            class="text-lg font-semibold text-gray-900 dark:text-white mb-4"
+                        >
+                            Atalhos Recentes
+                        </h3>
+                        <div id="recentShortcuts" class="space-y-3">
+                            <div
+                                class="flex items-center justify-center py-8 text-gray-500 dark:text-gray-400"
+                            >
+                                <span>Carregando atalhos recentes...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Usage Chart -->
+                <div
+                    class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700"
+                >
+                    <h3
+                        class="text-lg font-semibold text-gray-900 dark:text-white mb-4"
+                    >
+                        Atividade dos Últimos 7 Dias
+                    </h3>
+                    <div id="weeklyUsageChart" class="h-64">
+                        <div
+                            class="flex items-center justify-center h-full text-gray-500 dark:text-gray-400"
+                        >
+                            <span>Carregando gráfico...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shortcuts Page -->
+        <div id="shortcutsPage" class="page hidden flex-1 overflow-y-auto">
+            <div class="p-8">
+                <!-- Header -->
+                <header
+                    class="flex flex-col lg:flex-row lg:items-center justify-between mb-8 space-y-4 lg:space-y-0"
+                >
+                    <div>
+                        <h1
+                            class="text-3xl font-bold text-gray-900 dark:text-white"
+                        >
+                            Meus Atalhos
+                        </h1>
+                        <p class="text-gray-600 dark:text-gray-300 mt-1">
+                            Gerencie seus atalhos de texto inteligentes
+                        </p>
+                    </div>
+
+                    <div
+                        class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-4"
+                    >
+                        <!-- Search -->
+                        <div class="relative">
+                            <svg
+                                class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                />
+                            </svg>
+                            <input
+                                type="text"
+                                id="searchInput"
+                                placeholder="Buscar atalhos..."
+                                class="form-input pl-10 pr-4 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:border-symplifika-primary focus:ring-symplifika-primary/20"
+                            />
+                        </div>
+
+                        <!-- Category Filter -->
+                        <select
+                            id="categoryFilter"
+                            class="form-input bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:border-symplifika-primary focus:ring-symplifika-primary/20"
+                        >
+                            <option value="">Todas as categorias</option>
+                            <!-- Categories will be populated via JavaScript -->
+                        </select>
+
+                        <!-- Create Button -->
+                        <button
+                            id="createShortcutBtn"
+                            class="btn btn-primary flex items-center space-x-2 whitespace-nowrap"
+                        >
+                            <svg
+                                class="w-5 h-5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                                />
+                            </svg>
+                            <span>Criar Atalho</span>
+                        </button>
+                    </div>
+                </header>
+
+                <!-- Shortcuts Grid -->
+                <main
+                    id="shortcutsList"
+                    class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"
+                >
+                    <!-- Loading State -->
+                    <div
+                        id="loadingShortcuts"
+                        class="col-span-full flex items-center justify-center py-12"
+                    >
+                        <div class="spinner spinner-lg"></div>
+                        <span class="ml-3 text-gray-600 dark:text-gray-400"
+                            >Carregando atalhos...</span
+                        >
+                    </div>
+
+                    <!-- Empty State -->
+                    <div
+                        id="emptyShortcuts"
+                        class="hidden col-span-full text-center py-16"
+                    >
+                        <svg
+                            class="w-16 h-16 mx-auto text-gray-400 mb-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="1"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"
+                            />
+                        </svg>
+                        <h3
+                            class="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2"
+                        >
+                            Nenhum atalho encontrado
+                        </h3>
+                        <p class="text-gray-500 dark:text-gray-500 mb-6">
+                            Crie seu primeiro atalho para começar a economizar
+                            tempo!
+                        </p>
+                        <button class="btn btn-primary create-shortcut-btn">
+                            Criar Primeiro Atalho
+                        </button>
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        <!-- Categories Page -->
+        <div id="categoriesPage" class="page hidden flex-1 overflow-y-auto">
+            <div class="p-8">
+                <!-- Header -->
+                <header
+                    class="flex flex-col lg:flex-row lg:items-center justify-between mb-8 space-y-4 lg:space-y-0"
+                >
+                    <div>
+                        <h1
+                            class="text-3xl font-bold text-gray-900 dark:</div>text-white"
+                        >
+                            Categorias
+                        </h1>
+                        <p class="text-gray-600 dark:text-gray-300 mt-1">
+                            Organize seus atalhos em categorias
+                        </p>
+                    </div>
+
+                    <button
+                        id="createCategoryBtn"
+                        class="btn btn-primary flex items-center space-x-2"
+                    >
+                        <svg
+                            class="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                            />
+                        </svg>
+                        <span>Nova Categoria</span>
+                    </button>
+                </header>
+
+                <!-- Categories Grid -->
+                <div
+                    id="categoriesList"
+                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                >
+                    <!-- Categories will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Page -->
+        <div id="statisticsPage" class="page hidden flex-1 overflow-y-auto">
+            <div class="p-8">
+                <header class="mb-8">
+                    <h1
+                        class="text-3xl font-bold text-gray-900 dark:text-white"
+                    >
+                        Estatísticas
+                    </h1>
+                    <p class="text-gray-600 dark:text-gray-300 mt-1">
+                        Acompanhe o uso dos seus atalhos
+                    </p>
+                </header>
+
+                <!-- Stats Grid -->
+                <div
+                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+                >
+                    <div class="card p-6 text-center">
+                        <div
+                            class="text-3xl font-bold text-symplifika-primary mb-2"
+                            id="totalShortcuts"
+                        >
+                            0
+                        </div>
+                        <div class="text-gray-600 dark:text-gray-300">
+                            Total de Atalhos
+                        </div>
+                    </div>
+                    <div class="card p-6 text-center">
+                        <div
+                            class="text-3xl font-bold text-symplifika-primary mb-2"
+                            id="totalCategories"
+                        >
+                            0
+                        </div>
+                        <div class="text-gray-600 dark:text-gray-300">
+                            Categorias
+                        </div>
+                    </div>
+                    <div class="card p-6 text-center">
+                        <div
+                            class="text-3xl font-bold text-symplifika-primary mb-2"
+                            id="totalUsages"
+                        >
+                            0
+                        </div>
+                        <div class="text-gray-600 dark:text-gray-300">
+                            Usos Totais
+                        </div>
+                    </div>
+                    <div class="card p-6 text-center">
+                        <div
+                            class="text-3xl font-bold text-symplifika-primary mb-2"
+                            id="todayUsages"
+                        >
+                            0
+                        </div>
+                        <div class="text-gray-600 dark:text-gray-300">
+                            Usos Hoje
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="card p-6">
+                        <h3
+                            class="text-lg font-semibold text-gray-900 dark:text-white mb-4"
+                        >
+                            Atalhos Mais Usados
+                        </h3>
+                        <div id="topShortcutsChart" class="h-64"></div>
+                    </div>
+                    <div class="card p-6">
+                        <h3
+                            class="text-lg font-semibold text-gray-900 dark:text-white mb-4"
+                        >
+                            Uso por Categoria
+                        </h3>
+                        <div id="categoryUsageChart" class="h-64"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Import/Export Page -->
+        <div id="import-exportPage" class="page hidden flex-1 overflow-y-auto">
+            <div class="p-8">
+                <header class="mb-8">
+                    <h1
+                        class="text-3xl font-bold text-gray-900 dark:text-white"
+                    >
+                        Importar/Exportar Atalhos
+                    </h1>
+                    <p class="text-gray-600 dark:text-gray-300 mt-1">
+                        Faça backup ou importe seus atalhos
+                    </p>
+                </header>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Export Section -->
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700"
+                    >
+                        <h3
+                            class="text-lg font-semibold text-gray-900 dark:text-white mb-4"
+                        >
+                            Exportar Atalhos
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-6">
+                            Faça o download de todos os seus atalhos em formato
+                            JSON
+                        </p>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        checked
+                                        class="rounded border-gray-300 text-symplifika-primary focus:ring-symplifika-primary"
+                                    />
+                                    <span
+                                        class="ml-2 text-sm text-gray-700 dark:text-gray-300"
+                                    >
+                                        Incluir categorias
+                                    </span>
+                                </label>
+                            </div>
+                            <div>
+                                <label class="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        checked
+                                        class="rounded border-gray-300 text-symplifika-primary focus:ring-symplifika-primary"
+                                    />
+                                    <span
+                                        class="ml-2 text-sm text-gray-700 dark:text-gray-300"
+                                    >
+                                        Incluir estatísticas de uso
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button
+                            onclick="window.app && window.app.exportShortcuts()"
+                            class="w-full mt-6 btn btn-primary"
+                        >
+                            <svg
+                                class="w-5 h-5 mr-2"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                />
+                            </svg>
+                            Exportar Atalhos
+                        </button>
+                    </div>
+
+                    <!-- Import Section -->
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700"
+                    >
+                        <h3
+                            class="text-lg font-semibold text-gray-900 dark:text-white mb-4"
+                        >
+                            Importar Atalhos
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-6">
+                            Importe atalhos de um arquivo JSON
+                        </p>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                                >
+                                    Selecionar arquivo
+                                </label>
+                                <input
+                                    type="file"
+                                    id="importFile"
+                                    accept=".json"
+                                    class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-symplifika-primary file:text-white hover:file:bg-symplifika-primary/90"
+                                />
+                            </div>
+
+                            <div>
+                                <label class="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        id="overwriteExisting"
+                                        class="rounded border-gray-300 text-symplifika-primary focus:ring-symplifika-primary"
+                                    />
+                                    <span
+                                        class="ml-2 text-sm text-gray-700 dark:text-gray-300"
+                                    >
+                                        Sobrescrever atalhos existentes
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button
+                            onclick="window.app && window.app.importShortcuts()"
+                            class="w-full mt-6 btn btn-outline border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                        >
+                            <svg
+                                class="w-5 h-5 mr-2"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                                />
+                            </svg>
+                            Importar Atalhos
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Import History -->
+                <div
+                    class="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700"
+                >
+                    <h3
+                        class="text-lg font-semibold text-gray-900 dark:text-white mb-4"
+                    >
+                        Histórico de Importações
+                    </h3>
+                    <div id="importHistory" class="space-y-3">
+                        <div
+                            class="text-center py-8 text-gray-500 dark:text-gray-400"
+                        >
+                            <p>Nenhuma importação realizada ainda</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Backup Tips -->
+                <div
+                    class="mt-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6 border border-blue-200 dark:border-blue-800"
+                >
+                    <h4
+                        class="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-3"
+                    >
+                        💡 Dicas de Backup
+                    </h4>
+                    <ul class="space-y-2 text-blue-800 dark:text-blue-200">
+                        <li class="flex items-start">
+                            <span class="mr-2">•</span>
+                            <span
+                                >Exporte seus atalhos regularmente para não
+                                perder dados importantes</span
+                            >
+                        </li>
+                        <li class="flex items-start">
+                            <span class="mr-2">•</span>
+                            <span
+                                >O arquivo exportado contém todos os seus
+                                atalhos e configurações</span
+                            >
+                        </li>
+                        <li class="flex items-start">
+                            <span class="mr-2">•</span>
+                            <span
+                                >Você pode usar o arquivo para migrar entre
+                                dispositivos</span
+                            >
+                        </li>
+                        <li class="flex items-start">
+                            <span class="mr-2">•</span>
+                            <span
+                                >Mantenha sempre uma cópia de segurança em local
+                                seguro</span
+                            >
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div id="settingsPage" class="page hidden flex-1 overflow-y-auto">
+            <div class="p-8">
+                <header class="mb-8">
+                    <h1
+                        class="text-3xl font-bold text-gray-900 dark:text-white"
+                    >
+                        Configurações
+                    </h1>
+                    <p class="text-gray-600 dark:text-gray-300 mt-1">
+                        Personalize sua experiência
+                    </p>
+                </header>
+
+                <div class="max-w-4xl space-y-8">
+                    <!-- Profile Section -->
+                    <div class="card p-6">
+                        <h3
+                            class="text-lg font-semibold text-gray-900 dark:text-white mb-4"
+                        >
+                            Perfil
+                        </h3>
+                        <form id="profileForm" class="space-y-4">
+                            {% csrf_token %}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                                        >Nome</label
+                                    >
+                                    <input
+                                        type="text"
+                                        name="first_name"
+                                        value="{{ user.first_name }}"
+                                        class="form-input"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                                        >Sobrenome</label
+                                    >
+                                    <input
+                                        type="text"
+                                        name="last_name"
+                                        value="{{ user.last_name }}"
+                                        class="form-input"
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                                    >Email</label
+                                >
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value="{{ user.email }}"
+                                    class="form-input"
+                                />
+                            </div>
+                            <div class="flex justify-end">
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary"
+                                >
+                                    Salvar Perfil
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- App Preferences -->
+                    <div class="card p-6">
+                        <h3
+                            class="text-lg font-semibold text-gray-900 dark:text-white mb-4"
+                        >
+                            Preferências do App
+                        </h3>
+                        <div class="space-y-6">
+                            <div>
+                                <label
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3"
+                                >
+                                    Tema
+                                </label>
+                                <div class="grid grid-cols-3 gap-3">
+                                    <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
+                                        <input
+                                            type="radio"
+                                            name="theme"
+                                            value="light"
+                                            class="sr-only"
+                                        />
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-4 h-4 bg-white border-2 border-gray-300 rounded-full"></div>
+                                            <span class="text-sm">Claro</span>
+                                        </div>
+                                    </label>
+                                    <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
+                                        <input
+                                            type="radio"
+                                            name="theme"
+                                            value="dark"
+                                            class="sr-only"
+                                        />
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-4 h-4 bg-gray-800 border-2 border-gray-300 rounded-full"></div>
+                                            <span class="text-sm">Escuro</span>
+                                        </div>
+                                    </label>
+                                    <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
+                                        <input
+                                            type="radio"
+                                            name="theme"
+                                            value="auto"
+                                            class="sr-only"
+                                            checked
+                                        />
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-4 h-4 bg-gradient-to-r from-white to-gray-800 border-2 border-gray-300 rounded-full"></div>
+                                            <span class="text-sm">Auto</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="flex items-center justify-between">
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            Notificações de Atalhos
+                                        </span>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                                            Mostrar notificação quando um atalho é usado
+                                        </p>
+                                    </div>
+                                    <input
+                                        type="checkbox"
+                                        checked
+                                        class="toggle-switch"
+                                    />
+                                </label>
+                            </div>
+
+                            <div>
+                                <label class="flex items-center justify-between">
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            Backup Automático
+                                        </span>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                                            Fazer backup dos atalhos automaticamente
+                                        </p>
+                                    </div>
+                                    <input
+                                        type="checkbox"
+                                        class="toggle-switch"
+                                    />
+                                </label>
+                            </div>
+
+                            <div>
+                                <label
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                                >
+                                    Idioma
+                                </label>
+                                <select class="form-input">
+                                    <option value="pt-BR" selected>Português (Brasil)</option>
+                                    <option value="en-US">English (US)</option>
+                                    <option value="es-ES">Español</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Keyboard Shortcuts -->
+                    <div class="card p-6">
+                        <h3
+                            class="text-lg font-semibold text-gray-900 dark:text-white mb-4"
+                        >
+                            Atalhos de Teclado
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Criar novo atalho
+                                    </span>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                                        Abrir modal para criar novo atalho
+                                    </p>
+                                </div>
+                                <div class="flex items-center space-x-1">
+                                    <kbd class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded">Ctrl</kbd>
+                                    <span class="text-gray-400">+</span>
+                                    <kbd class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded">N</kbd>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Buscar atalhos
+                                    </span>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                                        Focar no campo de busca
+                                    </p>
+                                </div>
+                                <div class="flex items-center space-x-1">
+                                    <kbd class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded">Ctrl</kbd>
+                                    <span class="text-gray-400">+</span>
+                                    <kbd class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded">F</kbd>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Alternar tema
+                                    </span>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                                        Alternar entre tema claro e escuro
+                                    </p>
+                                </div>
+                                <div class="flex items-center space-x-1">
+                                    <kbd class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded">Ctrl</kbd>
+                                    <span class="text-gray-400">+</span>
+                                    <kbd class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded">Shift</kbd>
+                                    <span class="text-gray-400">+</span>
+                                    <kbd class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded">T</kbd>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Privacy & Security -->
+                    <div class="card p-6">
+                        <h3
+                            class="text-lg font-semibold text-gray-900 dark:text-white mb-4"
+                        >
+                            Privacidade e Segurança
+                        </h3>
+                        <div class="space-y-6">
+                            <div>
+                                <label class="flex items-center justify-between">
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            Coleta de Analytics
+                                        </span>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                                            Ajude-nos a melhorar compartilhando dados anônimos de uso
+                                        </p>
+                                    </div>
+                                    <input
+                                        type="checkbox"
+                                        checked
+                                        class="toggle-switch"
+                                    />
+                                </label>
+                            </div>
+
+                            <div>
+                                <button
+                                    onclick="window.app && window.app.clearAllData()"
+                                    class="btn btn-outline border-red-300 text-red-700 hover:bg-red-50 dark:border-red-600 dark:text-red-400 dark:hover:bg-red-900/20"
+                                >
+                                    Limpar Todos os Dados
+                                </button>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                    Esta ação não pode ser desfeita. Faça um backup antes.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- About -->
+                    <div class="card p-6">
+                        <h3
+                            class="text-lg font-semibold text-gray-900 dark:text-white mb-4"
+                        >
+                            Sobre o Symplifika
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Versão</span>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white">1.0.0</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Última atualização</span>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white">Janeiro 2024</span>
+                            </div>
+                            <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                                <p class="text-sm text-gray-600 dark:text-gray-400">
+                                    Symplifika é uma ferramenta para gerenciar atalhos de texto e automações.
+                                    Desenvolvido com ❤️ para aumentar sua produtividade.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Shortcut Modal -->
+<div
+    id="createShortcutModal"
+    class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden"
+>
+    <div
+        class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4"
+    >
+        <div class="flex items-center justify-between p-6 border-b">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                Criar Novo Atalho
+            </h3>
+            <button
+                type="button"
+                onclick="Symplifika.Modal.close('createShortcutModal')"
+                class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M6 18L18 6M6 6l12 12"
+                    />
+                </svg>
+            </button>
+        </div>
+
+        <form id="createShortcutForm" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                    >Palavra-chave</label
+                >
+                <input
+                    type="text"
+                    name="keyword"
+                    required
+                    class="form-input"
+                    placeholder="ex: email"
+                />
+            </div>
+            <div>
+                <label
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                    >Texto expandido</label
+                >
+                <textarea
+                    name="content"
+                    required
+                    class="form-input h-24"
+                    placeholder="Digite o texto que será inserido..."
+                ></textarea>
+            </div>
+            <div>
+                <label
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                    >Categoria</label
+                >
+                <select name="category" class="form-input">
+                    <option value="">Sem categoria</option>
+                    <!-- Categories will be populated via JavaScript -->
+                </select>
+            </div>
+            <div class="flex justify-end space-x-3 pt-4">
+                <button
+                    type="button"
+                    onclick="Symplifika.Modal.close('createShortcutModal')"
+                    class="btn btn-outline border-gray-300 text-gray-700 hover:bg-gray-50"
+                >
+                    Cancelar
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    Criar Atalho
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} {% block footer %}
+<!-- No footer in app layout -->
+{% endblock %} {% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/app.css' %}" />
+{% endblock %} {% block extra_js %}
+<script src="{% static 'js/app.js' %}"></script>
+{% endblock %}

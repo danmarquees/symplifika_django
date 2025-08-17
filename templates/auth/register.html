@@ -1,0 +1,610 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Registrar -
+Symplifika{% endblock %} {% block meta_description %}Crie sua conta gratuita no
+Symplifika e comece a automatizar suas tarefas hoje mesmo.{% endblock %}
+<!--prettier-ignore -->
+{% block html_class %}dark{% endblock %}
+<!--prettier-ignore -->
+{% block body_class %}bg-symplifika-gradient bg-mesh min-h-screen{% endblock %}
+<!--prettier-ignore -->
+{% block navigation %}
+<!-- Simplified navigation for auth pages -->
+<nav class="absolute top-0 left-0 right-0 z-10 p-6">
+    <div class="flex justify-between items-center">
+        <a
+            href="{% url 'core:index' %}"
+            class="flex items-center space-x-2 text-black hover:text-black/80 transition-colors"
+        >
+            <svg
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                class="text-black"
+            >
+                <path
+                    d="M16.8857 3.11429C13.8857 0.114286 9 1 6 4C3 7 2.11429 11.8857 5.11429 14.8857C8.11429 17.8857 13 19 16 16C19 13 19.8857 8.11429 16.8857 5.11429"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+                <path
+                    d="M7.11426 20.8857C10.1143 23.8857 15 23 18 20C21 17 21.8857 12.1143 18.8857 9.11428C15.8857 6.11428 11 5 8 8C5 11 4.11426 15.8857 7.11426 18.8857"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+            </svg>
+            <span class="text-xl font-bold">symplifika</span>
+        </a>
+
+        <!-- Theme toggle -->
+        <button
+            type="button"
+            class="p-2 text-black/70 hover:text-black rounded-md focus:outline-none focus:ring-2 focus:ring-black/20"
+            data-theme-toggle
+            title="Alternar tema"
+        >
+            <span class="theme-icon">🌙</span>
+        </button>
+    </div>
+</nav>
+{% endblock %} {% block main_class %}flex items-center justify-center
+min-h-screen px-4 py-20{% endblock %} {% block content %}
+<div class="w-full max-w-lg">
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <div class="flex items-center justify-center gap-3 mb-4">
+            <svg
+                width="48"
+                height="48"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                class="text-black"
+            >
+                <path
+                    d="M16.8857 3.11429C13.8857 0.114286 9 1 6 4C3 7 2.11429 11.8857 5.11429 14.8857C8.11429 17.8857 13 19 16 16C19 13 19.8857 8.11429 16.8857 5.11429"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+                <path
+                    d="M7.11426 20.8857C10.1143 23.8857 15 23 18 20C21 17 21.8857 12.1143 18.8857 9.11428C15.8857 6.11428 11 5 8 8C5 11 4.11426 15.8857 7.11426 18.8857"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+            </svg>
+            <h1 class="text-4xl font-extrabold text-black">symplifika</h1>
+        </div>
+        <p class="text-black/80 text-lg">
+            Crie sua conta e comece a
+            <span class="bg-white text-black px-2 py-1 rounded-md font-semibold"
+                >simplificar</span
+            >
+            sua vida
+        </p>
+    </div>
+
+    <!-- Register Form -->
+    <div class="bg-black/80 backdrop-blur-sm p-8 rounded-2xl shadow-2xl">
+        <form
+            method="post"
+            action="{% url 'auth:register' %}"
+            class="space-y-6"
+            data-validate
+            id="registerForm"
+        >
+            {% csrf_token %}
+
+            <!-- Error Messages -->
+            {% if form.non_field_errors %}
+            <div
+                class="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-lg text-sm"
+            >
+                <!--prettier-ignore -->
+                {% for error in form.non_field_errors %} {{ error }}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- First Name and Last Name -->
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label
+                        for="{{ form.first_name.id_for_label }}"
+                        class="block text-sm font-medium text-gray-300 mb-2"
+                    >
+                        Nome *
+                    </label>
+                    <input
+                        type="text"
+                        name="{{ form.first_name.name }}"
+                        id="{{ form.first_name.id_for_label }}"
+                        value="{{ form.first_name.value|default:'' }}"
+                        class="form-input bg-gray-800 border-gray-700 text-white focus:border-symplifika-secondary focus:ring-symplifika-secondary/20"
+                        placeholder="Seu nome"
+                        required
+                    />
+                    {% if form.first_name.errors %}
+                    <div class="text-red-400 text-sm mt-1">
+                        <!--prettier-ignore -->
+                        {% for error in form.first_name.errors %} {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label
+                        for="{{ form.last_name.id_for_label }}"
+                        class="block text-sm font-medium text-gray-300 mb-2"
+                    >
+                        Sobrenome *
+                    </label>
+                    <input
+                        type="text"
+                        name="{{ form.last_name.name }}"
+                        id="{{ form.last_name.id_for_label }}"
+                        value="{{ form.last_name.value|default:'' }}"
+                        class="form-input bg-gray-800 border-gray-700 text-white focus:border-symplifika-secondary focus:ring-symplifika-secondary/20"
+                        placeholder="Seu sobrenome"
+                        required
+                    />
+                    {% if form.last_name.errors %}
+                    <div class="text-red-400 text-sm mt-1">
+                        <!--prettier-ignore -->
+                        {% for error in form.last_name.errors %} {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Username -->
+            <div>
+                <label
+                    for="{{ form.username.id_for_label }}"
+                    class="block text-sm font-medium text-gray-300 mb-2"
+                >
+                    Nome de usuário *
+                </label>
+                <input
+                    type="text"
+                    name="{{ form.username.name }}"
+                    id="{{ form.username.id_for_label }}"
+                    value="{{ form.username.value|default:'' }}"
+                    class="form-input bg-gray-800 border-gray-700 text-white focus:border-symplifika-secondary focus:ring-symplifika-secondary/20"
+                    placeholder="Escolha um nome de usuário"
+                    required
+                />
+                <div class="text-gray-400 text-xs mt-1">
+                    Apenas letras, números e os caracteres @/./+/-/_ permitidos.
+                </div>
+                {% if form.username.errors %}
+                <div class="text-red-400 text-sm mt-1">
+                    <!--prettier-ignore -->
+                    {% for error in form.username.errors %} {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Email -->
+            <div>
+                <label
+                    for="{{ form.email.id_for_label }}"
+                    class="block text-sm font-medium text-gray-300 mb-2"
+                >
+                    Email *
+                </label>
+                <input
+                    type="email"
+                    name="{{ form.email.name }}"
+                    id="{{ form.email.id_for_label }}"
+                    value="{{ form.email.value|default:'' }}"
+                    class="form-input bg-gray-800 border-gray-700 text-white focus:border-symplifika-secondary focus:ring-symplifika-secondary/20"
+                    placeholder="seu@email.com"
+                    required
+                />
+                {% if form.email.errors %}
+                <div class="text-red-400 text-sm mt-1">
+                    <!--prettier-ignore -->
+                    {% for error in form.email.errors %} {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Password -->
+            <div>
+                <label
+                    for="{{ form.password1.id_for_label }}"
+                    class="block text-sm font-medium text-gray-300 mb-2"
+                >
+                    Senha *
+                </label>
+                <div class="relative">
+                    <input
+                        type="password"
+                        name="{{ form.password1.name }}"
+                        id="{{ form.password1.id_for_label }}"
+                        class="form-input bg-gray-800 border-gray-700 text-white focus:border-symplifika-secondary focus:ring-symplifika-secondary/20 pr-12"
+                        placeholder="Crie uma senha segura"
+                        required
+                    />
+                    <button
+                        type="button"
+                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-300"
+                        onclick="togglePasswordVisibility('{{ form.password1.id_for_label }}', this)"
+                    >
+                        <svg
+                            class="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                            />
+                        </svg>
+                    </button>
+                </div>
+                <!-- Password strength indicator -->
+                <div class="mt-2">
+                    <div class="flex space-x-1">
+                        <div
+                            class="h-1 w-1/4 bg-gray-600 rounded"
+                            id="strength-1"
+                        ></div>
+                        <div
+                            class="h-1 w-1/4 bg-gray-600 rounded"
+                            id="strength-2"
+                        ></div>
+                        <div
+                            class="h-1 w-1/4 bg-gray-600 rounded"
+                            id="strength-3"
+                        ></div>
+                        <div
+                            class="h-1 w-1/4 bg-gray-600 rounded"
+                            id="strength-4"
+                        ></div>
+                    </div>
+                    <div class="text-xs text-gray-400 mt-1" id="strength-text">
+                        Digite uma senha
+                    </div>
+                </div>
+                {% if form.password1.errors %}
+                <div class="text-red-400 text-sm mt-1">
+                    <!--prettier-ignore -->
+                    {% for error in form.password1.errors %} {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Confirm Password -->
+            <div>
+                <label
+                    for="{{ form.password2.id_for_label }}"
+                    class="block text-sm font-medium text-gray-300 mb-2"
+                >
+                    Confirmar senha *
+                </label>
+                <div class="relative">
+                    <input
+                        type="password"
+                        name="{{ form.password2.name }}"
+                        id="{{ form.password2.id_for_label }}"
+                        class="form-input bg-gray-800 border-gray-700 text-white focus:border-symplifika-secondary focus:ring-symplifika-secondary/20 pr-12"
+                        placeholder="Digite a senha novamente"
+                        required
+                    />
+                    <button
+                        type="button"
+                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-300"
+                        onclick="togglePasswordVisibility('{{ form.password2.id_for_label }}', this)"
+                    >
+                        <svg
+                            class="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                            />
+                        </svg>
+                    </button>
+                </div>
+                {% if form.password2.errors %}
+                <div class="text-red-400 text-sm mt-1">
+                    <!--prettier-ignore -->
+                    {% for error in form.password2.errors %} {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Terms and Privacy -->
+            <div class="flex items-start">
+                <input
+                    type="checkbox"
+                    name="terms_accepted"
+                    id="terms_accepted"
+                    class="w-4 h-4 mt-1 text-symplifika-primary bg-gray-800 border-gray-600 rounded focus:ring-symplifika-primary focus:ring-2"
+                    required
+                />
+                <label for="terms_accepted" class="ml-3 text-sm text-gray-300">
+                    Eu aceito os
+                    <a
+                        href="#"
+                        class="text-symplifika-secondary hover:text-white transition-colors"
+                        >Termos de Uso</a
+                    >
+                    e a
+                    <a
+                        href="#"
+                        class="text-symplifika-secondary hover:text-white transition-colors"
+                        >Política de Privacidade</a
+                    >
+                </label>
+            </div>
+
+            <!-- Newsletter subscription -->
+            <div class="flex items-start">
+                <input
+                    type="checkbox"
+                    name="newsletter_subscription"
+                    id="newsletter_subscription"
+                    class="w-4 h-4 mt-1 text-symplifika-primary bg-gray-800 border-gray-600 rounded focus:ring-symplifika-primary focus:ring-2"
+                />
+                <label
+                    for="newsletter_subscription"
+                    class="ml-3 text-sm text-gray-300"
+                >
+                    Quero receber novidades e dicas sobre automações por email
+                </label>
+            </div>
+
+            <!-- Submit Button -->
+            <button
+                type="submit"
+                class="w-full btn btn-secondary text-lg py-3 font-bold shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200"
+                id="registerBtn"
+            >
+                <span id="registerBtnText">Criar Conta Gratuita</span>
+                <div id="registerSpinner" class="hidden spinner ml-2"></div>
+            </button>
+        </form>
+
+        <!-- Divider -->
+        <div class="relative flex py-6 items-center">
+            <div class="flex-grow border-t border-gray-600"></div>
+            <span class="flex-shrink mx-4 text-gray-400 text-sm">ou</span>
+            <div class="flex-grow border-t border-gray-600"></div>
+        </div>
+
+        <!-- Login Link -->
+        <div class="text-center">
+            <p class="text-gray-400 text-sm mb-3">Já tem uma conta?</p>
+            <a
+                href="{% url 'auth:login' %}"
+                class="btn btn-outline border-symplifika-secondary text-symplifika-secondary hover:bg-symplifika-secondary hover:text-black w-full"
+            >
+                Fazer Login
+            </a>
+        </div>
+    </div>
+
+    <!-- Benefits -->
+    <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+        <div class="bg-black/40 backdrop-blur-sm p-4 rounded-xl">
+            <div class="text-2xl mb-2">⚡</div>
+            <div class="text-white text-sm font-medium">Setup Rápido</div>
+            <div class="text-white/70 text-xs">Em menos de 2 minutos</div>
+        </div>
+        <div class="bg-black/40 backdrop-blur-sm p-4 rounded-xl">
+            <div class="text-2xl mb-2">🔒</div>
+            <div class="text-white text-sm font-medium">100% Seguro</div>
+            <div class="text-white/70 text-xs">Dados criptografados</div>
+        </div>
+        <div class="bg-black/40 backdrop-blur-sm p-4 rounded-xl">
+            <div class="text-2xl mb-2">🆓</div>
+            <div class="text-white text-sm font-medium">Sempre Gratuito</div>
+            <div class="text-white/70 text-xs">Plano básico sem custo</div>
+        </div>
+    </div>
+</div>
+{% endblock %} {% block footer %}
+<!-- No footer on auth pages -->
+{% endblock %} {% block extra_js %}
+<script>
+    // Password strength checker
+    function checkPasswordStrength(password) {
+        let strength = 0;
+        let feedback = [];
+
+        if (password.length >= 8) strength += 1;
+        else feedback.push("Mínimo 8 caracteres");
+
+        if (/[a-z]/.test(password)) strength += 1;
+        else feedback.push("Letra minúscula");
+
+        if (/[A-Z]/.test(password)) strength += 1;
+        else feedback.push("Letra maiúscula");
+
+        if (/[0-9]/.test(password)) strength += 1;
+        else feedback.push("Número");
+
+        if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+        else feedback.push("Símbolo especial");
+
+        return { strength: Math.min(strength, 4), feedback };
+    }
+
+    function updatePasswordStrength(password) {
+        const { strength, feedback } = checkPasswordStrength(password);
+        const strengthBars = document.querySelectorAll('[id^="strength-"]');
+        const strengthText = document.getElementById("strength-text");
+
+        // Reset bars
+        strengthBars.forEach((bar) => {
+            bar.className = "h-1 w-1/4 bg-gray-600 rounded";
+        });
+
+        // Update bars based on strength
+        const colors = [
+            "bg-red-500",
+            "bg-orange-500",
+            "bg-yellow-500",
+            "bg-green-500",
+        ];
+        const texts = ["Muito fraca", "Fraca", "Boa", "Forte"];
+
+        for (let i = 0; i < strength; i++) {
+            strengthBars[i].className =
+                `h-1 w-1/4 ${colors[Math.min(strength - 1, 3)]} rounded`;
+        }
+
+        if (password.length === 0) {
+            strengthText.textContent = "Digite uma senha";
+            strengthText.className = "text-xs text-gray-400 mt-1";
+        } else {
+            strengthText.textContent =
+                strength > 0 ? texts[Math.min(strength - 1, 3)] : "Muito fraca";
+            strengthText.className = `text-xs mt-1 ${
+                strength <= 1
+                    ? "text-red-400"
+                    : strength <= 2
+                      ? "text-orange-400"
+                      : strength <= 3
+                        ? "text-yellow-400"
+                        : "text-green-400"
+            }`;
+        }
+    }
+
+    // Toggle password visibility
+    function togglePasswordVisibility(fieldId, button) {
+        const field = document.getElementById(fieldId);
+        const icon = button.querySelector("svg");
+
+        if (field.type === "password") {
+            field.type = "text";
+            icon.innerHTML = `
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"/>
+        `;
+        } else {
+            field.type = "password";
+            icon.innerHTML = `
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+        `;
+        }
+    }
+
+    // Password confirmation validation
+    function validatePasswordConfirmation() {
+        const password1 = document.getElementById(
+            "{{ form.password1.id_for_label }}",
+        );
+        const password2 = document.getElementById(
+            "{{ form.password2.id_for_label }}",
+        );
+
+        if (password1.value && password2.value) {
+            if (password1.value !== password2.value) {
+                password2.setCustomValidity("As senhas não coincidem");
+                password2.classList.add("border-red-500");
+            } else {
+                password2.setCustomValidity("");
+                password2.classList.remove("border-red-500");
+            }
+        }
+    }
+
+    // Form submission handling
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("registerForm");
+        const submitBtn = document.getElementById("registerBtn");
+        const btnText = document.getElementById("registerBtnText");
+        const spinner = document.getElementById("registerSpinner");
+        const password1 = document.getElementById(
+            "{{ form.password1.id_for_label }}",
+        );
+        const password2 = document.getElementById(
+            "{{ form.password2.id_for_label }}",
+        );
+
+        // Password strength monitoring
+        if (password1) {
+            password1.addEventListener("input", function () {
+                updatePasswordStrength(this.value);
+            });
+        }
+
+        // Password confirmation validation
+        if (password2) {
+            password2.addEventListener("input", validatePasswordConfirmation);
+            password1.addEventListener("input", validatePasswordConfirmation);
+        }
+
+        // Form submission
+        if (form) {
+            form.addEventListener("submit", function (e) {
+                // Final validation
+                validatePasswordConfirmation();
+
+                if (!form.checkValidity()) {
+                    e.preventDefault();
+                    return;
+                }
+
+                // Show loading state
+                submitBtn.disabled = true;
+                btnText.textContent = "Criando conta...";
+                spinner.classList.remove("hidden");
+
+                // Re-enable button after 15 seconds to prevent permanent disabled state
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    btnText.textContent = "Criar Conta Gratuita";
+                    spinner.classList.add("hidden");
+                }, 15000);
+            });
+        }
+
+        // Auto-focus on first field
+        const firstNameField = document.getElementById(
+            "{{ form.first_name.id_for_label }}",
+        );
+        if (firstNameField) {
+            firstNameField.focus();
+        }
+    });
+</script>
+{% endblock %}

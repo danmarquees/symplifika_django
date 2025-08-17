@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Debug - Symplifika</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+            color: #0c5460;
+        }
+        h1 {
+            color: #00C853;
+            text-align: center;
+        }
+        h2 {
+            color: #555;
+            margin-top: 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #00C853;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background-color: #00A046;
+        }
+        code {
+            background-color: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Debug Symplifika</h1>
+
+        <div class="test-section success">
+            <h2>✅ Teste Básico</h2>
+            <p>Se você está vendo esta página, o Django está funcionando!</p>
+            <p><strong>Timestamp:</strong> <span id="timestamp"></span></p>
+        </div>
+
+        <div class="test-section info">
+            <h2>📋 Informações do Sistema</h2>
+            <p><strong>User Agent:</strong> <span id="userAgent"></span></p>
+            <p><strong>Viewport:</strong> <span id="viewport"></span></p>
+            <p><strong>URL Atual:</strong> <span id="currentUrl"></span></p>
+        </div>
+
+        <div class="test-section info">
+            <h2>🎨 Teste de Estilos</h2>
+            <p>Este texto deve estar visível e bem formatado.</p>
+            <button class="btn" onclick="testAlert()">Testar JavaScript</button>
+            <button class="btn" onclick="testConsole()">Testar Console</button>
+        </div>
+
+        <div class="test-section" id="cssTest">
+            <h2>🔍 Teste de CSS</h2>
+            <p>Verificando se os estilos estão sendo aplicados...</p>
+            <div style="background: linear-gradient(45deg, #00C853, #00FF57); padding: 20px; border-radius: 8px; color: white; margin: 10px 0;">
+                <strong>Gradiente Symplifika</strong> - Se você vê este gradiente verde, o CSS está funcionando!
+            </div>
+        </div>
+
+        <div class="test-section" id="jsTest">
+            <h2>⚡ Teste de JavaScript</h2>
+            <p id="jsStatus</h2>">Verificando JavaScript...</p>
+            <button class="btn" onclick="location.href='/'">Voltar para Home</button>
+            <button class="btn" onclick="location.href='/auth/login/'">Ir para Login</button>
+        </div>
+
+        <div class="test-section error" id="errorTest" style="display: none;">
+            <h2>❌ Erros Detectados</h2>
+            <ul id="errorList"></ul>
+        </div>
+    </div>
+
+    <script>
+        // Teste básico de JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // Atualizar timestamp
+            document.getElementById('timestamp').textContent = new Date().toLocaleString('pt-BR');
+
+            // Informações do sistema
+            document.getElementById('userAgent').textContent = navigator.userAgent;
+            document.getElementById('viewport').textContent = window.innerWidth + 'x' + window.innerHeight;
+            document.getElementById('currentUrl').textContent = window.location.href;
+
+            // Teste de JavaScript
+            document.getElementById('jsStatus').innerHTML = '<strong style="color: green;">✅ JavaScript está funcionando!</strong>';
+
+            // Verificar se há erros no console
+            checkForErrors();
+        });
+
+        function testAlert() {
+            alert('JavaScript está funcionando! ✅');
+        }
+
+        function testConsole() {
+            console.log('Teste de console - Symplifika Debug');
+            console.info('Sistema funcionando normalmente');
+            alert('Verifique o console do navegador (F12)');
+        }
+
+        function checkForErrors() {
+            // Capturar erros JavaScript
+            window.addEventListener('error', function(e) {
+                showError('JavaScript Error: ' + e.message + ' (Linha: ' + e.lineno + ')');
+            });
+
+            // Verificar se recursos CSS estão carregando
+            var links = document.querySelectorAll('link[rel="stylesheet"]');
+            links.forEach(function(link) {
+                link.addEventListener('error', function() {
+                    showError('Erro ao carregar CSS: ' + link.href);
+                });
+            });
+        }
+
+        function showError(message) {
+            var errorSection = document.getElementById('errorTest');
+            var errorList = document.getElementById('errorList');
+
+            var li = document.createElement('li');
+            li.textContent = message;
+            errorList.appendChild(li);
+
+            errorSection.style.display = 'block';
+        }
+
+        // Teste de funcionalidades específicas
+        function testSymplifika() {
+            var results = [];
+
+            // Verificar se Tailwind está carregado
+            var testElement = document.createElement('div');
+            testElement.className = 'hidden';
+            document.body.appendChild(testElement);
+            var isHidden = window.getComputedStyle(testElement).display === 'none';
+            document.body.removeChild(testElement);
+
+            if (isHidden) {
+                results.push('✅ Tailwind CSS: Funcionando');
+            } else {
+                results.push('❌ Tailwind CSS: Não carregado');
+            }
+
+            // Verificar se as fontes estão carregadas
+            if (document.fonts && document.fonts.check) {
+                if (document.fonts.check('16px Poppins')) {
+                    results.push('✅ Fonte Poppins: Carregada');
+                } else {
+                    results.push('⚠️ Fonte Poppins: Não encontrada');
+                }
+            }
+
+            console.log('Resultados dos testes:', results);
+            alert('Testes concluídos! Verifique o console para detalhes.');
+        }
+
+        // Executar testes automáticos após 1 segundo
+        setTimeout(testSymplifika, 1000);
+    </script>
+</body>
+</html>

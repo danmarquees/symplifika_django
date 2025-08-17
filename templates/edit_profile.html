@@ -1,0 +1,309 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar Perfil | Symplifika{% endblock %}
+
+{% block meta_description %}Edite suas informações pessoais no Symplifika{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center space-x-4">
+                <a href="{% url 'core:profile' %}"
+                   class="text-symplifika-primary hover:text-symplifika-accent transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </a>
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Editar Perfil</div></h1>
+                    <p class="mt-2 text-gray-600 dark:text-gray-400">Atualize suas informações pessoais</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Form -->
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+            <form method="post" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+
+                <!-- Avatar Section -->
+                <div class="text-center mb-6">
+                    <div class="relative inline-block">
+                        {% if user.userprofile.avatar %}
+                            <img class="w-24 h-24 rounded-full border-4 border-symplifika-primary object-cover"
+                                 src="{{ user.userprofile.avatar.url }}"
+                                 alt="Avatar atual"
+                                 id="avatar-preview">
+                        {% else %}
+                            <div class="w-24 h-24 rounded-full border-4 border-symplifika-primary bg-symplifika-primary flex items-center justify-center"
+                                 id="avatar-preview">
+                                <span class="text-2xl font-bold text-white">
+                                    {{ user.first_name.0|default:user.username.0|upper }}
+                                </span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                        Clique em "Alterar Avatar" para modificar sua foto
+                    </p>
+                    <a href="{% url 'core:change-avatar' %}"
+                       class="mt-2 inline-block bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                        Alterar Avatar
+                    </a>
+                </div>
+
+                <!-- Personal Information -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div></div>
+                        <label for="first_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Primeiro Nome *
+                        </label>
+                        <input type="text"
+                               id="first_name"
+                               name="first_name"
+                               value="{{ user.first_name }}"
+                               required
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                    </div>
+
+                    <div>
+                        <label for="last_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Sobrenome *
+                        </label>
+                        <input type="text"
+                               id="last_name"
+                               name="last_name"
+                               value="{{ user.last_name }}"
+                               required
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Nome de Usuário *
+                        </label>
+                        <input type="text"
+                               id="username"
+                               name="username"
+                               value="{{ user.username }}"
+                               required
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                            Apenas letras, números e os caracteres @, ., +, -, _
+                        </p>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Email *
+                        </label>
+                        <input type="email"
+                               id="email"
+                               name="email"
+                               value="{{ user.email }}"
+                               required
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                    </div>
+                </div>
+
+                <!-- Profile Information -->
+                <div class="space-y-6">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
+                        Informações Adicionais
+                    </h3>
+
+                    <div>
+                        <label for="bio" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Biografia
+                        </label>
+                        <textarea id="bio"
+                                  name="bio"
+                                  rows="4"
+                                  placeholder="Conte um pouco sobre você..."
+                                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none">{{ user.userprofile.bio|default:'' }}</textarea>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                            Máximo de 500 caracteres
+                        </p>
+                    </div>
+
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Telefone
+                        </label>
+                        <input type="tel"
+                               id="phone"
+                               name="phone"
+                               value="{{ user.userprofile.phone|default:'' }}"
+                               placeholder="(11) 99999-9999"
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                    </div>
+
+                    <div>
+                        <label for="location" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Localização
+                        </label>
+                        <input type="text"
+                               id="location"
+                               name="location"
+                               value="{{ user.userprofile.location|default:'' }}"
+                               placeholder="São Paulo, SP"
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                    </div>
+                </div>
+
+                <!-- Privacy Settings -->
+                <div class="space-y-6">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
+                        Configurações de Privacidade
+                    </h3>
+
+                    <div class="space-y-3">
+                        <label class="flex items-center">
+                            <input type="checkbox"
+                                   name="email_notifications"
+                                   {% if user.userprofile.email_notifications %}checked{% endif %}
+                                   class="mr-3 focus:ring-symplifika-primary">
+                            <span class="text-gray-700 dark:text-gray-300">Receber notificações por email</span>
+                        </label>
+
+                        <label class="flex items-center">
+                            <input type="checkbox"
+                                   name="profile_public"
+                                   {% if user.userprofile.profile_public %}checked{% endif %}
+                                   class="mr-3 focus:ring-symplifika-primary">
+                            <span class="text-gray-700 dark:text-gray-300">Perfil público</span>
+                        </label>
+
+                        <label class="flex items-center">
+                            <input type="checkbox"
+                                   name="show_email"
+                                   {% if user.userprofile.show_email %}checked{% endif %}
+                                   class="mr-3 focus:ring-symplifika-primary">
+                            <span class="text-gray-700 dark:text-gray-300">Mostrar email no perfil público</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <button type="submit"
+                            class="flex-1 bg-symplifika-primary text-white px-6 py-3 rounded-lg hover:bg-symplifika-accent transition-colors font-medium">
+                        Salvar Alterações
+                    </button>
+
+                    <a href="{% url 'core:profile' %}"
+                       class="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium text-center">
+                        Cancelar
+                    </a>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="mt-8 p-4 border border-red-200 dark:border-red-800 rounded-lg bg-red-50 dark:bg-red-900/20">
+                    <h3 class="text-lg font-medium text-red-800 dark:text-red-400 mb-2">Zona de Perigo</h3>
+                    <p class="text-red-600 dark:text-red-400 text-sm mb-4">
+                        As ações abaixo são irreversíveis. Tenha cuidado.
+                    </p>
+                    <button type="button"
+                            onclick="confirmDeleteAccount()"
+                            class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm">
+                        Excluir Conta
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div id="deleteAccountModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-4">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Confirmar Exclusão da Conta</h3>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">
+            Esta ação não pode ser desfeita. Todos os seus dados serão permanentemente removidos.
+        </p>
+        <div class="flex gap-4">
+            <button onclick="deleteAccount()"
+                    class="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                Sim, Excluir
+            </button>
+            <button onclick="closeDeleteModal()"
+                    class="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                Cancelar
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Character counter for bio
+document.getElementById('bio').addEventListener('input', function() {
+    const maxLength = 500;
+    const currentLength = this.value.length;
+    const remaining = maxLength - currentLength;
+
+    // Update character count display (you can add this element if needed)
+    const counter = this.parentNode.querySelector('.char-counter');
+    if (counter) {
+        counter.textContent = `${remaining} caracteres restantes`;
+        counter.className = remaining < 50 ? 'char-counter text-red-500' : 'char-counter text-gray-500';
+    }
+});
+
+// Phone number formatting
+document.getElementById('phone').addEventListener('input', function() {
+    let value = this.value.replace(/\D/g, '');
+    if (value.length > 11) value = value.slice(0, 11);
+
+    if (value.length > 10) {
+        value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    } else if (value.length > 6) {
+        value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+    } else if (value.length > 2) {
+        value = value.replace(/(\d{2})(\d{0,5})/, '($1) $2');
+    }
+
+    this.value = value;
+});
+
+// Delete account functions
+function confirmDeleteAccount() {
+    document.getElementById('deleteAccountModal').classList.remove('hidden');
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteAccountModal').classList.add('hidden');
+}
+
+function deleteAccount() {
+    // This would typically make an AJAX request to delete the account
+    alert('Funcionalidade de exclusão de conta será implementada');
+    closeDeleteModal();
+}
+
+// Form validation
+document.querySelector('form').addEventListener('submit', function(e) {
+    const requiredFields = ['first_name', 'last_name', 'username', 'email'];
+    let isValid = true;
+
+    requiredFields.forEach(fieldName => {
+        const field = document.getElementById(fieldName);
+        if (!field.value.trim()) {
+            field.classList.add('border-red-500');
+            isValid = false;
+        } else {
+            field.classList.remove('border-red-500');
+        }
+    });
+
+    if (!isValid) {
+        e.preventDefault();
+        alert('Por favor, preencha todos os campos obrigatórios.');
+    }
+});
+</script>
+{% endblock %}

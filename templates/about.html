@@ -1,0 +1,307 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sobre | Symplifika{% endblock %}
+
+{% block meta_description %}Conheça a história e missão do Symplifika - sua plataforma de automação e atalhos{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Hero Section -->
+        <div class="text-center mb-16">
+            <div class="w-20 h-20 bg-symplifika-primary rounded-full flex items-center justify-center mx-auto mb-8">
+                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+            </div>
+            <h1 class="text-5xl font-bold text-gray-900 dark:text-white mb-6">Sobre o Symplifika</h1>
+            <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                Simplificamos sua vida digital através de automações inteligentes e atalhos personalizados
+            </p>
+        </div>
+
+        <!-- Mission Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Nossa Missão</h2>
+                <p class="text-lg text-gray-600 dark:text-gray-400 mb-6">
+                    Acreditamos que a tecnologia deve simplificar, não complicar. Nossa missão é democratizar a automação,
+                    tornando-a acessível a todos, independentemente do nível técnico.
+                </p>
+                <p class="text-lg text-gray-600 dark:text-gray-400">
+                    Com o Symplifika, transformamos tarefas repetitivas em atalhos inteligentes, liberando seu tempo
+                    para o que realmente importa.
+                </p>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Nossos Valores</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-start">
+                        <svg class="w-6 h-6 text-symplifika-primary mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span class="text-gray-700 dark:text-gray-300">Simplicidade em primeiro lugar</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="w-6 h-6 text-symplifika-primary mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span class="text-gray-700 dark:text-gray-300">Inovação constante</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="w-6 h-6 text-symplifika-primary mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span class="text-gray-700 dark:text-gray-300">Foco no usuário</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="w-6 h-6 text-symplifika-primary mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span class="text-gray-700 dark:text-gray-300">Transparência e confiança</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Story Section -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6 text-center">Nossa História</h2>
+            <div class="max-w-4xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-2xl font-bold text-blue-600 dark:text-blue-400">2023</span>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">O Início</h3>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm">
+                            Identificamos a necessidade de simplificar tarefas digitais repetitivas
+                        </p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-2xl font-bold text-green-600 dark:text-green-400">2024</span>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Lançamento</h3>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm">
+                            Primeira versão do Symplifika com funcionalidades básicas de automação
+                        </p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-2xl font-bold text-purple-600 dark:text-purple-400">+</span>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Futuro</h3>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm">
+                            Expansão de funcionalidades e integração com mais plataformas
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-12 text-center">O que Oferecemos</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-symplifika-primary rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Atalhos Personalizados</h3>
+                    <p class="text-gray-600 dark:text-gray-400">
+                        Crie atalhos únicos para suas tarefas mais frequentes e aumente sua produtividade.
+                    </p>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Interface Intuitiva</h3>
+                    <p class="text-gray-600 dark:text-gray-400">
+                        Design clean e intuitivo que torna a automação acessível para todos os usuários.
+                    </p>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Segurança Garantida</h3>
+                    <p class="text-gray-600 dark:text-gray-400">
+                        Seus dados estão protegidos com criptografia de ponta e práticas de segurança rigorosas.
+                    </p>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Multiplataforma</h3>
+                    <p class="text-gray-600 dark:text-gray-400">
+                        Acesse seus atalhos de qualquer dispositivo, em qualquer lugar.
+                    </p>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Analytics Detalhado</h3>
+                    <p class="text-gray-600 dark:text-gray-400">
+                        Acompanhe seu progresso e otimize sua produtividade com relatórios detalhados.
+                    </p>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Suporte 24/7</h3>
+                    <p class="text-gray-600 dark:text-gray-400">
+                        Nossa equipe está sempre disponível para ajudar você a aproveitar ao máximo a plataforma.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="bg-gradient-to-r from-symplifika-primary to-symplifika-accent rounded-lg shadow-lg p-8 text-white mb-16">
+            <h2 class="text-3xl font-bold mb-8 text-center">Nossos Números</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+                <div>
+                    <div class="text-4xl font-bold mb-2">10k+</div>
+                    <div class="text-lg opacity-90">Usuários Ativos</div>
+                </div>
+                <div>
+                    <div class="text-4xl font-bold mb-2">50k+</div>
+                    <div class="text-lg opacity-90">Atalhos Criados</div>
+                </div>
+                <div>
+                    <div class="text-4xl font-bold mb-2">99.9%</div>
+                    <div class="text-lg opacity-90">Uptime</div>
+                </div>
+                <div>
+                    <div class="text-4xl font-bold mb-2">24/7</div>
+                    <div class="text-lg opacity-90">Suporte</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Team Section -->
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-8">Nossa Equipe</h2>
+            <p class="text-lg text-gray-600 dark:text-gray-400 mb-12 max-w-3xl mx-auto">
+                Somos um time apaixonado por tecnologia e dedicado a criar soluções que realmente fazem a diferença na vida das pessoas.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <div class="w-20 h-20 bg-symplifika-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl font-bold text-white">DS</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Daniel Silva</h3>
+                    <p class="text-symplifika-primary font-medium mb-3">CEO & Fundador</p>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm">
+                        Visionário em tecnologia com 10+ anos de experiência em automação e desenvolvimento.
+                    </p>
+                </div>
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <div class="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl font-bold text-white">AS</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Ana Santos</h3>
+                    <p class="text-blue-500 font-medium mb-3">CTO</p>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm">
+                        Expert em arquitetura de sistemas e segurança, garante a robustez da plataforma.
+                    </p>
+                </div>
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl font-bold text-white">RC</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Rafael Costa</h3>
+                    <p class="text-green-500 font-medium mb-3">Head of Design</p>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm">
+                        Designer UX/UI especialista em criar experiências intuitivas e agradáveis.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact CTA -->
+        <div class="text-center bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Quer Saber Mais?</h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-6">
+                Entre em contato conosco para conhecer melhor nossa plataforma e como ela pode transformar sua produtividade.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'core:contact' %}"
+                   class="bg-symplifika-primary text-white px-6 py-3 rounded-lg hover:bg-symplifika-accent transition-colors font-medium">
+                    Entrar em Contato
+                </a>
+                <a href="{% url 'core:dashboard' %}"
+                   class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium">
+                    Acessar Plataforma
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Animate numbers on scroll
+function animateNumbers() {
+    const numbers = document.querySelectorAll('.text-4xl');
+
+    numbers.forEach(number => {
+        const target = parseInt(number.textContent.replace(/\D/g, ''));
+        const increment = target / 100;
+        let current = 0;
+
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                number.textContent = number.textContent.replace(/\d+/, target);
+                clearInterval(timer);
+            } else {
+                number.textContent = number.textContent.replace(/\d+/, Math.floor(current));
+            }
+        }, 30);
+    });
+}
+
+// Intersection Observer for animations
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            animateNumbers();
+            observer.unobserve(entry.target);
+        }
+    });
+});
+
+// Observe stats section
+document.addEventListener('DOMContentLoaded', () => {
+    const statsSection = document.querySelector('.bg-gradient-to-r');
+    if (statsSection) {
+        observer.observe(statsSection);
+    }
+});
+</script>
+{% endblock %}

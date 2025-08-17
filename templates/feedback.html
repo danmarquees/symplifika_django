@@ -1,0 +1,422 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Feedback | Symplifika{% endblock %}
+
+{% block meta_description %}Envie seu feedback e sugestões para melhorar o Symplifika{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <div class="w-16 h-16 bg-symplifika-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                </svg>
+            </div>
+            <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">Seu Feedback é Importante</h1>
+            <p class="text-xl text-gray-600 dark:text-gray-400">
+                Ajude-nos a melhorar o Symplifika compartilhando suas ideias, sugestões e experiências
+            </p>
+        </div>
+
+        <!-- Feedback Types -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-2 border-transparent hover:border-symplifika-primary transition-all cursor-pointer feedback-type" data-type="suggestion">
+                <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Sugestão</h3>
+                <p class="text-gray-600 dark:text-gray-400 text-sm">
+                    Compartilhe ideias para novas funcionalidades ou melhorias
+                </p>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-2 border-transparent hover:border-symplifika-primary transition-all cursor-pointer feedback-type" data-type="bug">
+                <div class="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Reportar Bug</h3>
+                <p class="text-gray-600 dark:text-gray-400 text-sm">
+                    Informe problemas técnicos ou comportamentos inesperados
+                </p>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-2 border-transparent hover:border-symplifika-primary transition-all cursor-pointer feedback-type" data-type="praise">
+                <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Elogio</h3>
+                <p class="text-gray-600 dark:text-gray-400 text-sm">
+                    Conte o que você mais gosta no Symplifika
+                </p>
+            </div>
+        </div>
+
+        <!-- Feedback Form -->
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-8">
+            <form method="post" id="feedbackForm" class="space-y-6">
+                {% csrf_token %}
+
+                <!-- Feedback Type (Hidden) -->
+                <input type="hidden" id="feedback_type" name="feedback_type" value="">
+
+                <!-- User Info Display -->
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 flex items-center">
+                    {% if user.userprofile.avatar %}
+                        <img class="w-12 h-12 rounded-full object-cover mr-4"
+                             src="{{ user.userprofile.avatar.url }}"
+                             alt="Seu avatar">
+                    {% else %}
+                        <div class="w-12 h-12 rounded-full bg-symplifika-primary flex items-center justify-center mr-4">
+                            <span class="text-white font-bold">{{ user.first_name.0|default:user.username.0|upper }}</span>
+                        </div>
+                    {% endif %}
+                    <div>
+                        <p class="font-medium text-gray-900 dark:text-white">{{ user.get_full_name|default:user.username }}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ user.email }}</p>
+                    </div>
+                </div>
+
+                <!-- Subject -->
+                <div>
+                    <label for="subject" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Assunto *
+                    </label>
+                    <input type="text"
+                           id="subject"
+                           name="subject"
+                           required
+                           placeholder="Resuma seu feedback em uma linha"
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                </div>
+
+                <!-- Category -->
+                <div></div>
+                    <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Categoria *
+                    </label>
+                    <select id="category" name="category" required
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                        <option value="">Selecione uma categoria</option>
+                        <option value="interface">Interface do Usuário</option>
+                        <option value="performance">Performance</option>
+                        <option value="shortcuts">Atalhos</option>
+                        <option value="mobile">Versão Mobile</option>
+                        <option value="integration">Integrações</option>
+                        <option value="security">Segurança</option>
+                        <option value="billing">Cobrança/Planos</option>
+                        <option value="other">Outro</option>
+                    </select>
+                </div>
+
+                <!-- Priority (for bugs) -->
+                <div id="priority-section" class="hidden">
+                    <label for="priority" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Prioridade
+                    </label>
+                    <select id="priority" name="priority"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                        <option value="low">Baixa - Não afeta o uso</option>
+                        <option value="medium">Média - Inconveniente mas contornável</option>
+                        <option value="high">Alta - Dificulta o uso significativamente</option>
+                        <option value="critical">Crítica - Impede o uso completamente</option>
+                    </select>
+                </div>
+
+                <!-- Message -->
+                <div>
+                    <label for="message" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Sua Mensagem *
+                    </label>
+                    <textarea id="message"
+                              name="message"
+                              rows="6"
+                              required
+                              placeholder="Descreva detalhadamente seu feedback..."
+                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"></textarea>
+                    <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        <span id="char-count">0</span>/1000 caracteres
+                    </div>
+                </div>
+
+                <!-- Steps to Reproduce (for bugs) -->
+                <div id="steps-section" class="hidden">
+                    <label for="steps" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Passos para Reproduzir
+                    </label>
+                    <textarea id="steps"
+                              name="steps"
+                              rows="4"
+                              placeholder="1. Primeiro, eu...&#10;2. Depois, eu...&#10;3. O erro aconteceu quando..."
+                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"></textarea>
+                </div>
+
+                <!-- Browser/System Info (for bugs) -->
+                <div id="system-info-section" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Informações do Sistema
+                    </label>
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 text-sm">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <span class="font-medium">Navegador:</span>
+                                <span id="browser-info" class="text-gray-600 dark:text-gray-400"></span>
+                            </div>
+                            <div>
+                                <span class="font-medium">Sistema:</span>
+                                <span id="os-info" class="text-gray-600 dark:text-gray-400"></span>
+                            </div>
+                            <div>
+                                <span class="font-medium">Resolução:</span>
+                                <span id="screen-info" class="text-gray-600 dark:text-gray-400"></span>
+                            </div>
+                            <div>
+                                <span class="font-medium">Timestamp:</span>
+                                <span class="text-gray-600 dark:text-gray-400">{{ "now"|date:"d/m/Y H:i:s" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rating (for praise) -->
+                <div id="rating-section" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Avaliação Geral
+                    </label>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Muito Ruim</span>
+                        <div class="flex space-x-1">
+                            {% for i in "12345"|make_list %}
+                                <button type="button" class="star-btn w-8 h-8 text-gray-300 hover:text-yellow-400 transition-colors" data-rating="{{ i }}">
+                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                    </svg>
+                                </button>
+                            {% endfor %}
+                        </div>
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Excelente</span>
+                    </div>
+                    <input type="hidden" id="rating" name="rating" value="">
+                </div>
+
+                <!-- Contact Permission -->
+                <div class="flex items-center">
+                    <input type="checkbox" id="contact_permission" name="contact_permission" checked
+                           class="mr-3 focus:ring-symplifika-primary">
+                    <label for="contact_permission" class="text-sm text-gray-700 dark:text-gray-300">
+                        Permitir que nossa equipe entre em contato comigo sobre este feedback
+                    </label>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button type="submit"
+                            class="flex-1 bg-symplifika-primary text-white px-6 py-3 rounded-lg hover:bg-symplifika-accent transition-colors font-medium">
+                        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                        Enviar Feedback
+                    </button>
+                    <button type="button"
+                            onclick="clearForm()"
+                            class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium">
+                        Limpar Formulário
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Recent Feedback -->
+        <div class="mt-12 bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Seus Feedbacks Recentes</h2>
+            <div class="space-y-4">
+                <!-- Placeholder for recent feedback items -->
+                <div class="text-center text-gray-500 dark:text-gray-400 py-8">
+                    <svg class="w-12 h-12 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                    </svg>
+                    <p>Você ainda não enviou nenhum feedback</p>
+                    <p class="text-sm mt-1">Seus feedbacks anteriores aparecerão aqui</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Feedback type selection
+document.querySelectorAll('.feedback-type').forEach(card => {
+    card.addEventListener('click', function() {
+        // Remove selection from all cards
+        document.querySelectorAll('.feedback-type').forEach(c => {
+            c.classList.remove('border-symplifika-primary', 'bg-symplifika-primary/5');
+        });
+
+        // Select current card
+        this.classList.add('border-symplifika-primary', 'bg-symplifika-primary/5');
+
+        // Update hidden input
+        const type = this.dataset.type;
+        document.getElementById('feedback_type').value = type;
+
+        // Show/hide conditional sections
+        toggleConditionalSections(type);
+
+        // Update form placeholders
+        updateFormForType(type);
+    });
+});
+
+function toggleConditionalSections(type) {
+    // Hide all conditional sections
+    document.getElementById('priority-section').classList.add('hidden');
+    document.getElementById('steps-section').classList.add('hidden');
+    document.getElementById('system-info-section').classList.add('hidden');
+    document.getElementById('rating-section').classList.add('hidden');
+
+    // Show relevant sections
+    if (type === 'bug') {
+        document.getElementById('priority-section').classList.remove('hidden');
+        document.getElementById('steps-section').classList.remove('hidden');
+        document.getElementById('system-info-section').classList.remove('hidden');
+    } else if (type === 'praise') {
+        document.getElementById('rating-section').classList.remove('hidden');
+    }
+}
+
+function updateFormForType(type) {
+    const subjectInput = document.getElementById('subject');
+    const messageTextarea = document.getElementById('message');
+
+    const placeholders = {
+        suggestion: {
+            subject: 'Sugestão para melhorar o Symplifika',
+            message: 'Descreva sua ideia ou sugestão detalhadamente. Como isso ajudaria outros usuários?'
+        },
+        bug: {
+            subject: 'Descreva o problema encontrado',
+            message: 'Explique o que aconteceu e o que você esperava que acontecesse...'
+        },
+        praise: {
+            subject: 'O que você mais gosta no Symplifika',
+            message: 'Conte o que funciona bem e o que você mais aprecia...'
+        }
+    };
+
+    if (placeholders[type]) {
+        subjectInput.placeholder = placeholders[type].subject;
+        messageTextarea.placeholder = placeholders[type].message;
+    }
+}
+
+// Character counter
+document.getElementById('message').addEventListener('input', function() {
+    const count = this.value.length;
+    const counter = document.getElementById('char-count');
+    counter.textContent = count;
+
+    if (count > 1000) {
+        counter.classList.add('text-red-500');
+        this.value = this.value.substring(0, 1000);
+    } else {
+        counter.classList.remove('text-red-500');
+    }
+});
+
+// Star rating
+document.querySelectorAll('.star-btn').forEach(star => {
+    star.addEventListener('click', function() {
+        const rating = parseInt(this.dataset.rating);
+        document.getElementById('rating').value = rating;
+
+        // Update star display
+        document.querySelectorAll('.star-btn').forEach((s, index) => {
+            if (index < rating) {
+                s.classList.remove('text-gray-300');
+                s.classList.add('text-yellow-400');
+            } else {
+                s.classList.remove('text-yellow-400');
+                s.classList.add('text-gray-300');
+            }
+        });
+    });
+});
+
+// Collect system info
+function collectSystemInfo() {
+    document.getElementById('browser-info').textContent = navigator.userAgent.split(' ').pop();
+    document.getElementById('os-info').textContent = navigator.platform;
+    document.getElementById('screen-info').textContent = `${screen.width}x${screen.height}`;
+}
+
+// Form validation
+document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+    const feedbackType = document.getElementById('feedback_type').value;
+    const subject = document.getElementById('subject').value.trim();
+    const message = document.getElementById('message').value.trim();
+
+    if (!feedbackType) {
+        e.preventDefault();
+        alert('Por favor, selecione um tipo de feedback.');
+        return;
+    }
+
+    if (!subject || !message) {
+        e.preventDefault();
+        alert('Por favor, preencha todos os campos obrigatórios.');
+        return;
+    }
+
+    // Show loading state
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = `
+        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Enviando...
+    `;
+    submitBtn.disabled = true;
+});
+
+// Clear form function
+function clearForm() {
+    if (confirm('Tem certeza que deseja limpar o formulário?')) {
+        document.getElementById('feedbackForm').reset();
+        document.getElementById('feedback_type').value = '';
+        document.getElementById('rating').value = '';
+        document.getElementById('char-count').textContent = '0';
+
+        // Reset feedback type selection
+        document.querySelectorAll('.feedback-type').forEach(card => {
+            card.classList.remove('border-symplifika-primary', 'bg-symplifika-primary/5');
+        });
+
+        // Reset stars
+        document.querySelectorAll('.star-btn').forEach(star => {
+            star.classList.remove('text-yellow-400');
+            star.classList.add('text-gray-300');
+        });
+
+        // Hide conditional sections
+        toggleConditionalSections('');
+    }
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    collectSystemInfo();
+});
+</script>
+{% endblock %}

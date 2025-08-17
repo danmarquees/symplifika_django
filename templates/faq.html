@@ -1,0 +1,378 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}FAQ - Perguntas Frequentes | Symplifika{% endblock %}
+
+{% block meta_description %}Perguntas frequentes sobre o Symplifika - tire suas dúvidas mais comuns{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">Perguntas Frequentes</h1>
+            <p class="text-xl text-gray-600 dark:text-gray-400">
+                Encontre respostas para as dúvidas mais comuns sobre o Symplifika
+            </p>
+        </div>
+
+        <!-- Search Box -->
+        <div class="mb-12">
+            <div class="relative max-w-2xl mx-auto">
+                <input type="text"
+                       id="faq-search"
+                       placeholder="Buscar nas perguntas frequentes..."
+                       class="w-full px-4 py-3 pl-12 pr-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                <svg class="w-5 h-5 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="flex flex-wrap justify-center gap-4 mb-12">
+            <button onclick="filterFAQ('all')" class="faq-filter active px-4 py-2 rounded-lg font-medium transition-colors bg-symplifika-primary text-white" data-category="all">
+                Todas
+            </button>
+            <button onclick="filterFAQ('getting-started')" class="faq-filter px-4 py-2 rounded-lg font-medium transition-colors bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600" data-category="getting-started">
+                Primeiros Passos
+            </button>
+            <button onclick="filterFAQ('shortcuts')" class="faq-filter px-4 py-2 rounded-lg font-medium transition-colors bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600" data-category="shortcuts">
+                Atalhos
+            </button>
+            <button onclick="filterFAQ('account')" class="faq-filter px-4 py-2 rounded-lg font-medium transition-colors bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600" data-category="account">
+                Conta
+            </button>
+            <button onclick="filterFAQ('billing')" class="faq-filter px-4 py-2 rounded-lg font-medium transition-colors bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600" data-category="billing">
+                Cobrança
+            </button>
+            <button onclick="filterFAQ('technical')" class="faq-filter px-4 py-2 rounded-lg font-medium transition-colors bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600" data-category="technical">
+                Técnico
+            </button>
+        </div>
+
+        <!-- FAQ Items -->
+        <div class="space-y-4">
+            <!-- Getting Started Questions -->
+            <div class="faq-item bg-white dark:bg-gray-800 rounded-lg shadow-md" data-category="getting-started">
+                <button class="faq-question w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none" onclick="toggleFAQ(this)">
+                    <span class="font-medium text-gray-900 dark:text-white">Como criar meu primeiro atalho?</span>
+                    <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="faq-answer hidden px-6 pb-4">
+                    <p class="text-gray-600 dark:text-gray-400">
+                        Para criar seu primeiro atalho: 1) Acesse o Dashboard, 2) Clique em "Novo Atalho", 3) Escolha o tipo de automação, 4) Configure as ações desejadas, 5) Salve e teste seu atalho.
+                    </p>
+                </div>
+            </div>
+
+            <div class="faq-item bg-white dark:bg-gray-800 rounded-lg shadow-md" data-category="getting-started">
+                <button class="faq-question w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none" onclick="toggleFAQ(this)">
+                    <span class="font-medium text-gray-900 dark:text-white">O que é automação de atalhos?</span>
+                    <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="faq-answer hidden px-6 pb-4">
+                    <p class="text-gray-600 dark:text-gray-400">
+                        Automação de atalhos permite criar comandos personalizados que executam sequências de ações automaticamente, economizando tempo em tarefas repetitivas.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Shortcuts Questions -->
+            <div class="faq-item bg-white dark:bg-gray-800 rounded-lg shadow-md" data-category="shortcuts">
+                <button class="faq-question w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none" onclick="toggleFAQ(this)">
+                    <span class="font-medium text-gray-900 dark:text-white">Quantos atalhos posso criar?</span>
+                    <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="faq-answer hidden px-6 pb-4">
+                    <p class="text-gray-600 dark:text-gray-400">
+                        No plano gratuito você pode criar até 5 atalhos. Nos planos pagos: Básico (25 atalhos), Pro (100 atalhos) e Enterprise (ilimitados).
+                    </p>
+                </div>
+            </div>
+
+            <div class="faq-item bg-white dark:bg-gray-800 rounded-lg shadow-md" data-category="shortcuts">
+                <button class="faq-question w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none" onclick="toggleFAQ(this)">
+                    <span class="font-medium text-gray-900 dark:text-white">Posso compartilhar meus atalhos?</span>
+                    <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="faq-answer hidden px-6 pb-4">
+                    <p class="text-gray-600 dark:text-gray-400">
+                        Sim! Você pode compartilhar atalhos públicos com a comunidade ou criar links privados para compartilhar com pessoas específicas.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Account Questions -->
+            <div class="faq-item bg-white dark:bg-gray-800 rounded-lg shadow-md" data-category="account">
+                <button class="faq-question w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none" onclick="toggleFAQ(this)">
+                    <span class="font-medium text-gray-900 dark:text-white">Como alterar minha senha?</span>
+                    <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="faq-answer hidden px-6 pb-4">
+                    <p class="text-gray-600 dark:text-gray-400">
+                        Acesse seu Perfil > Configurações > Segurança > Alterar Senha. Digite sua senha atual e a nova senha duas vezes para confirmar.
+                    </p>
+                </div>
+            </div>
+
+            <div class="faq-item bg-white dark:bg-gray-800 rounded-lg shadow-md" data-category="account">
+                <button class="faq-question w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none" onclick="toggleFAQ(this)">
+                    <span class="font-medium text-gray-900 dark:text-white">Posso excluir minha conta?</span>
+                    <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="faq-answer hidden px-6 pb-4">
+                    <p class="text-gray-600 dark:text-gray-400">
+                        Sim, você pode excluir sua conta permanentemente em Configurações > Conta > Zona de Perigo. Esta ação é irreversível e todos os dados serão removidos.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Billing Questions -->
+            <div class="faq-item bg-white dark:bg-gray-800 rounded-lg shadow-md" data-category="billing">
+                <button class="faq-question w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none" onclick="toggleFAQ(this)">
+                    <span class="font-medium text-gray-900 dark:text-white">Quais são os planos disponíveis?</span>
+                    <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="faq-answer hidden px-6 pb-4">
+                    <p class="text-gray-600 dark:text-gray-400">
+                        Oferecemos: Gratuito (5 atalhos), Básico R$19/mês (25 atalhos), Pro R$49/mês (100 atalhos), Enterprise (consulte-nos para preços personalizados).
+                    </p>
+                </div>
+            </div>
+
+            <div class="faq-item bg-white dark:bg-gray-800 rounded-lg shadow-md" data-category="billing">
+                <button class="faq-question w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none" onclick="toggleFAQ(this)">
+                    <span class="font-medium text-gray-900 dark:text-white">Posso cancelar a assinatura a qualquer momento?</span>
+                    <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="faq-answer hidden px-6 pb-4">
+                    <p class="text-gray-600 dark:text-gray-400">
+                        Sim, você pode cancelar sua assinatura a qualquer momento. Você manterá acesso até o final do período pago e depois retornará ao plano gratuito.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Technical Questions -->
+            <div class="faq-item bg-white dark:bg-gray-800 rounded-lg shadow-md" data-category="technical">
+                <button class="faq-question w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none" onclick="toggleFAQ(this)">
+                    <span class="font-medium text-gray-900 dark:text-white">Meu atalho não está funcionando. O que fazer?</span>
+                    <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="faq-answer hidden px-6 pb-4">
+                    <p class="text-gray-600 dark:text-gray-400">
+                        Verifique: 1) Se todas as configurações estão corretas, 2) Se você tem permissões necessárias, 3) Se o serviço integrado está funcionando. Se persistir, contate o suporte.
+                    </p>
+                </div>
+            </div>
+
+            <div class="faq-item bg-white dark:bg-gray-800 rounded-lg shadow-md" data-category="technical">
+                <button class="faq-question w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none" onclick="toggleFAQ(this)">
+                    <span class="font-medium text-gray-900 dark:text-white">Quais navegadores são suportados?</span>
+                    <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div class="faq-answer hidden px-6 pb-4">
+                    <p class="text-gray-600 dark:text-gray-400">
+                        Suportamos Chrome (v90+), Firefox (v88+), Safari (v14+) e Edge (v90+). Para melhor experiência, recomendamos sempre usar a versão mais recente.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Not Found Message -->
+        <div id="no-results" class="hidden text-center py-12">
+            <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Nenhuma pergunta encontrada</h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">Não encontramos perguntas que correspondam à sua busca.</p>
+            <a href="{% url 'core:contact' %}" class="text-symplifika-primary hover:text-symplifika-accent font-medium">
+                Entre em contato conosco →
+            </a>
+        </div>
+
+        <!-- Contact Section -->
+        <div class="mt-16 bg-symplifika-primary rounded-lg shadow-lg p-8 text-white text-center">
+            <h2 class="text-2xl font-bold mb-4">Não encontrou sua resposta?</h2>
+            <p class="text-lg mb-6 opacity-90">
+                Nossa equipe de suporte está pronta para ajudar você
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'core:contact' %}"
+                   class="bg-white text-symplifika-primary px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors">
+                    Entrar em Contato
+                </a>
+                <a href="{% url 'core:support' %}"
+                   class="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-medium hover:bg-white hover:text-symplifika-primary transition-colors">
+                    Central de Suporte
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// FAQ Toggle Function
+function toggleFAQ(button) {
+    const answer = button.nextElementSibling;
+    const icon = button.querySelector('svg');
+
+    if (answer.classList.contains('hidden')) {
+        answer.classList.remove('hidden');
+        icon.style.transform = 'rotate(180deg)';
+    } else {
+        answer.classList.add('hidden');
+        icon.style.transform = 'rotate(0deg)';
+    }
+}
+
+// Filter FAQ by category
+function filterFAQ(category) {
+    const items = document.querySelectorAll('.faq-item');
+    const filters = document.querySelectorAll('.faq-filter');
+
+    // Update filter buttons
+    filters.forEach(filter => {
+        filter.classList.remove('active', 'bg-symplifika-primary', 'text-white');
+        filter.classList.add('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+    });
+
+    const activeFilter = document.querySelector(`[data-category="${category}"]`);
+    activeFilter.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+    activeFilter.classList.add('active', 'bg-symplifika-primary', 'text-white');
+
+    // Show/hide items
+    let visibleCount = 0;
+    items.forEach(item => {
+        if (category === 'all' || item.dataset.category === category) {
+            item.style.display = 'block';
+            visibleCount++;
+        } else {
+            item.style.display = 'none';
+        }
+
+        // Close any open answers when filtering
+        const answer = item.querySelector('.faq-answer');
+        const icon = item.querySelector('svg');
+        if (answer && !answer.classList.contains('hidden')) {
+            answer.classList.add('hidden');
+            icon.style.transform = 'rotate(0deg)';
+        }
+    });
+
+    // Show/hide no results message
+    const noResults = document.getElementById('no-results');
+    if (visibleCount === 0) {
+        noResults.classList.remove('hidden');
+    } else {
+        noResults.classList.add('hidden');
+    }
+}
+
+// Search functionality
+document.getElementById('faq-search').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase().trim();
+    const items = document.querySelectorAll('.faq-item');
+    let visibleCount = 0;
+
+    items.forEach(item => {
+        const question = item.querySelector('.faq-question span').textContent.toLowerCase();
+        const answer = item.querySelector('.faq-answer p').textContent.toLowerCase();
+
+        if (searchTerm === '' || question.includes(searchTerm) || answer.includes(searchTerm)) {
+            item.style.display = 'block';
+            visibleCount++;
+
+            // Highlight search terms
+            if (searchTerm !== '') {
+                highlightSearchTerm(item, searchTerm);
+            }
+        } else {
+            item.style.display = 'none';
+        }
+    });
+
+    // Show/hide no results message
+    const noResults = document.getElementById('no-results');
+    if (visibleCount === 0 && searchTerm !== '') {
+        noResults.classList.remove('hidden');
+    } else {
+        noResults.classList.add('hidden');
+    }
+
+    // Reset category filter when searching
+    if (searchTerm !== '') {
+        const filters = document.querySelectorAll('.faq-filter');
+        filters.forEach(filter => {
+            filter.classList.remove('active', 'bg-symplifika-primary', 'text-white');
+            filter.classList.add('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+        });
+
+        const allFilter = document.querySelector('[data-category="all"]');
+        allFilter.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+        allFilter.classList.add('active', 'bg-symplifika-primary', 'text-white');
+    }
+});
+
+// Highlight search terms
+function highlightSearchTerm(item, term) {
+    const question = item.querySelector('.faq-question span');
+    const answer = item.querySelector('.faq-answer p');
+
+    [question, answer].forEach(element => {
+        const text = element.textContent;
+        const regex = new RegExp(`(${term})`, 'gi');
+        const highlightedText = text.replace(regex, '<mark class="bg-yellow-200 dark:bg-yellow-600">$1</mark>');
+        element.innerHTML = highlightedText;
+    });
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        // Close all open FAQ items
+        const openAnswers = document.querySelectorAll('.faq-answer:not(.hidden)');
+        openAnswers.forEach(answer => {
+            answer.classList.add('hidden');
+            const icon = answer.previousElementSibling.querySelector('svg');
+            icon.style.transform = 'rotate(0deg)';
+        });
+    }
+});
+
+// Auto-expand FAQ item if URL contains hash
+document.addEventListener('DOMContentLoaded', function() {
+    const hash = window.location.hash;
+    if (hash) {
+        const targetItem = document.querySelector(hash);
+        if (targetItem && targetItem.classList.contains('faq-item')) {
+            const button = targetItem.querySelector('.faq-question');
+            toggleFAQ(button);
+            targetItem.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,159 @@
+{% load static %}
+<!doctype html>
+<html lang="pt-br" class="{% block html_class %}{% endblock %}">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="{% block meta_description %}Symplifika - Automações fáceis e rápidas no seu dia-a-dia{% endblock %}"
+        />
+        <meta
+            name="keywords"
+            content="{% block meta_keywords %}automação, atalhos, produtividade, django{% endblock %}"
+        />
+        <meta name="author" content="Symplifika" />
+
+        <!-- CSRF Token -->
+        <meta name="csrf-token" content="{{ csrf_token }}" />
+
+        <title>{% block title %}Symplifika - Seus Atalhos{% endblock %}</title>
+
+        <!-- Favicon -->
+        <link
+            rel="icon"
+            type="image/x-icon"
+            href="{% static 'images/favicon.ico' %}"
+        />
+
+        <!-- Tailwind CSS via CDN -->
+        <script src="https://cdn.tailwindcss.com"></script>
+
+        <!-- Google Fonts: Poppins -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="{% static 'css/base.css' %}" />
+        <link
+            rel="stylesheet"
+            href="{% static 'css/components/navbar.css' %}"
+        />
+        <link rel="stylesheet" href="{% static 'css/components/modal.css' %}" />
+        {% block extra_css %}{% endblock %}
+
+        <!-- Custom Tailwind Config -->
+        <script>
+            tailwind.config = {
+                darkMode: "class",
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            poppins: ["Poppins", "sans-serif"],
+                        },
+                        colors: {
+                            symplifika: {
+                                primary: "#00C853",
+                                secondary: "#00FF57",
+                                accent: "#4CAF50",
+                            },
+                        },
+                    },
+                },
+            };
+        </script>
+    </head>
+    <body
+        class="{% block body_class %}bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-poppins{% endblock %}"
+    >
+        <!-- Messages Framework -->
+        {% if messages %}
+        <div class="fixed top-4 right-4 z-50">
+            {% for message in messages %}
+            <div
+                class="alert alert-{{ message.tags }} mb-2 px-4 py-3 rounded-lg shadow-lg
+                    {% if message.tags == 'error' %}bg-red-100 border border-red-400 text-red-700
+                    {% elif message.tags == 'warning' %}bg-yellow-100 border border-yellow-400 text-yellow-700
+                    {% elif message.tags == 'success' %}bg-green-100 border border-green-400 text-green-700
+                    {% else %}bg-blue-100 border border-blue-400 text-blue-700{% endif %}
+                "
+                role="alert"
+            >
+                {{ message }}
+                <button
+                    type="button"
+                    class="float-right font-bold text-xl leading-none"
+                    onclick="this.parentElement.remove()"
+                >
+                    ×
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Navigation -->
+        {% block navigation %} {% include 'includes/navbar.html' %}
+        <!--prettier-ignore--->
+        {% endblock %}
+
+        <!-- Main Content -->
+        <main class="{% block main_class %}{% endblock %}">
+            {% block content %} {% endblock %}
+        </main>
+
+        <!-- Footer -->
+        {% block footer %} {% include 'includes/footer.html' %} {% endblock %}
+
+        <!-- Loading Spinner -->
+        <div
+            id="loadingSpinner"
+            class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+        >
+            <div
+                class="spinner border-4 border-gray-300 border-t-symplifika-primary rounded-full w-12 h-12 animate-spin"
+            ></div>
+        </div>
+
+        <!-- JavaScript -->
+        <script src="{% static 'js/base.js' %}"></script>
+        <script src="{% static 'js/components/modal.js' %}"></script>
+        {% block extra_js %}{% endblock %}
+
+        <!-- CSRF Token for AJAX -->
+        <script>
+            // Get CSRF token for AJAX requests
+            function getCSRFToken() {
+                return (
+                    document.querySelector("[name=csrfmiddlewaretoken]")
+                        .value ||
+                    document
+                        .querySelector('meta[name="csrf-token"]')
+                        .getAttribute("content")
+                );
+            }
+
+            // Setup CSRF for all AJAX requests
+            window.addEventListener("DOMContentLoaded", function () {
+                const csrfToken = getCSRFToken();
+                if (csrfToken) {
+                    // Set default headers for fetch requests
+                    const originalFetch = window.fetch;
+                    window.fetch = function (url, options = {}) {
+                        if (!options.headers) {
+                            options.headers = {};
+                        }
+                        if (typeof options.headers === "object") {
+                            options.headers["X-CSRFToken"] = csrfToken;
+                        }
+                        return originalFetch(url, options);
+                    };
+                }
+            });
+        </script>
+    </body>
+</html>

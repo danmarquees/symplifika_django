@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Erro interno do servidor - Symplifika{% endblock %}
+
+{% block meta_description %}Ocorreu um erro interno no servidor. Nossa equipe foi notificada e está trabalhando para resolver o problema.{% endblock %}
+
+{% block html_class %}dark{% endblock %}
+
+{% block body_class %}bg-gray-50 dark:bg-gray-900 min-h-screen{% endblock %}
+
+{% block navigation %}
+{% include 'includes/navbar.html' %}
+{% endblock %}
+
+{% block main_class %}flex items-center justify-center min-h-screen px-4{% endblock %}
+
+{% block content %}
+<div class="text-center max-w-lg mx-auto">
+    <!-- Error illustration -->
+    <div class="mb-8">
+        <svg class="w-32 h-32 mx-auto text-red-400/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+    </div>
+
+    <!-- Error code -->
+    <div class="mb-6">
+        <h1 class="text-8xl font-bold text-red-500 mb-2">500</h1>
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+            Erro interno do servidor
+        </h2>
+        <p class="text-gray-600 dark:text-gray-300 text-lg">
+            Algo deu errado em nossos servidores. Nossa equipe foi notificada e está trabalhando para resolver o problema.
+        </p>
+    </div>
+
+    <!-- Error details (only in debug mode) -->
+    {% if debug %}
+    <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 rounded-lg mb-8">
+        <h3 class="text-lg font-semibold text-red-800 dark:text-red-200 mb-2">
+            Detalhes do erro (modo debug):
+        </h3>
+        <div class="text-left text-sm text-red-700 dark:text-red-300 font-mono bg-red-100 dark:bg-red-900/30 p-3 rounded overflow-auto">
+            {{ exception|default:"Informações não disponíveis" }}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Status info -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
+        <div class="flex items-center justify-center mb-4">
+            <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse mr-2"></div>
+            <span class="text-sm font-medium text-gray-900 dark:text-white">
+                Status do sistema: Instável
+            </span>
+        </div>
+
+        <div class="text-sm text-gray-600 dark:text-gray-300 space-y-2">
+            <p>• Nossa equipe foi automaticamente notificada</p>
+            <p>• Estamos investigando a causa do problema</p>
+            <p>• Esperamos resolver em breve</p>
+        </div>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+        <button onclick="location.reload()" class="btn btn-primary px-6 py-3">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            Tentar Novamente
+        </button>
+
+        <a href="{% url 'core:index' %}" class="btn btn-outline border-symplifika-primary text-symplifika-primary hover:bg-symplifika-primary hover:text-white px-6 py-3">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            Voltar ao Início
+        </a>
+
+        <button onclick="history.back()" class="btn btn-outline border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 px-6 py-3">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"/>
+            </svg>
+            Voltar
+        </button>
+    </div>
+
+    <!-- Contact support -->
+    <div class="bg-symplifika-primary/5 border border-symplifika-primary/20 p-4 rounded-lg">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            Precisa de ajuda urgente?
+        </h3>
+        <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">
+            Se o problema persistir, entre em contato conosco
+        </p>
+        <div class="flex flex-col sm:flex-row gap-2 justify-center">
+            <a href="mailto:suporte@symplifika.com" class="text-symplifika-primary hover:text-symplifika-accent text-sm font-medium">
+                📧 suporte@symplifika.com
+            </a>
+            <a href="#" class="text-symplifika-primary hover:text-symplifika-accent text-sm font-medium">
+                💬 Chat ao vivo
+            </a>
+        </div>
+    </div>
+
+    <!-- Timestamp -->
+    <div class="mt-8 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <p class="text-xs text-gray-500 dark:text-gray-400">
+            Erro reportado em: <span id="timestamp"></span>
+        </p>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            ID do erro: <span class="font-mono">{{ request.META.HTTP_X_REQUEST_ID|default:"N/A" }}</span>
+        </p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Display current timestamp
+    const timestampElement = document.getElementById('timestamp');
+    if (timestampElement) {
+        const now = new Date();
+        timestampElement.textContent = now.toLocaleString('pt-BR');
+    }
+
+    // Auto-retry mechanism (optional)
+    let retryCount = 0;
+    const maxRetries = 3;
+
+    function autoRetry() {
+        if (retryCount < maxRetries) {
+            retryCount++;
+            console.log(`Auto-retry attempt ${retryCount}/${maxRetries}`);
+
+            // Wait a few seconds before retrying
+            setTimeout(() => {
+                // Only retry if user is still on the error page
+                if (window.location.pathname === '{{ request.path }}') {
+                    window.location.reload();
+                }
+            }, 5000 * retryCount); // Exponential backoff
+        }
+    }
+
+    // Start auto-retry after 10 seconds
+    setTimeout(autoRetry, 10000);
+
+    // Track 500 errors for monitoring
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'exception', {
+            description: 'Server Error 500',
+            fatal: true,
+            custom_map: {
+                'dimension1': 'server_error'
+            }
+        });
+    }
+
+    // Send error report to monitoring service
+    if (typeof fetch !== 'undefined') {
+        fetch('/api/error-report/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+            },
+            body: JSON.stringify({
+                error_type: '500',
+                url: window.location.href,
+                user_agent: navigator.userAgent,
+                timestamp: new Date().toISOString(),
+                request_id: '{{ request.META.HTTP_X_REQUEST_ID|default:"" }}'
+            })
+        }).catch(err => {
+            console.warn('Failed to send error report:', err);
+        });
+    }
+});
+
+// Prevent form resubmission on refresh
+if (window.history.replaceState) {
+    window.history.replaceState(null, null, window.location.href);
+}
+</script>
+{% endblock %}

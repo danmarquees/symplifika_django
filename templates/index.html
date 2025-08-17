@@ -1,0 +1,349 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Symplifika -
+Automações Fáceis e Rápidas{% endblock %} {% block meta_description %}Symplifika
+oferece automações fáceis e rápidas para seu dia-a-dia. Crie atalhos
+inteligentes e aumente sua produtividade.{% endblock %}
+<!--prettier-ignore -->
+{% block html_class %}dark{% endblock %} {% block body_class %}bg-white dark:bg-gray-900
+text-gray-900 dark:text-gray-100 font-poppins{% endblock %}
+<!--prettier-ignore -->
+{% block navigation %} {% include 'includes/navbar.html' %} {% endblock %} {% block main_class %}
+{% endblock %} {% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pages/index.css' %}" />
+{% endblock %} {% block content %}
+<!-- Hero Section -->
+<section
+    class="hero-parallax relative min-h-screen flex items-center justify-center bg-symplifika-gradient bg-mesh overflow-hidden"
+>
+    <!-- Background decorations -->
+    <div class="absolute inset-0 overflow-hidden">
+        <div
+            class="bg-decoration absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full"
+        ></div>
+        <div
+            class="bg-decoration absolute -bottom-40 -left-40 w-80 h-80 bg-white/10 rounded-full"
+        ></div>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div class="text-center">
+            <!-- Logo and Brand -->
+            <div class="flex items-center justify-center gap-4 mb-8">
+                <svg
+                    width="64"
+                    height="64"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="text-black"
+                >
+                    <path
+                        d="M16.8857 3.11429C13.8857 0.114286 9 1 6 4C3 7 2.11429 11.8857 5.11429 14.8857C8.11429 17.8857 13 19 16 16C19 13 19.8857 8.11429 16.8857 5.11429"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+                    <path
+                        d="M7.11426 20.8857C10.1143 23.8857 15 23 18 20C21 17 21.8857 12.1143 18.8857 9.11428C15.8857 6.11428 11 5 8 8C5 11 4.11426 15.8857 7.11426 18.8857"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+                </svg>
+                <h1
+                    class="text-6xl md:text-8xl font-extrabold text-black drop-shadow-md"
+                >
+                    symplifika
+                </h1>
+            </div>
+
+            <!-- Subtitle -->
+            <p
+                class="text-black/80 text-xl md:text-2xl mb-12 max-w-3xl mx-auto"
+            >
+                Automações
+                <span
+                    class="bg-white text-black px-3 py-1 rounded-lg font-semibold"
+                    >fáceis e rápidas</span
+                >
+                no seu dia-a-dia.
+            </p>
+
+            <!-- CTA Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+                {% if user.is_authenticated %}
+                <a
+                    href="{% url 'core:dashboard' %}"
+                    class="btn btn-secondary text-lg px-8 py-4 shadow-xl hover:shadow-2xl transform hover:scale-105"
+                >
+                    Acessar Dashboard
+                </a>
+                {% else %}
+                <a
+                    href="{% url 'users:register' %}"
+                    class="btn btn-secondary text-lg px-8 py-4 shadow-xl hover:shadow-2xl transform hover:scale-105"
+                >
+                    Começar Agora
+                </a>
+                <a
+                    href="{% url 'users:login' %}"
+                    class="btn btn-outline text-lg px-8 py-4 border-2 border-white text-white hover:bg-white hover:text-black shadow-xl"
+                >
+                    Fazer Login
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- Demo credentials -->
+            {% if not user.is_authenticated %}
+            <div
+                class="bg-black/20 backdrop-blur-sm p-6 rounded-xl max-w-md mx-auto"
+            >
+                <p class="text-white/90 text-sm mb-2">
+                    Credenciais de demonstração:
+                </p>
+                <p class="text-white font-semibold">
+                    <span class="bg-white/20 px-2 py-1 rounded">demo</span> /
+                    <span class="bg-white/20 px-2 py-1 rounded">demo123</span>
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div
+        class="absolute bottom-8 left-1/2 transform -translate-x-1/2 scroll-indicator"
+    >
+        <svg
+            class="w-6 h-6 text-black/70"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+        >
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 14l-7 7m0 0l-7-7m7 7V3"
+            />
+        </svg>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-20 bg-white dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                Recursos Poderosos
+            </h2>
+            <p
+                class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto"
+            >
+                Descubra como o Symplifika pode transformar sua produtividade
+                com automações inteligentes
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Feature 1 -->
+            <div class="card card-hover feature-card p-8 text-center">
+                <div
+                    class="w-16 h-16 bg-symplifika-primary/10 rounded-full flex items-center justify-center mx-auto mb-6"
+                >
+                    <svg
+                        class="w-8 h-8 text-symplifika-primary feature-icon"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M13 10V3L4 14h7v7l9-11h-7z"
+                        />
+                    </svg>
+                </div>
+                <h3
+                    class="text-xl font-semibold text-gray-900 dark:text-white mb-4"
+                >
+                    Atalhos Rápidos
+                </h3>
+                <p class="text-gray-600 dark:text-gray-300">
+                    Crie atalhos personalizados para suas tarefas mais
+                    frequentes e economize tempo valioso.
+                </p>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="card card-hover feature-card p-8 text-center">
+                <div
+                    class="w-16 h-16 bg-symplifika-primary/10 rounded-full flex items-center justify-center mx-auto mb-6"
+                >
+                    <svg
+                        class="w-8 h-8 text-symplifika-primary feature-icon"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                        />
+                    </svg>
+                </div>
+                <h3
+                    class="text-xl font-semibold text-gray-900 dark:text-white mb-4"
+                >
+                    Automação Inteligente
+                </h3>
+                <p class="text-gray-600 dark:text-gray-300">
+                    Sistema inteligente que aprende seus padrões e sugere
+                    automações relevantes.
+                </p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="card card-hover feature-card p-8 text-center">
+                <div
+                    class="w-16 h-16 bg-symplifika-primary/10 rounded-full flex items-center justify-center mx-auto mb-6"
+                >
+                    <svg
+                        class="w-8 h-8 text-symplifika-primary feature-icon"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                        />
+                    </svg>
+                </div>
+                <h3
+                    class="text-xl font-semibold text-gray-900 dark:text-white mb-4"
+                >
+                    Segurança Avançada
+                </h3>
+                <p class="text-gray-600 dark:text-gray-300">
+                    Seus dados e automações protegidos com criptografia de ponta
+                    e controle de acesso.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="py-20 bg-gray-50 dark:bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <h2
+                    class="text-4xl font-bold text-gray-900 dark:text-white mb-6"
+                >
+                    Sobre o Symplifika
+                </h2>
+                <p class="text-lg text-gray-600 dark:text-gray-300 mb-6">
+                    O Symplifika nasceu da necessidade de simplificar tarefas
+                    repetitivas e aumentar a produtividade no dia-a-dia. Nossa
+                    plataforma oferece uma interface intuitiva para criar e
+                    gerenciar automações personalizadas.
+                </p>
+                <p class="text-lg text-gray-600 dark:text-gray-300 mb-8">
+                    Com tecnologia de ponta e foco na experiência do usuário,
+                    transformamos processos complexos em ações simples de um
+                    clique.
+                </p>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="text-center">
+                        <div
+                            class="stat-number text-3xl font-bold text-symplifika-primary mb-2"
+                            data-value="500"
+                        >
+                            500+
+                        </div>
+                        <div class="text-gray-600 dark:text-gray-300">
+                            Usuários Ativos
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <div
+                            class="stat-number text-3xl font-bold text-symplifika-primary mb-2"
+                            data-value="1000"
+                        >
+                            1000+
+                        </div>
+                        <div class="text-gray-600 dark:text-gray-300">
+                            Automações Criadas
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative">
+                <div class="bg-symplifika-gradient rounded-2xl p-8 text-center">
+                    <svg
+                        class="w-32 h-32 mx-auto text-white/80 mb-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1"
+                            d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                        />
+                    </svg>
+                    <h3 class="text-2xl font-bold text-white mb-4">
+                        Interface Moderna
+                    </h3>
+                    <p class="text-white/90">
+                        Design limpo e intuitivo, otimizado para todos os
+                        dispositivos
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+{% if not user.is_authenticated %}
+<section class="py-20 bg-symplifika-gradient">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-4xl font-bold text-black mb-6">
+            Pronto para Simplificar sua Vida?
+        </h2>
+        <p class="text-xl text-black/80 mb-8">
+            Junte-se a centenas de usuários que já descobriram o poder da
+            automação inteligente.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+                href="{% url 'users:register' %}"
+                class="btn bg-black text-white hover:bg-gray-800 text-lg px-8 py-4 shadow-xl cta-button"
+            >
+                Criar Conta Gratuita
+            </a>
+            <a
+                href="{% url 'users:login' %}"
+                class="btn btn-outline border-2 border-black text-black hover:bg-black hover:text-white text-lg px-8 py-4 cta-button"
+            >
+                Já Tenho Conta
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %} {% endblock %} {% block extra_js %}
+<script src="{% static 'js/pages/index.js' %}"></script>
+{% endblock %}
