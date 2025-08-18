@@ -43,6 +43,7 @@ python -c "import django; print(f'Django version: {django.get_version()}')" || {
 echo "🔍 Checking Django settings..."
 python -c "
 import os
+import sys
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', '$DJANGO_SETTINGS_MODULE')
 try:
     import django
@@ -52,7 +53,7 @@ try:
     print(f'Database engine: {settings.DATABASES[\"default\"][\"ENGINE\"]}')
 except Exception as e:
     print(f'❌ Settings load failed: {e}')
-    exit 1
+    sys.exit(1)
 "
 
 # Collect static files
@@ -100,33 +101,7 @@ EOF
 
 # Final verification
 echo "🔍 Final verification..."
-python -c "
-import os
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', '$DJANGO_SETTINGS_MODULE')
-import django
-django.setup()
-
-from django.conf import settings
-
-print('✅ Django setup successful')
-print(f'✅ DEBUG: {settings.DEBUG}')
-print(f'✅ ALLOWED_HOSTS: {settings.ALLOWED_HOSTS}')
-print(f'✅ DATABASE ENGINE: {settings.DATABASES[\"default\"][\"ENGINE\"]}')
-print(f'✅ STATIC_ROOT: {settings.STATIC_ROOT}')
-print(f'✅ STATICFILES_STORAGE: {getattr(settings, \"STATICFILES_STORAGE\", \"Default\")}')
-
-# Test database connection
-try:
-    from django.db import connections
-    db_conn = connections['default']
-    with db_conn.cursor() as cursor:
-        cursor.execute('SELECT 1')
-        result = cursor.fetchone()
-        if result:
-            print('✅ Database connection test successful')
-except Exception as e:
-    print(f'⚠️  Database connection test failed: {e}')
-"
+python verify_build.py
 
 echo "🎉 Build completed successfully!"
 echo ""
