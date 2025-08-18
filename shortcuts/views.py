@@ -306,8 +306,8 @@ class ShortcutViewSet(viewsets.ModelViewSet):
             'total_shortcuts': total_shortcuts,
             'active_shortcuts': active_shortcuts,
             'total_uses': total_uses,
-            'most_used_shortcut': ShortcutSerializer(most_used).data if most_used else None,
-            'recent_shortcuts': ShortcutSerializer(recent_shortcuts, many=True).data,
+            'most_used_shortcut': most_used,
+            'recent_shortcuts': recent_shortcuts,
             'shortcuts_by_category': shortcuts_by_category,
             'shortcuts_by_type': shortcuts_by_type
         }

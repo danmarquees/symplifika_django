@@ -39,4 +39,7 @@ urlpatterns = [
     path('faq/', views.faq, name='faq'),
     path('help/', views.help, name='help'),
     path('pricing/', views.pricing, name='pricing'),
+
+    # Static files
+    path('favicon.ico', views.favicon_view, name='favicon'),
 ]

@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.utils import timezone
+from django.conf import settings as django_settings
+import os
 
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -216,3 +218,34 @@ def statistics_view(request):
         stats = SystemStats.update_daily_stats()
     serializer = SystemStatsSerializer(stats)
     return Response(serializer.data)
+
+
+def favicon_view(request):
+    """Serve favicon.ico"""
+    # Try different favicon formats
+    favicon_paths = [
+        ('favicon.ico', 'image/x-icon'),
+        ('favicon.svg', 'image/svg+xml'),
+        ('favicon.png', 'image/png'),
+    ]
+
+    # Check static directories
+    static_dirs = []
+    if django_settings.STATIC_ROOT:
+        static_dirs.append(django_settings.STATIC_ROOT)
+    if django_settings.STATICFILES_DIRS:
+        static_dirs.extend(django_settings.STATICFILES_DIRS)
+
+    for static_dir in static_dirs:
+        for filename, content_type in favicon_paths:
+            favicon_path = os.path.join(static_dir, 'images', filename)
+            if os.path.exists(favicon_path):
+                with open(favicon_path, 'rb') as f:
+                    return HttpResponse(f.read(), content_type=content_type)
+
+    # Generate a minimal SVG favicon if none found
+    svg_favicon = '''<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="6" fill="#007bff"/>
+  <text x="16" y="22" font-family="Arial,sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="white">S</text>
+</svg>'''
+    return HttpResponse(svg_favicon, content_type="image/svg+xml")
