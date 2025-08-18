@@ -35,7 +35,7 @@ git push origin main
 
 **Build & Deploy:**
 - **Build Command**: `./build.sh`
-- **Start Command**: `gunicorn symplifika.wsgi:application`
+- **Start Command**: `gunicorn symplifika.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120`
 
 ### 3. Configurar Variáveis de Ambiente
 
@@ -45,7 +45,8 @@ No painel do Render, vá para "Environment" e adicione:
 ```
 DEBUG=False
 SECRET_KEY=[gerar uma chave secreta nova]
-PYTHON_VERSION=3.11.0
+PYTHON_VERSION=3.13.4
+DJANGO_SETTINGS_MODULE=symplifika.production_settings
 ```
 
 **Opcionais:**
@@ -91,6 +92,19 @@ Se quiser usar um domínio próprio:
 - **Logs**: Acesse pela aba "Logs" no dashboard
 - **Métricas**: Disponível na aba "Metrics"
 
+## Arquivos de Diagnóstico
+
+Para ajudar com problemas, o projeto inclui:
+
+### Script de Verificação
+Execute para diagnosticar problemas:
+```bash
+python check_environment.py
+```
+
+### Logs Detalhados
+O script de build (`build.sh`) agora inclui logs detalhados para facilitar o troubleshooting.
+
 ## Limitações da Versão Gratuita
 
 - **Sleep Mode**: O serviço "dorme" após 15 minutos de inatividade
@@ -100,31 +114,52 @@ Se quiser usar um domínio próprio:
 
 ## Troubleshooting
 
-### Problema: Build falha
-**Solução**: Verifique os logs na aba "Logs" e certifique-se de que:
-- O arquivo `build.sh` tem permissões de execução
-- Todas as dependências estão no `requirements.txt`
+### Problema: Build falha com erro "No such file or directory: logs/django.log"
+**Solução**: O script de build foi atualizado para criar os diretórios necessários automaticamente. Se ainda falhar:
+1. Verifique se o arquivo `build.sh` tem permissões de execução
+2. Certifique-se de que está usando `DJANGO_SETTINGS_MODULE=symplifika.production_settings`
+
+### Problema: Build falha na instalação de dependências
+**Solução**: 
+- Verifique se o `runtime.txt` especifica Python 3.13.4
+- Certifique-se de que todas as dependências estão no `requirements.txt`
+- Verifique os logs de build para erros específicos
 
 ### Problema: Static files não carregam
-**Solução**: Certifique-se de que:
-- `whitenoise` está instalado
-- `STATICFILES_STORAGE` está configurado corretamente
+**Solução**: 
+- Certifique-se de que `whitenoise` está instalado
+- Verifique se `STATICFILES_STORAGE` está configurado nas configurações de produção
+- Execute `python manage.py collectstatic` localmente para testar
 
 ### Problema: Erro de database
-**Solução**: Verifique se:
-- A `DATABASE_URL` está configurada corretamente
-- As migrações foram executadas no build
+**Solução**: 
+- Verifique se a `DATABASE_URL` está configurada corretamente
+- Confirme que o banco PostgreSQL foi criado no Render
+- Verifique se as migrações foram executadas no build
+
+### Problema: Erro "Unable to configure handler 'file'"
+**Solução**: Use as configurações de produção que têm logging simplificado:
+```bash
+DJANGO_SETTINGS_MODULE=symplifika.production_settings
+```
 
 ### Problema: CORS errors
 **Solução**: 
-- Certifique-se de que o domínio do Render está em `CORS_ALLOWED_ORIGINS`
-- Verifique `CSRF_TRUSTED_ORIGINS`
+- As configurações de produção configuram CORS automaticamente baseado em `RENDER_EXTERNAL_HOSTNAME`
+- Certifique-se de que está usando `symplifika.production_settings`
+
+### Problema: Timeout no build
+**Solução**: 
+- O script de build foi otimizado com timeouts apropriados
+- Se ainda falhar, verifique se há dependências que demoram muito para instalar
 
 ## Comandos Úteis para Debug
 
-Para executar comandos Django na produção, use o Render Console:
-
+### No Render Console (produção):
 ```bash
+# Verificar ambiente
+python check_environment.py
+
 # Criar superuser
 python manage.py createsuperuser
 
@@ -134,8 +169,20 @@ python manage.py migrate
 # Coletar arquivos estáticos
 python manage.py collectstatic --noinput
 
+# Verificar configuração de deploy
+python manage.py check --deploy
+
 # Shell Django
 python manage.py shell
+```
+
+### Para desenvolvimento local:
+```bash
+# Setup completo do ambiente local
+./local_setup.sh
+
+# Verificar ambiente local
+python check_environment.py
 ```
 
 ## Monitoramento de Custos
@@ -159,5 +206,21 @@ A versão gratuita inclui:
 - Community: [community.render.com](https://community.render.com)
 
 ---
+
+## Mudanças Importantes na Configuração
+
+### Configurações de Produção Separadas
+- Criado `symplifika/production_settings.py` específico para produção
+- Configurações de logging simplificadas para evitar erros
+- Configurações de segurança otimizadas para Render
+
+### Script de Build Melhorado
+- Verificações de ambiente detalhadas
+- Criação automática de diretórios necessários
+- Logs detalhados para facilitar troubleshooting
+
+### Versão do Python
+- Atualizado para Python 3.13.4 (compatível com Render)
+- Runtime especificado em `runtime.txt`
 
 **Nota**: Lembre-se de que na versão gratuita, o serviço pode ter latência inicial devido ao "cold start" após períodos de inatividade.
