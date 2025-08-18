@@ -1,0 +1,524 @@
+/* Symplifika Mobile Forms CSS */
+
+/* ==========================================================================
+   Form Elements Mobile Optimization
+   ========================================================================== */
+
+/* Base form styling improvements */
+@media screen and (max-width: 767px) {
+    .form-input,
+    .form-select,
+    .form-textarea {
+        padding: 1rem !important;
+        font-size: 1rem !important;
+        line-height: 1.5 !important;
+        min-height: 48px !important;
+        border-radius: 0.5rem !important;
+        border-width: 1px !important;
+        transition: all 0.2s ease-in-out !important;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+        outline: none !important;
+        border-color: var(--symplifika-primary) !important;
+        box-shadow: 0 0 0 3px rgba(0, 200, 83, 0.1) !important;
+        transform: none !important;
+    }
+
+    /* Form labels */
+    .form-field label {
+        font-size: 0.875rem !important;
+        font-weight: 600 !important;
+        margin-bottom: 0.5rem !important;
+        display: block !important;
+    }
+
+    /* Form field containers */
+    .form-field {
+        margin-bottom: 1.5rem !important;
+    }
+
+    /* Error messages */
+    .form-field .text-red-400,
+    .form-field .text-red-500,
+    .form-error {
+        font-size: 0.875rem !important;
+        margin-top: 0.5rem !important;
+        padding: 0.5rem !important;
+        background: rgba(239, 68, 68, 0.1) !important;
+        border-radius: 0.375rem !important;
+        border-left: 3px solid #ef4444 !important;
+    }
+
+    /* Success messages */
+    .form-success {
+        font-size: 0.875rem !important;
+        margin-top: 0.5rem !important;
+        padding: 0.5rem !important;
+        background: rgba(16, 185, 129, 0.1) !important;
+        border-radius: 0.375rem !important;
+        border-left: 3px solid #10b981 !important;
+        color: #065f46 !important;
+    }
+}
+
+/* ==========================================================================
+   Authentication Forms Mobile Optimization
+   ========================================================================== */
+
+@media screen and (max-width: 767px) {
+    .auth-form-container {
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .dark .auth-form-container {
+        background: rgba(31, 41, 55, 0.95) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .auth-submit-btn {
+        font-weight: 600 !important;
+        background: var(--symplifika-primary) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 0.5rem !important;
+        transition: all 0.2s ease-in-out !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+
+    .auth-submit-btn:hover,
+    .auth-submit-btn:focus {
+        background: var(--symplifika-accent) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3) !important;
+    }
+
+    .auth-submit-btn:active {
+        transform: translateY(0) !important;
+    }
+
+    .auth-submit-btn:disabled {
+        opacity: 0.6 !important;
+        cursor: not-allowed !important;
+        transform: none !important;
+    }
+
+    /* Remember me checkbox */
+    .remember-checkbox {
+        accent-color: var(--symplifika-primary) !important;
+        transform: scale(1.2) !important;
+    }
+
+    /* Auth links */
+    .auth-link {
+        color: var(--symplifika-primary) !important;
+        text-decoration: none !important;
+        font-weight: 500 !important;
+    }
+
+    .auth-link:hover {
+        color: var(--symplifika-accent) !important;
+        text-decoration: underline !important;
+    }
+
+    /* Demo credentials button */
+    .demo-btn {
+        background: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 0.5rem !important;
+        padding: 0.75rem 1rem !important;
+        font-size: 0.875rem !important;
+        font-weight: 500 !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease-in-out !important;
+    }
+
+    .demo-btn:hover {
+        background: rgba(255, 255, 255, 0.3) !important;
+        transform: translateY(-1px) !important;
+    }
+
+    .demo-credentials {
+        text-align: center !important;
+        padding: 1rem !important;
+        border-radius: 0.5rem !important;
+        background: rgba(0, 0, 0, 0.2) !important;
+        backdrop-filter: blur(5px) !important;
+    }
+}
+
+/* ==========================================================================
+   Form Validation Mobile Styles
+   ========================================================================== */
+
+@media screen and (max-width: 767px) {
+    .form-input.is-valid {
+        border-color: #10b981 !important;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+    }
+
+    .form-input.is-invalid {
+        border-color: #ef4444 !important;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+    }
+
+    .form-input.is-valid:focus {
+        border-color: #10b981 !important;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2) !important;
+    }
+
+    .form-input.is-invalid:focus {
+        border-color: #ef4444 !important;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+    }
+
+    /* Validation icons */
+    .form-field .validation-icon {
+        position: absolute !important;
+        right: 1rem !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 1.25rem !important;
+        height: 1.25rem !important;
+    }
+
+    .form-field .validation-icon.valid {
+        color: #10b981 !important;
+    }
+
+    .form-field .validation-icon.invalid {
+        color: #ef4444 !important;
+    }
+}
+
+/* ==========================================================================
+   Password Field Mobile Enhancements
+   ========================================================================== */
+
+@media screen and (max-width: 767px) {
+    .password-field {
+        position: relative !important;
+    }
+
+    .password-toggle {
+        position: absolute !important;
+        right: 1rem !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        background: none !important;
+        border: none !important;
+        color: #6b7280 !important;
+        cursor: pointer !important;
+        padding: 0.25rem !important;
+        border-radius: 0.25rem !important;
+        min-height: 32px !important;
+        min-width: 32px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .password-toggle:hover {
+        color: #374151 !important;
+        background: rgba(0, 0, 0, 0.05) !important;
+    }
+
+    .dark .password-toggle {
+        color: #9ca3af !important;
+    }
+
+    .dark .password-toggle:hover {
+        color: #d1d5db !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+    }
+}
+
+/* ==========================================================================
+   Select and Dropdown Mobile Optimization
+   ========================================================================== */
+
+@media screen and (max-width: 767px) {
+    .form-select {
+        appearance: none !important;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+        background-position: right 0.75rem center !important;
+        background-repeat: no-repeat !important;
+        background-size: 1.5em 1.5em !important;
+        padding-right: 3rem !important;
+    }
+
+    .form-select:focus {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2300C853' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+    }
+
+    /* Custom dropdown */
+    .custom-select {
+        position: relative !important;
+    }
+
+    .custom-select-dropdown {
+        position: absolute !important;
+        top: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+        background: white !important;
+        border: 1px solid #d1d5db !important;
+        border-radius: 0.5rem !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+        z-index: 1000 !important;
+        max-height: 200px !important;
+        overflow-y: auto !important;
+        margin-top: 0.25rem !important;
+    }
+
+    .dark .custom-select-dropdown {
+        background: #374151 !important;
+        border-color: #4b5563 !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .custom-select-option {
+        padding: 0.75rem 1rem !important;
+        cursor: pointer !important;
+        border-bottom: 1px solid #f3f4f6 !important;
+        min-height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    .dark .custom-select-option {
+        border-bottom-color: #4b5563 !important;
+    }
+
+    .custom-select-option:hover {
+        background: #f9fafb !important;
+    }
+
+    .dark .custom-select-option:hover {
+        background: #4b5563 !important;
+    }
+
+    .custom-select-option.selected {
+        background: var(--symplifika-primary) !important;
+        color: white !important;
+    }
+}
+
+/* ==========================================================================
+   File Upload Mobile Styles
+   ========================================================================== */
+
+@media screen and (max-width: 767px) {
+    .file-upload-area {
+        border: 2px dashed #d1d5db !important;
+        border-radius: 0.5rem !important;
+        padding: 2rem 1rem !important;
+        text-align: center !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease-in-out !important;
+        min-height: 120px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .file-upload-area:hover {
+        border-color: var(--symplifika-primary) !important;
+        background: rgba(0, 200, 83, 0.05) !important;
+    }
+
+    .file-upload-area.dragover {
+        border-color: var(--symplifika-primary) !important;
+        background: rgba(0, 200, 83, 0.1) !important;
+        transform: scale(1.02) !important;
+    }
+
+    .file-upload-input {
+        display: none !important;
+    }
+
+    .file-upload-icon {
+        width: 2rem !important;
+        height: 2rem !important;
+        color: #6b7280 !important;
+        margin-bottom: 0.5rem !important;
+    }
+
+    .file-upload-text {
+        font-size: 0.875rem !important;
+        color: #6b7280 !important;
+        margin-bottom: 0.25rem !important;
+    }
+
+    .file-upload-hint {
+        font-size: 0.75rem !important;
+        color: #9ca3af !important;
+    }
+
+    .dark .file-upload-area {
+        border-color: #4b5563 !important;
+    }
+
+    .dark .file-upload-area:hover {
+        border-color: var(--symplifika-secondary) !important;
+        background: rgba(0, 255, 87, 0.05) !important;
+    }
+
+    .dark .file-upload-icon,
+    .dark .file-upload-text {
+        color: #9ca3af !important;
+    }
+
+    .dark .file-upload-hint {
+        color: #6b7280 !important;
+    }
+}
+
+/* ==========================================================================
+   Form Button Groups Mobile
+   ========================================================================== */
+
+@media screen and (max-width: 767px) {
+    .form-button-group {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.75rem !important;
+        margin-top: 1.5rem !important;
+    }
+
+    .form-button-group .btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    .form-button-group.horizontal {
+        flex-direction: row !important;
+    }
+
+    .form-button-group.horizontal .btn {
+        flex: 1 !important;
+    }
+}
+
+/* ==========================================================================
+   Form Steps/Wizard Mobile
+   ========================================================================== */
+
+@media screen and (max-width: 767px) {
+    .form-steps {
+        margin-bottom: 2rem !important;
+    }
+
+    .form-step {
+        display: flex !important;
+        align-items: center !important;
+        padding: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+        border-radius: 0.5rem !important;
+        font-size: 0.875rem !important;
+    }
+
+    .form-step.active {
+        background: var(--symplifika-primary) !important;
+        color: white !important;
+    }
+
+    .form-step.completed {
+        background: #10b981 !important;
+        color: white !important;
+    }
+
+    .form-step.inactive {
+        background: #f3f4f6 !important;
+        color: #6b7280 !important;
+    }
+
+    .dark .form-step.inactive {
+        background: #374151 !important;
+        color: #9ca3af !important;
+    }
+
+    .form-step-number {
+        width: 1.5rem !important;
+        height: 1.5rem !important;
+        border-radius: 50% !important;
+        background: currentColor !important;
+        color: white !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 0.75rem !important;
+        font-weight: 600 !important;
+        margin-right: 0.5rem !important;
+    }
+
+    .form-step-title {
+        font-weight: 500 !important;
+    }
+}
+
+/* ==========================================================================
+   Accessibility Improvements for Mobile
+   ========================================================================== */
+
+@media screen and (max-width: 767px) {
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .form-input,
+        .form-select,
+        .form-textarea {
+            border-width: 2px !important;
+            border-color: #000 !important;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            border-color: #000 !important;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.3) !important;
+        }
+    }
+
+    /* Reduced motion support */
+    @media (prefers-reduced-motion: reduce) {
+        .form-input,
+        .form-select,
+        .form-textarea,
+        .btn,
+        .auth-submit-btn {
+            transition: none !important;
+        }
+    }
+
+    /* Focus indicators for keyboard navigation */
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus,
+    .btn:focus,
+    .auth-submit-btn:focus {
+        outline: 2px solid var(--symplifika-primary) !important;
+        outline-offset: 2px !important;
+    }
+
+    /* Screen reader only content */
+    .sr-only-mobile {
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        padding: 0 !important;
+        margin: -1px !important;
+        overflow: hidden !important;
+        clip: rect(0, 0, 0, 0) !important;
+        white-space: nowrap !important;
+        border: 0 !important;
+    }
+}

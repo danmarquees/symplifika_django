@@ -7,37 +7,74 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
 {% block navigation %} {% include 'includes/navbar.html' %} {% endblock %}
 <!--prettier-ignore -->
 {% block main_class %}{% endblock %} {% block content %}
-<div class="flex h-screen pt-16">
+<div class="flex h-screen pt-16 overflow-hidden">
+    <!-- Mobile backdrop -->
+    <div
+        id="sidebar-backdrop"
+        class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden hidden"
+    ></div>
+
     <!-- Sidebar -->
     <aside
-        class="sidebar w-64 bg-white dark:bg-gray-800 shadow-sm border-r border-gray-200 dark:border-gray-700"
+        id="app-sidebar"
+        class="sidebar fixed lg:relative inset-y-0 left-0 z-50 w-80 lg:w-64 bg-white dark:bg-gray-800 shadow-sm border-r border-gray-200 dark:border-gray-700 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out pt-16 lg:pt-0"
     >
+        <!-- Mobile sidebar header -->
+        <div
+            class="lg:hidden flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700"
+        >
+            <span class="text-lg font-semibold text-gray-900 dark:text-white"
+                >Menu</span
+            >
+            <button
+                id="close-sidebar-btn"
+                type="button"
+                class="p-2 text-gray-400 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-symplifika-primary"
+            >
+                <svg
+                    class="h-6 w-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M6 18L18 6M6 6l12 12"
+                    />
+                </svg>
+            </button>
+        </div>
+
         <!-- User Info -->
-        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div class="p-4 lg:p-6 border-b border-gray-200 dark:border-gray-700">
             <div class="flex items-center space-x-3">
                 {% if user.profile.avatar %}
                 <img
-                    class="w-10 h-10 rounded-full object-cover"
+                    class="w-10 h-10 lg:w-12 lg:h-12 rounded-full object-cover"
                     src="{{ user.profile.avatar.url }}"
                     alt="{{ user.get_full_name|default:user.username }}"
                 />
                 {% else %}
                 <div
-                    class="w-10 h-10 bg-symplifika-primary rounded-full flex items-center justify-center"
+                    class="w-10 h-10 lg:w-12 lg:h-12 bg-symplifika-primary rounded-full flex items-center justify-center"
                 >
                     <!-- prettier-ignore -->
-                    <span class="text-white font-semibold text-sm">
+                    <span class="text-white font-semibold text-sm lg:text-base">
                         {{user.first_name|first|default:user.username|first|upper}}
                     </span>
                 </div>
                 {% endif %}
                 <div class="flex-1 min-w-0">
                     <p
-                        class="text-sm font-semibold text-gray-900 dark:text-white truncate"
+                        class="text-sm lg:text-base font-semibold text-gray-900 dark:text-white truncate"
                     >
                         {{ user.get_full_name|default:user.username }}
                     </p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                    <p
+                        class="text-xs lg:text-sm text-gray-500 dark:text-gray-400"
+                    >
                         Plano Free
                     </p>
                 </div>
@@ -45,14 +82,14 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
         </div>
 
         <!-- Navigation Menu -->
-        <nav class="flex-1 p-4 space-y-2">
+        <nav class="flex-1 p-4 space-y-1 lg:space-y-2 overflow-y-auto">
             <a
                 href="#"
                 data-page="dashboard"
-                class="sidebar-item nav-item active flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-colors"
+                class="sidebar-item nav-item active flex items-center space-x-3 px-4 py-4 lg:py-3 rounded-lg font-medium transition-colors text-base lg:text-sm min-h-[48px] lg:min-h-[44px]"
             >
                 <svg
-                    class="w-5 h-5"
+                    class="w-6 h-6 lg:w-5 lg:h-5 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -70,10 +107,10 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
             <a
                 href="#"
                 data-page="shortcuts"
-                class="sidebar-item nav-item flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-colors"
+                class="sidebar-item nav-item flex items-center space-x-3 px-4 py-4 lg:py-3 rounded-lg font-medium transition-colors text-base lg:text-sm min-h-[48px] lg:min-h-[44px]"
             >
                 <svg
-                    class="w-5 h-5"
+                    class="w-6 h-6 lg:w-5 lg:h-5 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -91,10 +128,10 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
             <a
                 href="#"
                 data-page="categories"
-                class="sidebar-item nav-item flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-colors"
+                class="sidebar-item nav-item flex items-center space-x-3 px-4 py-4 lg:py-3 rounded-lg font-medium transition-colors text-base lg:text-sm min-h-[48px] lg:min-h-[44px]"
             >
                 <svg
-                    class="w-5 h-5"
+                    class="w-6 h-6 lg:w-5 lg:h-5 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -112,10 +149,10 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
             <a
                 href="#"
                 data-page="statistics"
-                class="sidebar-item nav-item flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-colors"
+                class="sidebar-item nav-item flex items-center space-x-3 px-4 py-4 lg:py-3 rounded-lg font-medium transition-colors text-base lg:text-sm min-h-[48px] lg:min-h-[44px]"
             >
                 <svg
-                    class="w-5 h-5"
+                    class="w-6 h-6 lg:w-5 lg:h-5 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -133,10 +170,10 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
             <a
                 href="#"
                 data-page="import-export"
-                class="sidebar-item nav-item flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-colors"
+                class="sidebar-item nav-item flex items-center space-x-3 px-4 py-4 lg:py-3 rounded-lg font-medium transition-colors text-base lg:text-sm min-h-[48px] lg:min-h-[44px]"
             >
                 <svg
-                    class="w-5 h-5"
+                    class="w-6 h-6 lg:w-5 lg:h-5 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -154,10 +191,10 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
             <a
                 href="#"
                 data-page="settings"
-                class="sidebar-item nav-item flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-colors"
+                class="sidebar-item nav-item flex items-center space-x-3 px-4 py-4 lg:py-3 rounded-lg font-medium transition-colors text-base lg:text-sm min-h-[48px] lg:min-h-[44px]"
             >
                 <svg
-                    class="w-5 h-5"
+                    class="w-6 h-6 lg:w-5 lg:h-5 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -184,11 +221,11 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
             class="p-4 border-t border-gray-200 dark:border-gray-700 space-y-2"
         >
             <button
-                class="w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors"
+                class="w-full flex items-center space-x-3 px-4 py-3 lg:py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors min-h-[48px] lg:min-h-[40px]"
                 data-theme-toggle
             >
                 <svg
-                    class="w-5 h-5"
+                    class="w-6 h-6 lg:w-5 lg:h-5 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -200,17 +237,17 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                         d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
                     />
                 </svg>
-                <span>Tema</span>
+                <span class="text-base lg:text-sm">Tema</span>
             </button>
 
             <form method="post" action="#" class="w-full">
                 {% csrf_token %}
                 <button
                     type="submit"
-                    class="w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                    class="w-full flex items-center space-x-3 px-4 py-3 lg:py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors min-h-[48px] lg:min-h-[40px]"
                 >
                     <svg
-                        class="w-5 h-5"
+                        class="w-6 h-6 lg:w-5 lg:h-5 flex-shrink-0"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -222,21 +259,52 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                             d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                         />
                     </svg>
-                    <span>Sair</span>
+                    <span class="text-base lg:text-sm">Sair</span>
                 </button>
             </form>
         </div>
     </aside>
 
     <!-- Main Content -->
-    <div class="flex-1 flex flex-col overflow-hidden">
+    <div class="flex-1 flex flex-col overflow-hidden lg:ml-0">
+        <!-- Mobile header -->
+        <div
+            class="lg:hidden bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4"
+        >
+            <div class="flex items-center justify-between">
+                <button
+                    id="open-sidebar-btn"
+                    type="button"
+                    class="p-2 text-gray-400 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-symplifika-primary"
+                >
+                    <svg
+                        class="h-6 w-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16"
+                        />
+                    </svg>
+                </button>
+                <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
+                    Dashboard
+                </h1>
+                <div class="w-10"></div>
+                <!-- Spacer for centering -->
+            </div>
+        </div>
         <!-- Dashboard Overview Page -->
         <div id="dashboardPage" class="page flex-1 overflow-y-auto">
-            <div class="p-8">
+            <div class="p-4 sm:p-6 lg:p-8">
                 <!-- Header -->
-                <header class="mb-8">
+                <header class="mb-6 lg:mb-8 hidden lg:block">
                     <h1
-                        class="text-3xl font-bold text-gray-900 dark:text-white"
+                        class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white"
                     >
                         Dashboard
                     </h1>
@@ -247,10 +315,10 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
 
                 <!-- Quick Stats -->
                 <div
-                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+                    class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 lg:mb-8"
                 >
                     <div
-                        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700"
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 lg:p-6 border border-gray-200 dark:border-gray-700"
                     >
                         <div class="flex items-center justify-between">
                             <div>
@@ -2043,4 +2111,54 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
 <link rel="stylesheet" href="{% static 'css/app.css' %}" />
 {% endblock %} {% block extra_js %}
 <script src="{% static 'js/app.js' %}"></script>
+<script>
+    // Mobile sidebar controls
+    document.addEventListener("DOMContentLoaded", function () {
+        const sidebar = document.getElementById("app-sidebar");
+        const backdrop = document.getElementById("sidebar-backdrop");
+        const openBtn = document.getElementById("open-sidebar-btn");
+        const closeBtn = document.getElementById("close-sidebar-btn");
+
+        function openSidebar() {
+            sidebar.classList.remove("-translate-x-full");
+            backdrop.classList.remove("hidden");
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeSidebar() {
+            sidebar.classList.add("-translate-x-full");
+            backdrop.classList.add("hidden");
+            document.body.style.overflow = "";
+        }
+
+        if (openBtn) {
+            openBtn.addEventListener("click", openSidebar);
+        }
+
+        if (closeBtn) {
+            closeBtn.addEventListener("click", closeSidebar);
+        }
+
+        if (backdrop) {
+            backdrop.addEventListener("click", closeSidebar);
+        }
+
+        // Close sidebar on nav item click (mobile)
+        const navItems = document.querySelectorAll(".nav-item");
+        navItems.forEach((item) => {
+            item.addEventListener("click", () => {
+                if (window.innerWidth < 1024) {
+                    closeSidebar();
+                }
+            });
+        });
+
+        // Close sidebar on window resize if screen becomes large
+        window.addEventListener("resize", () => {
+            if (window.innerWidth >= 1024) {
+                closeSidebar();
+            }
+        });
+    });
+</script>
 {% endblock %}

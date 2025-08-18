@@ -4,19 +4,21 @@
     class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 no-print"
 >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
+        <div class="flex justify-between items-center h-16">
             <!-- Logo and brand -->
             <div class="flex items-center">
                 <!-- Mobile menu button -->
                 <button
                     type="button"
-                    class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-symplifika-primary mr-2"
+                    class="md:hidden inline-flex items-center justify-center p-3 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-symplifika-primary mr-2"
                     data-sidebar-toggle
                     aria-expanded="false"
+                    id="mobile-menu-button"
                 >
                     <span class="sr-only">Abrir menu principal</span>
+                    <!-- Hamburger icon -->
                     <svg
-                        class="h-6 w-6"
+                        class="hamburger-icon h-6 w-6"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -27,6 +29,21 @@
                             stroke-linejoin="round"
                             stroke-width="2"
                             d="M4 6h16M4 12h16M4 18h16"
+                        />
+                    </svg>
+                    <!-- Close icon -->
+                    <svg
+                        class="close-icon h-6 w-6 hidden"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"
                         />
                     </svg>
                 </button>
@@ -60,14 +77,16 @@
                         />
                     </svg>
                     <span
-                        class="text-xl font-bold text-gray-900 dark:text-white"
+                        class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white"
                         >symplifika</span
                     >
                 </a>
             </div>
 
             <!-- Navigation links (desktop) -->
-            <div class="hidden md:flex md:items-center md:space-x-8">
+            <div
+                class="hidden md:flex md:items-center md:space-x-6 lg:space-x-8"
+            >
                 {% if user.is_authenticated %}
                 <a
                     href="{% url 'core:dashboard' %}"
@@ -110,10 +129,10 @@
             </div>
 
             <!-- Right side buttons -->
-            <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2 md:space-x-4">
                 {% if user.is_authenticated %}
                 <!-- Plan Status Widget -->
-                <div class="hidden md:block">
+                <div class="hidden lg:block">
                     {% include 'includes/plan_status_widget.html' %}
                 </div>
                 {% endif %}
@@ -121,11 +140,11 @@
                 <!-- Theme toggle -->
                 <button
                     type="button"
-                    class="p-2 text-gray-400 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-symplifika-primary"
+                    class="p-2 text-gray-400 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-symplifika-primary min-h-[44px] min-w-[44px]"
                     data-theme-toggle
                     title="Alternar tema"
                 >
-                    <span class="theme-icon">🌙</span>
+                    <span class="theme-icon text-lg">🌙</span>
                 </button>
 
                 {% if user.is_authenticated %}
@@ -133,7 +152,7 @@
                 <div class="relative">
                     <button
                         type="button"
-                        class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-symplifika-primary"
+                        class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-symplifika-primary min-h-[44px] min-w-[44px]"
                         id="user-menu-button"
                         aria-expanded="false"
                         onclick="toggleUserMenu()"
@@ -141,13 +160,13 @@
                         <span class="sr-only">Abrir menu do usuário</span>
                         {% if user.profile.avatar %}
                         <img
-                            class="h-8 w-8 rounded-full object-cover"
+                            class="h-8 w-8 sm:h-9 sm:w-9 rounded-full object-cover"
                             src="{{ user.profile.avatar.url }}"
                             alt="{{ user.get_full_name|default:user.username }}"
                         />
                         {% else %}
                         <div
-                            class="h-8 w-8 rounded-full bg-symplifika-primary flex items-center justify-center"
+                            class="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-symplifika-primary flex items-center justify-center"
                         >
                             <span class="text-white font-medium text-sm">
                                 <!--prettier-ignore -->
@@ -206,22 +225,23 @@
                 <!-- Pricing Button -->
                 <a
                     href="{% url 'core:pricing' %}"
-                    class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                    class="hidden sm:block text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
                     Preços
                 </a>
                 <!-- Login/Register buttons -->
                 <a
                     href="{% url 'users:login' %}"
-                    class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                    class="hidden sm:block text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
                     Entrar
                 </a>
                 <a
                     href="{% url 'users:register' %}"
-                    class="btn btn-primary text-sm"
+                    class="btn btn-primary text-sm min-h-[44px]"
                 >
-                    Registrar
+                    <span class="hidden sm:inline">Registrar</span>
+                    <span class="sm:hidden">+</span>
                 </a>
                 {% endif %}
             </div>
@@ -229,64 +249,66 @@
     </div>
 
     <!-- Mobile navigation menu -->
-    <div class="md:hidden hidden" id="mobile-menu">
+    <div class="md:hidden hidden overflow-hidden" id="mobile-menu">
         <div
-            class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700"
+            class="px-4 pt-4 pb-4 space-y-1 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 max-h-[70vh] overflow-y-auto"
         >
             {% if user.is_authenticated %}
             <a
                 href="{% url 'core:dashboard' %}"
-                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-4 py-3 rounded-md text-base font-medium border-b border-gray-100 dark:border-gray-700 min-h-[44px] flex items-center"
             >
                 Dashboard
             </a>
             <a
                 href="{% url 'core:dashboard' %}#shortcuts"
-                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-4 py-3 rounded-md text-base font-medium border-b border-gray-100 dark:border-gray-700 min-h-[44px] flex items-center"
             >
                 Atalhos
             </a>
             <a
                 href="{% url 'core:profile' %}"
-                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-4 py-3 rounded-md text-base font-medium border-b border-gray-100 dark:border-gray-700 min-h-[44px] flex items-center"
             >
                 Perfil
             </a>
             {% else %}
             <a
                 href="{% url 'core:index' %}"
-                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-4 py-3 rounded-md text-base font-medium border-b border-gray-100 dark:border-gray-700 min-h-[44px] flex items-center"
             >
                 Início
             </a>
             <a
                 href="{% url 'core:index' %}#features"
-                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-4 py-3 rounded-md text-base font-medium border-b border-gray-100 dark:border-gray-700 min-h-[44px] flex items-center"
             >
                 Recursos
             </a>
             <a
                 href="{% url 'core:about' %}"
-                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-4 py-3 rounded-md text-base font-medium border-b border-gray-100 dark:border-gray-700 min-h-[44px] flex items-center"
             >
                 Sobre
             </a>
-            <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+            <div
+                class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4"
+            >
                 <a
                     href="{% url 'core:pricing' %}"
-                    class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                    class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-4 py-3 rounded-md text-base font-medium border-b border-gray-100 dark:border-gray-700 min-h-[44px] flex items-center"
                 >
                     Preços
                 </a>
                 <a
                     href="{% url 'users:login' %}"
-                    class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                    class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-4 py-3 rounded-md text-base font-medium border-b border-gray-100 dark:border-gray-700 min-h-[44px] flex items-center"
                 >
                     Entrar
                 </a>
                 <a
                     href="{% url 'users:register' %}"
-                    class="btn btn-primary block mx-3 mt-2 text-center"
+                    class="btn btn-primary block mx-4 mt-3 mb-2 text-center min-h-[48px] flex items-center justify-center"
                 >
                     Registrar
                 </a>
@@ -325,6 +347,38 @@
         .querySelector("[data-sidebar-toggle]")
         .addEventListener("click", function () {
             const mobileMenu = document.getElementById("mobile-menu");
+            const button = document.getElementById("mobile-menu-button");
+            const hamburgerIcon = button.querySelector(".hamburger-icon");
+            const closeIcon = button.querySelector(".close-icon");
+
             mobileMenu.classList.toggle("hidden");
+            hamburgerIcon.classList.toggle("hidden");
+            closeIcon.classList.toggle("hidden");
+
+            // Update aria-expanded
+            const isExpanded = !mobileMenu.classList.contains("hidden");
+            button.setAttribute("aria-expanded", isExpanded);
         });
+
+    // Close mobile menu when clicking outside
+    document.addEventListener("click", function (event) {
+        const mobileMenu = document.getElementById("mobile-menu");
+        const toggleButton = document.querySelector("[data-sidebar-toggle]");
+
+        if (
+            mobileMenu &&
+            !mobileMenu.classList.contains("hidden") &&
+            !mobileMenu.contains(event.target) &&
+            !toggleButton.contains(event.target)
+        ) {
+            mobileMenu.classList.add("hidden");
+            const button = document.getElementById("mobile-menu-button");
+            const hamburgerIcon = button.querySelector(".hamburger-icon");
+            const closeIcon = button.querySelector(".close-icon");
+
+            hamburgerIcon.classList.remove("hidden");
+            closeIcon.classList.add("hidden");
+            button.setAttribute("aria-expanded", "false");
+        }
+    });
 </script>

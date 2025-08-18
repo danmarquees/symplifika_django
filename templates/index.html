@@ -24,17 +24,21 @@ text-gray-900 dark:text-gray-100 font-poppins{% endblock %}
         ></div>
     </div>
 
-    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <div
+        class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20"
+    >
         <div class="text-center">
             <!-- Logo and Brand -->
-            <div class="flex items-center justify-center gap-4 mb-8">
+            <div
+                class="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mb-6 sm:mb-8"
+            >
                 <svg
-                    width="64"
-                    height="64"
+                    width="48"
+                    height="48"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
-                    class="text-black"
+                    class="text-black sm:w-16 sm:h-16"
                 >
                     <path
                         d="M16.8857 3.11429C13.8857 0.114286 9 1 6 4C3 7 2.11429 11.8857 5.11429 14.8857C8.11429 17.8857 13 19 16 16C19 13 19.8857 8.11429 16.8857 5.11429"
@@ -52,7 +56,7 @@ text-gray-900 dark:text-gray-100 font-poppins{% endblock %}
                     />
                 </svg>
                 <h1
-                    class="text-6xl md:text-8xl font-extrabold text-black drop-shadow-md"
+                    class="text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-extrabold text-black drop-shadow-md"
                 >
                     symplifika
                 </h1>
@@ -60,35 +64,37 @@ text-gray-900 dark:text-gray-100 font-poppins{% endblock %}
 
             <!-- Subtitle -->
             <p
-                class="text-black/80 text-xl md:text-2xl mb-12 max-w-3xl mx-auto"
+                class="text-black/80 text-base sm:text-lg md:text-xl lg:text-2xl mb-8 sm:mb-12 max-w-3xl mx-auto px-4"
             >
                 Automações
                 <span
-                    class="bg-white text-black px-3 py-1 rounded-lg font-semibold"
+                    class="bg-white text-black px-2 sm:px-3 py-1 rounded-lg font-semibold text-sm sm:text-base"
                     >fáceis_e_rápidas</span
                 >
                 no seu dia-a-dia.
             </p>
 
             <!-- CTA Buttons -->
-            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+            <div
+                class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-12 sm:mb-16 px-4"
+            >
                 {% if user.is_authenticated %}
                 <a
                     href="{% url 'core:dashboard' %}"
-                    class="btn btn-secondary text-lg px-8 py-4 shadow-xl hover:shadow-2xl transform hover:scale-105"
+                    class="btn btn-secondary text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 shadow-xl hover:shadow-2xl transform hover:scale-105 w-full sm:w-auto"
                 >
                     Acessar Dashboard
                 </a>
                 {% else %}
                 <a
                     href="{% url 'users:register' %}"
-                    class="btn btn-secondary text-lg px-8 py-4 shadow-xl hover:shadow-2xl transform hover:scale-105"
+                    class="btn btn-secondary text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 shadow-xl hover:shadow-2xl transform hover:scale-105 w-full sm:w-auto"
                 >
                     Começar Agora
                 </a>
                 <a
                     href="{% url 'users:login' %}"
-                    class="btn btn-outline text-lg px-8 py-4 border-2 border-white text-white hover:bg-white hover:text-black shadow-xl"
+                    class="btn btn-outline text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 border-2 border-white text-white hover:bg-white hover:text-black shadow-xl w-full sm:w-auto"
                 >
                     Fazer Login
                 </a>
@@ -98,14 +104,21 @@ text-gray-900 dark:text-gray-100 font-poppins{% endblock %}
             <!-- Demo credentials -->
             {% if not user.is_authenticated %}
             <div
-                class="bg-black/20 backdrop-blur-sm p-6 rounded-xl max-w-md mx-auto"
+                class="bg-black/20 backdrop-blur-sm p-4 sm:p-6 rounded-xl max-w-md mx-auto"
             >
-                <p class="text-white/90 text-sm mb-2">
+                <p class="text-white/90 text-xs sm:text-sm mb-2">
                     Credenciais de demonstração:
                 </p>
-                <p class="text-white font-semibold">
-                    <span class="bg-white/20 px-2 py-1 rounded">demo</span> /
-                    <span class="bg-white/20 px-2 py-1 rounded">demo123</span>
+                <p class="text-white font-semibold text-sm sm:text-base">
+                    <span
+                        class="bg-white/20 px-2 py-1 rounded text-xs sm:text-sm"
+                        >demo</span
+                    >
+                    /
+                    <span
+                        class="bg-white/20 px-2 py-1 rounded text-xs sm:text-sm"
+                        >demo123</span
+                    >
                 </p>
             </div>
             {% endif %}
@@ -133,28 +146,32 @@ text-gray-900 dark:text-gray-100 font-poppins{% endblock %}
 </section>
 
 <!-- Features Section -->
-<section id="features" class="py-20 bg-white dark:bg-gray-900">
+<section id="features" class="py-12 sm:py-20 bg-white dark:bg-gray-900">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-            <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+        <div class="text-center mb-12 sm:mb-16">
+            <h2
+                class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4"
+            >
                 Recursos Poderosos
             </h2>
             <p
-                class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto"
+                class="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto px-4"
             >
                 Descubra como o Symplifika pode transformar sua produtividade
                 com automações inteligentes
             </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+        >
             <!-- Feature 1 -->
-            <div class="card card-hover feature-card p-8 text-center">
+            <div class="card card-hover feature-card p-6 sm:p-8 text-center">
                 <div
-                    class="w-16 h-16 bg-symplifika-primary/10 rounded-full flex items-center justify-center mx-auto mb-6"
+                    class="w-12 h-12 sm:w-16 sm:h-16 bg-symplifika-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6"
                 >
                     <svg
-                        class="w-8 h-8 text-symplifika-primary feature-icon"
+                        class="w-6 h-6 sm:w-8 sm:h-8 text-symplifika-primary feature-icon"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -168,23 +185,25 @@ text-gray-900 dark:text-gray-100 font-poppins{% endblock %}
                     </svg>
                 </div>
                 <h3
-                    class="text-xl font-semibold text-gray-900 dark:text-white mb-4"
+                    class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4"
                 >
                     Atalhos Rápidos
                 </h3>
-                <p class="text-gray-600 dark:text-gray-300">
+                <p
+                    class="text-sm sm:text-base text-gray-600 dark:text-gray-300"
+                >
                     Crie atalhos personalizados para suas tarefas mais
                     frequentes e economize tempo valioso.
                 </p>
             </div>
 
             <!-- Feature 2 -->
-            <div class="card card-hover feature-card p-8 text-center">
+            <div class="card card-hover feature-card p-6 sm:p-8 text-center">
                 <div
-                    class="w-16 h-16 bg-symplifika-primary/10 rounded-full flex items-center justify-center mx-auto mb-6"
+                    class="w-12 h-12 sm:w-16 sm:h-16 bg-symplifika-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6"
                 >
                     <svg
-                        class="w-8 h-8 text-symplifika-primary feature-icon"
+                        class="w-6 h-6 sm:w-8 sm:h-8 text-symplifika-primary feature-icon"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -198,23 +217,27 @@ text-gray-900 dark:text-gray-100 font-poppins{% endblock %}
                     </svg>
                 </div>
                 <h3
-                    class="text-xl font-semibold text-gray-900 dark:text-white mb-4"
+                    class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4"
                 >
                     Automação Inteligente
                 </h3>
-                <p class="text-gray-600 dark:text-gray-300">
+                <p
+                    class="text-sm sm:text-base text-gray-600 dark:text-gray-300"
+                >
                     Sistema inteligente que aprende seus padrões e sugere
                     automações relevantes.
                 </p>
             </div>
 
             <!-- Feature 3 -->
-            <div class="card card-hover feature-card p-8 text-center">
+            <div
+                class="card card-hover feature-card p-6 sm:p-8 text-center sm:col-span-2 lg:col-span-1"
+            >
                 <div
-                    class="w-16 h-16 bg-symplifika-primary/10 rounded-full flex items-center justify-center mx-auto mb-6"
+                    class="w-12 h-12 sm:w-16 sm:h-16 bg-symplifika-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6"
                 >
                     <svg
-                        class="w-8 h-8 text-symplifika-primary feature-icon"
+                        class="w-6 h-6 sm:w-8 sm:h-8 text-symplifika-primary feature-icon"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -228,11 +251,13 @@ text-gray-900 dark:text-gray-100 font-poppins{% endblock %}
                     </svg>
                 </div>
                 <h3
-                    class="text-xl font-semibold text-gray-900 dark:text-white mb-4"
+                    class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4"
                 >
                     Segurança Avançada
                 </h3>
-                <p class="text-gray-600 dark:text-gray-300">
+                <p
+                    class="text-sm sm:text-base text-gray-600 dark:text-gray-300"
+                >
                     Seus dados e automações protegidos com criptografia de ponta
                     e controle de acesso.
                 </p>
@@ -242,57 +267,69 @@ text-gray-900 dark:text-gray-100 font-poppins{% endblock %}
 </section>
 
 <!-- About Section -->
-<section id="about" class="py-20 bg-gray-50 dark:bg-gray-800">
+<section id="about" class="py-12 sm:py-20 bg-gray-50 dark:bg-gray-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
+        <div
+            class="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center"
+        >
+            <div class="order-2 lg:order-1">
                 <h2
-                    class="text-4xl font-bold text-gray-900 dark:text-white mb-6"
+                    class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6 text-center lg:text-left"
                 >
                     Sobre o Symplifika
                 </h2>
-                <p class="text-lg text-gray-600 dark:text-gray-300 mb-6">
+                <p
+                    class="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-300 mb-4 sm:mb-6 text-center lg:text-left"
+                >
                     O Symplifika nasceu da necessidade de simplificar tarefas
                     repetitivas e aumentar a produtividade no dia-a-dia. Nossa
                     plataforma oferece uma interface intuitiva para criar e
                     gerenciar automações personalizadas.
                 </p>
-                <p class="text-lg text-gray-600 dark:text-gray-300 mb-8">
+                <p
+                    class="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-300 mb-6 sm:mb-8 text-center lg:text-left"
+                >
                     Com tecnologia de ponta e foco na experiência do usuário,
                     transformamos processos complexos em ações simples de um
                     clique.
                 </p>
 
-                <div class="grid grid-cols-2 gap-6">
+                <div class="grid grid-cols-2 gap-4 sm:gap-6">
                     <div class="text-center">
                         <div
-                            class="stat-number text-3xl font-bold text-symplifika-primary mb-2"
+                            class="stat-number text-2xl sm:text-3xl font-bold text-symplifika-primary mb-1 sm:mb-2"
                             data-value="500"
                         >
                             500+
                         </div>
-                        <div class="text-gray-600 dark:text-gray-300">
+                        <div
+                            class="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-300"
+                        >
                             Usuários Ativos
                         </div>
                     </div>
                     <div class="text-center">
                         <div
-                            class="stat-number text-3xl font-bold text-symplifika-primary mb-2"
+                            class="stat-number text-2xl sm:text-3xl font-bold text-symplifika-primary mb-1 sm:mb-2"
                             data-value="1000"
                         >
                             1000+
                         </div>
-                        <div class="text-gray-600 dark:text-gray-300">
+                        <div
+                            class="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-300"
+                        >
                             Automações Criadas
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="relative">
-                <div class="bg-symplifika-gradient rounded-2xl p-8 text-center">
+            <div class="relative order-1 lg:order-2">
+                <div
+                    class="bg-symplifika-gradient rounded-2xl p-6 sm:p-8 text-center"
+                >
                     <svg
-                        class="w-32 h-32 mx-auto text-white/80 mb-6"
+                        class="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 mx-auto text-white/80 mb-4 sm:mb-6"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -304,10 +341,12 @@ text-gray-900 dark:text-gray-100 font-poppins{% endblock %}
                             d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                         />
                     </svg>
-                    <h3 class="text-2xl font-bold text-white mb-4">
+                    <h3
+                        class="text-lg sm:text-xl md:text-2xl font-bold text-white mb-3 sm:mb-4"
+                    >
                         Interface Moderna
                     </h3>
-                    <p class="text-white/90">
+                    <p class="text-sm sm:text-base text-white/90">
                         Design limpo e intuitivo, otimizado para todos os
                         dispositivos
                     </p>
@@ -319,25 +358,31 @@ text-gray-900 dark:text-gray-100 font-poppins{% endblock %}
 
 <!-- CTA Section -->
 {% if not user.is_authenticated %}
-<section class="py-20 bg-symplifika-gradient">
+<section class="py-12 sm:py-20 bg-symplifika-gradient">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 class="text-4xl font-bold text-black mb-6">
+        <h2
+            class="text-2xl sm:text-3xl md:text-4xl font-bold text-black mb-4 sm:mb-6"
+        >
             Pronto para Simplificar sua Vida?
         </h2>
-        <p class="text-xl text-black/80 mb-8">
+        <p
+            class="text-base sm:text-lg md:text-xl text-black/80 mb-6 sm:mb-8 px-4"
+        >
             Junte-se a centenas de usuários que já descobriram o poder da
             automação inteligente.
         </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <div
+            class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4"
+        >
             <a
                 href="{% url 'users:register' %}"
-                class="btn bg-black text-white hover:bg-gray-800 text-lg px-8 py-4 shadow-xl cta-button"
+                class="btn bg-black text-white hover:bg-gray-800 text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 shadow-xl cta-button w-full sm:w-auto"
             >
                 Criar Conta Gratuita
             </a>
             <a
                 href="{% url 'users:login' %}"
-                class="btn btn-outline border-2 border-black text-black hover:bg-black hover:text-white text-lg px-8 py-4 cta-button"
+                class="btn btn-outline border-2 border-black text-black hover:bg-black hover:text-white text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 cta-button w-full sm:w-auto"
             >
                 Já Tenho Conta
             </a>
