@@ -141,9 +141,23 @@ Thumbs.db
 # Media files
 media/
 
-# Static files
-staticfiles/
-static/
+# Static files (keep staticfiles/ for local development)
+# staticfiles/
+static/collected/
 
 # Node modules (if using npm for frontend)
 node_modules/
+
+# Render specific
+.render/
+
+# Production environment files
+.env.production
+
+# Logs
+logs/
+*.log
+
+# Database backups
+*.sql
+*.dump

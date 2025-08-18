@@ -10,6 +10,7 @@ class SymphilikaContentScript {
     this.isProcessing = false;
     this.triggerPattern = /\/\/[\w\-]+$/; // Padrão para //palavra-chave
     this.debounceTimer = null;
+    this.isAuthenticated = false;
 
     this.init();
   }
@@ -19,6 +20,9 @@ class SymphilikaContentScript {
 
     // Carregar configurações
     await this.loadSettings();
+
+    // Verificar autenticação
+    await this.checkAuthentication();
 
     // Configurar listeners
     this.setupEventListeners();
@@ -32,21 +36,42 @@ class SymphilikaContentScript {
 
   async loadSettings() {
     try {
-      const result = await chrome.storage.local.get(["isEnabled", "shortcuts"]);
+      const result = await chrome.storage.local.get([
+        "isEnabled",
+        "shortcuts",
+        "token",
+      ]);
       this.isEnabled = result.isEnabled !== false; // Padrão é true
       this.shortcuts = result.shortcuts || [];
+      this.isAuthenticated = !!result.token;
     } catch (error) {
       console.error("Erro ao carregar configurações:", error);
     }
   }
 
+  async checkAuthentication() {
+    try {
+      const response = await chrome.runtime.sendMessage({
+        action: "init",
+      });
+      if (response) {
+        this.isAuthenticated = response.authenticated;
+      }
+    } catch (error) {
+      console.error("Erro ao verificar autenticação:", error);
+    }
+  }
+
   async syncShortcuts() {
+    if (!this.isAuthenticated) return;
+
     try {
       const response = await chrome.runtime.sendMessage({
         action: "getShortcuts",
       });
       if (response && response.shortcuts) {
         this.shortcuts = response.shortcuts;
+        console.log(`${this.shortcuts.length} atalhos carregados`);
       }
     } catch (error) {
       console.error("Erro ao sincronizar atalhos:", error);
@@ -177,12 +202,31 @@ class SymphilikaContentScript {
       let shortcut = this.findLocalShortcut(trigger);
 
       if (!shortcut) {
-        // Buscar no servidor
+        // Buscar no servidor por trigger exato
         const response = await chrome.runtime.sendMessage({
           action: "findShortcut",
           trigger: trigger,
         });
         shortcut = response?.shortcut;
+      }
+
+      // Se ainda não encontrou, buscar por texto (search)
+      if (!shortcut) {
+        try {
+          const searchResults = await chrome.runtime.sendMessage({
+            action: "searchShortcuts",
+            query: trigger.replace(/^\/\//, ""), // remove // do início
+          });
+          if (
+            searchResults &&
+            searchResults.results &&
+            searchResults.results.length > 0
+          ) {
+            shortcut = searchResults.results[0];
+          }
+        } catch (searchError) {
+          this.showError("Erro ao buscar atalhos por texto");
+        }
       }
 
       if (shortcut) {
@@ -192,7 +236,10 @@ class SymphilikaContentScript {
       }
     } catch (error) {
       console.error("Erro ao processar trigger:", error);
-      this.showError("Erro ao expandir atalho");
+      this.showError(
+        "Erro ao expandir atalho: " +
+          (error && error.message ? error.message : error),
+      );
     } finally {
       this.isProcessing = false;
     }
@@ -270,6 +317,50 @@ class SymphilikaContentScript {
 
       // Disparar evento de mudança
       input.dispatchEvent(new Event("input", { bubbles: true }));
+
+      // Highlight visual do texto expandido
+      this.highlightInsertedText(input, beforeTrigger.length, newText.length);
+    }
+  }
+
+  /**
+   * Destaca visualmente o texto recém-inserido (microanimação highlight).
+   */
+  highlightInsertedText(input, start, length) {
+    if (input.contentEditable === "true") {
+      // Para contenteditable, envolve o texto em um span temporário
+      const range = document.createRange();
+      const sel = window.getSelection();
+      const node = input.firstChild || input;
+      range.setStart(node, start);
+      range.setEnd(node, start + length);
+
+      const highlightSpan = document.createElement("span");
+      highlightSpan.style.background = "#b6e6b6";
+      highlightSpan.style.transition = "background 1s";
+      highlightSpan.className = "symplifika-highlight-inserted";
+      range.surroundContents(highlightSpan);
+
+      setTimeout(() => {
+        highlightSpan.style.background = "transparent";
+        setTimeout(() => {
+          if (highlightSpan.parentNode) {
+            while (highlightSpan.firstChild) {
+              highlightSpan.parentNode.insertBefore(
+                highlightSpan.firstChild,
+                highlightSpan,
+              );
+            }
+            highlightSpan.parentNode.removeChild(highlightSpan);
+          }
+        }, 800);
+      }, 800);
+    } else if (input.setSelectionRange) {
+      // Para input/textarea, usa seleção temporária e animação CSS
+      input.classList.add("symplifika-input-highlight");
+      setTimeout(() => {
+        input.classList.remove("symplifika-input-highlight");
+      }, 1200);
     }
   }
 
@@ -560,5 +651,26 @@ SymphilikaContentScript.prototype.logDebug = async function (...args) {
     console.log("[Symplifika DEBUG]", ...args);
   }
 };
+
+// CSS para highlight visual (injetado se não existir)
+(function injectSymplifikaHighlightCSS() {
+  if (!document.getElementById("symplifika-highlight-style")) {
+    const style = document.createElement("style");
+    style.id = "symplifika-highlight-style";
+    style.innerHTML = `
+      .symplifika-highlight-inserted {
+        background: #b6e6b6 !important;
+        transition: background 1s;
+        border-radius: 3px;
+        padding: 0 2px;
+      }
+      .symplifika-input-highlight {
+        box-shadow: 0 0 0 3px #b6e6b6 !important;
+        transition: box-shadow 1s;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+})();
 
 console.log("Symplifika Content Script carregado");

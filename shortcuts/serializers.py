@@ -12,11 +12,55 @@ class CategorySerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'updated_at']
 
     def get_shortcuts_count(self, obj):
+        if hasattr(obj, 'shortcuts_count'):
+            return obj.shortcuts_count
         return obj.shortcuts.filter(is_active=True).count()
 
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
         return super().create(validated_data)
+
+    def validate_name(self, value):
+        """Valida se o nome da categoria não existe para o usuário"""
+        if not value or not value.strip():
+            raise serializers.ValidationError("O nome da categoria é obrigatório.")
+
+        value = value.strip()
+
+        if len(value) < 2:
+            raise serializers.ValidationError("O nome da categoria deve ter pelo menos 2 caracteres.")
+
+        if len(value) > 100:
+            raise serializers.ValidationError("O nome da categoria deve ter no máximo 100 caracteres.")
+
+        user = self.context['request'].user
+
+        # Para criação, verifica se já existe categoria com este nome
+        if not self.instance and Category.objects.filter(user=user, name=value).exists():
+            raise serializers.ValidationError("Já existe uma categoria com este nome.")
+
+        # Para atualização, verifica se existe outra categoria com este nome
+        if self.instance:
+            existing = Category.objects.filter(user=user, name=value).exclude(id=self.instance.id)
+            if existing.exists():
+                raise serializers.ValidationError("Já existe uma categoria com este nome.")
+
+        return value
+
+    def validate_color(self, value):
+        """Valida se a cor está em formato hexadecimal válido"""
+        if not value:
+            return "#007bff"  # Cor padrão
+
+        if not value.startswith('#') or len(value) != 7:
+            raise serializers.ValidationError("A cor deve estar no formato hexadecimal (#RRGGBB).")
+
+        try:
+            int(value[1:], 16)  # Verifica se é um valor hexadecimal válido
+        except ValueError:
+            raise serializers.ValidationError("A cor deve estar no formato hexadecimal válido (#RRGGBB).")
+
+        return value
 
 
 class ShortcutSerializer(serializers.ModelSerializer):

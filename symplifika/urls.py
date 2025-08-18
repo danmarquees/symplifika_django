@@ -37,9 +37,8 @@ def api_root(request):
 urlpatterns = [
     path('', include('core.urls')),
     path('admin/', admin.site.urls),
-    path('api/', include('shortcuts.urls')),  # Expose shortcuts API endpoints at /api/
-    path('api/root/', api_root, name='api-root'),  # Optionally keep your API root at /api/root/
-    path('shortcuts/', include('shortcuts.urls')),  # (optional, for legacy)
+    path('shortcuts/api/', include('shortcuts.urls')),  # Shortcuts API endpoints
+    path('api/root/', api_root, name='api-root'),
     path('users/', include('users.urls')),
 ]
 

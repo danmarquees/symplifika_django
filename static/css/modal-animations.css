@@ -1,0 +1,379 @@
+/* Modal Animations CSS for Symplifika */
+/* Enhanced modal transitions and animations */
+
+/* Base modal styles */
+.modal-overlay {
+  transition: opacity 0.2s ease-out, visibility 0.2s ease-out;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.modal-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Modal content animations */
+.modal-content,
+.modal-container {
+  transform: scale(0.95) translateY(-20px);
+  transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+  opacity: 0;
+}
+
+.modal-overlay.show .modal-content,
+.modal-overlay.show .modal-container {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+/* Slide-in animation */
+.modal-overlay.animate-slide .modal-content,
+.modal-overlay.animate-slide .modal-container {
+  transform: translateY(100px);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-out;
+}
+
+.modal-overlay.animate-slide.show .modal-content,
+.modal-overlay.animate-slide.show .modal-container {
+  transform: translateY(0);
+}
+
+/* Fade animation */
+.modal-overlay.animate-fade {
+  transition: opacity 0.3s ease-out;
+}
+
+.modal-overlay.animate-fade .modal-content,
+.modal-overlay.animate-fade .modal-container {
+  transform: none;
+  transition: opacity 0.3s ease-out;
+}
+
+/* Scale animation */
+.modal-overlay.animate-scale .modal-content,
+.modal-overlay.animate-scale .modal-container {
+  transform: scale(0.8);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease-out;
+}
+
+.modal-overlay.animate-scale.show .modal-content,
+.modal-overlay.animate-scale.show .modal-container {
+  transform: scale(1);
+}
+
+/* Slide from top */
+.modal-overlay.animate-slide-top .modal-content,
+.modal-overlay.animate-slide-top .modal-container {
+  transform: translateY(-100px);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-out;
+}
+
+.modal-overlay.animate-slide-top.show .modal-content,
+.modal-overlay.animate-slide-top.show .modal-container {
+  transform: translateY(0);
+}
+
+/* Animate-in and animate-out classes for JavaScript control */
+.modal-overlay.animate-in {
+  animation: modalFadeIn 0.2s ease-out forwards;
+}
+
+.modal-overlay.animate-in .modal-content,
+.modal-overlay.animate-in .modal-container {
+  animation: modalSlideIn 0.2s ease-out forwards;
+}
+
+.modal-overlay.animate-out {
+  animation: modalFadeOut 0.2s ease-out forwards;
+}
+
+.modal-overlay.animate-out .modal-content,
+.modal-overlay.animate-out .modal-container {
+  animation: modalSlideOut 0.2s ease-out forwards;
+}
+
+/* Keyframe animations */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    visibility: hidden;
+  }
+  to {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+@keyframes modalFadeOut {
+  from {
+    opacity: 1;
+    visibility: visible;
+  }
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@keyframes modalSlideIn {
+  from {
+    transform: scale(0.95) translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideOut {
+  from {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.95) translateY(-20px);
+    opacity: 0;
+  }
+}
+
+@keyframes modalBounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Loading modal specific animations */
+.modal-loading .modal-container {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: none;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.modal-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f4f6;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.modal-loading-text {
+  text-align: center;
+  color: #374151;
+  font-weight: 500;
+}
+
+/* Confirmation modal styles */
+.modal-confirm {
+  text-align: center;
+  max-width: 400px;
+}
+
+.modal-confirm-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.modal-confirm-icon.warning {
+  background: #fef3c7;
+  color: #f59e0b;
+}
+
+.modal-confirm-icon.danger {
+  background: #fecaca;
+  color: #ef4444;
+}
+
+.modal-confirm-icon.success {
+  background: #d1fae5;
+  color: #10b981;
+}
+
+.modal-confirm-icon.info {
+  background: #dbeafe;
+  color: #3b82f6;
+}
+
+.modal-confirm-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  color: #111827;
+}
+
+.modal-confirm-message {
+  color: #6b7280;
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+
+/* Focus styles for accessibility */
+.modal-overlay:focus-within .modal-content,
+.modal-overlay:focus-within .modal-container {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.modal-content *:focus,
+.modal-container *:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Close button animations */
+.modal-close,
+[data-modal-close] {
+  transition: all 0.2s ease-out;
+  border-radius: 4px;
+}
+
+.modal-close:hover,
+[data-modal-close]:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  transform: scale(1.1);
+}
+
+.modal-close:active,
+[data-modal-close]:active {
+  transform: scale(0.95);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .modal-loading .modal-container {
+    background: rgba(31, 41, 55, 0.95);
+    color: #f9fafb;
+  }
+
+  .modal-loading-text {
+    color: #d1d5db;
+  }
+
+  .modal-confirm-title {
+    color: #f9fafb;
+  }
+
+  .modal-confirm-message {
+    color: #9ca3af;
+  }
+}
+
+.dark .modal-loading .modal-container {
+  background: rgba(31, 41, 55, 0.95);
+  color: #f9fafb;
+}
+
+.dark .modal-loading-text {
+  color: #d1d5db;
+}
+
+.dark .modal-confirm-title {
+  color: #f9fafb;
+}
+
+.dark .modal-confirm-message {
+  color: #9ca3af;
+}
+
+/* Responsive modal animations */
+@media (max-width: 640px) {
+  .modal-content,
+  .modal-container {
+    margin: 16px;
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+  }
+
+  /* Slide up from bottom on mobile */
+  .modal-overlay.animate-mobile .modal-content,
+  .modal-overlay.animate-mobile .modal-container {
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .modal-overlay.animate-mobile.show .modal-content,
+  .modal-overlay.animate-mobile.show .modal-container {
+    transform: translateY(0);
+  }
+}
+
+/* Reduce animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .modal-overlay,
+  .modal-content,
+  .modal-container,
+  .modal-close,
+  [data-modal-close] {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .modal-overlay.animate-in,
+  .modal-overlay.animate-out,
+  .modal-overlay.animate-in .modal-content,
+  .modal-overlay.animate-in .modal-container,
+  .modal-overlay.animate-out .modal-content,
+  .modal-overlay.animate-out .modal-container {
+    animation: none !important;
+  }
+
+  .modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .modal-overlay.show .modal-content,
+  .modal-overlay.show .modal-container {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .modal-overlay {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+
+  .modal-content,
+  .modal-container {
+    border: 2px solid #000;
+  }
+
+  .modal-close,
+  [data-modal-close] {
+    border: 1px solid #000;
+  }
+}

@@ -10,8 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 from decouple import config
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +28,12 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-08hhywmq^&43h_lqxa4pc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=str).split(',')
+# Render.com deployment configuration
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS = [RENDER_EXTERNAL_HOSTNAME, 'localhost', '127.0.0.1']
+else:
+    ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,testserver', cast=str).split(',')
 
 
 # Application definition
@@ -52,6 +59,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -84,24 +92,20 @@ WSGI_APPLICATION = 'symplifika.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Use PostgreSQL in production (Render), SQLite in development
+if 'DATABASE_URL' in os.environ:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=config('DATABASE_URL')
+        )
     }
-}
-
-# Uncomment below for PostgreSQL
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': config('DB_NAME', default='symplifika_db'),
-#         'USER': config('DB_USER', default='postgres'),
-#         'PASSWORD': config('DB_PASSWORD', default=''),
-#         'HOST': config('DB_HOST', default='localhost'),
-#         'PORT': config('DB_PORT', default='5432'),
-#     }
-# }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
@@ -145,6 +149,9 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
+# Use WhiteNoise for static files in production
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -174,25 +181,48 @@ REST_FRAMEWORK = {
 }
 
 # CORS Settings
-CORS_ALLOWED_ORIGINS = config(
-    'CORS_ALLOWED_ORIGINS',
-    default='http://localhost:3000,http://127.0.0.1:3000',
-    cast=str
-).split(',')
+if RENDER_EXTERNAL_HOSTNAME:
+    CORS_ALLOWED_ORIGINS = [
+        f"https://{RENDER_EXTERNAL_HOSTNAME}",
+        f"http://{RENDER_EXTERNAL_HOSTNAME}",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
+    CSRF_TRUSTED_ORIGINS = [
+        f"https://{RENDER_EXTERNAL_HOSTNAME}",
+        f"http://{RENDER_EXTERNAL_HOSTNAME}",
+    ]
+else:
+    CORS_ALLOWED_ORIGINS = config(
+        'CORS_ALLOWED_ORIGINS',
+        default='http://localhost:8000,http://127.0.0.1:8000,http://localhost:3000,http://127.0.0.1:3000',
+        cast=str
+    ).split(',')
+
+    CSRF_TRUSTED_ORIGINS = config(
+        'CSRF_TRUSTED_ORIGINS',
+        default='http://localhost:8000,http://127.0.0.1:8000,http://localhost:3000,http://127.0.0.1:3000',
+        cast=str
+    ).split(',')
 
 CORS_ALLOW_CREDENTIALS = True
-
-CSRF_TRUSTED_ORIGINS = config(
-    'CSRF_TRUSTED_ORIGINS',
-    default='http://localhost:3000,http://127.0.0.1:3000',
-    cast=str
-).split(',')
 
 # AI Configuration
 OPENAI_API_KEY = config('OPENAI_API_KEY', default='')
 
 # Custom User Model (if needed)
 # AUTH_USER_MODEL = 'users.User'
+
+# Security settings for production
+if not DEBUG:
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_REDIRECT_EXEMPT = []
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 # Logging
 LOGGING = {
@@ -211,12 +241,12 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['file', 'console'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': True,
         },
         'symplifika': {
-            'handlers': ['file', 'console'],
+            'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,
         },

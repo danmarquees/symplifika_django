@@ -1,12 +1,16 @@
 from django.shortcuts import get_object_or_404
 from django.db.models import Q, Count, Sum
 from django.utils import timezone
+from django.db import IntegrityError
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from datetime import timedelta
 import time
+import logging
+
+logger = logging.getLogger(__name__)
 
 from .models import Category, Shortcut, ShortcutUsage, AIEnhancementLog
 from .serializers import (
@@ -32,8 +36,55 @@ class CategoryViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Category.objects.filter(user=self.request.user).annotate(
             shortcuts_count=Count('shortcuts', filter=Q(shortcuts__is_active=True))
-        )
+        ).order_by('name')
 
+    def create(self, request, *args, **kwargs):
+        """Sobrescreve create para tratar erros de integridade"""
+        logger.info("CategoryViewSet.create called with data: %s", request.data)
+        try:
+            serializer = self.get_serializer(data=request.data)
+            if serializer.is_valid():
+                logger.info("Serializer is valid, creating category")
+                return super().create(request, *args, **kwargs)
+            else:
+                logger.warning("Serializer validation failed: %s", serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except IntegrityError as e:
+            logger.error("IntegrityError in category creation: %s", e)
+            return Response(
+                {'name': ['Já existe uma categoria com este nome.']},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            logger.error("Unexpected error in category creation: %s", e)
+            return Response(
+                {'error': 'Erro interno do servidor'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    def update(self, request, *args, **kwargs):
+        """Sobrescreve update para tratar erros de integridade"""
+        logger.info("CategoryViewSet.update called with data: %s", request.data)
+        try:
+            serializer = self.get_serializer(instance=self.get_object(), data=request.data, partial=kwargs.get('partial', False))
+            if serializer.is_valid():
+                logger.info("Serializer is valid, updating category")
+                return super().update(request, *args, **kwargs)
+            else:
+                logger.warning("Serializer validation failed: %s", serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except IntegrityError as e:
+            logger.error("IntegrityError in category update: %s", e)
+            return Response(
+                {'name': ['Já existe uma categoria com este nome.']},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            logger.error("Unexpected error in category update: %s", e)
+            return Response(
+                {'error': 'Erro interno do servidor'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
     @action(detail=True, methods=['get'])
     def shortcuts(self, request, pk=None):
         """Lista atalhos de uma categoria específica"""
@@ -49,7 +100,7 @@ class ShortcutViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
-        return Shortcut.objects.filter(user=self.request.user)
+        return Shortcut.objects.filter(user=self.request.user).order_by('-last_used', '-use_count', 'trigger')
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -57,6 +108,34 @@ class ShortcutViewSet(viewsets.ModelViewSet):
         elif self.action in ['update', 'partial_update']:
             return ShortcutUpdateSerializer
         return ShortcutSerializer
+
+    def create(self, request, *args, **kwargs):
+        """Sobrescreve create para tratar erros de integridade"""
+        try:
+            serializer = self.get_serializer(data=request.data)
+            if serializer.is_valid():
+                return super().create(request, *args, **kwargs)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except IntegrityError:
+            return Response(
+                {'trigger': ['Já existe um atalho com este gatilho.']},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    def update(self, request, *args, **kwargs):
+        """Sobrescreve update para tratar erros de integridade"""
+        try:
+            serializer = self.get_serializer(instance=self.get_object(), data=request.data, partial=kwargs.get('partial', False))
+            if serializer.is_valid():
+                return super().update(request, *args, **kwargs)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except IntegrityError:
+            return Response(
+                {'trigger': ['Já existe um atalho com este gatilho.']},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
     @action(detail=False, methods=['post'])
     def search(self, request):
@@ -292,7 +371,7 @@ class ShortcutUsageViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
-        return ShortcutUsage.objects.filter(user=self.request.user)
+        return ShortcutUsage.objects.filter(user=self.request.user).order_by('-used_at')
 
 
 class AIEnhancementLogViewSet(viewsets.ReadOnlyModelViewSet):
@@ -302,4 +381,4 @@ class AIEnhancementLogViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
-        return AIEnhancementLog.objects.filter(shortcut__user=self.request.user)
+        return AIEnhancementLog.objects.filter(shortcut__user=self.request.user).order_by('-created_at')

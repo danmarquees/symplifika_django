@@ -1,406 +1,508 @@
-// Symplifika Chrome Extension - Options Page JavaScript
-// Handles settings configuration and account management
+// Symplifika Chrome Extension - Options/Settings Page
+// Página de configurações da extensão
 
 class SymphilikaOptions {
   constructor() {
+    this.serverUrl = "http://localhost:8000";
+    this.authToken = null;
+    this.isAuthenticated = false;
+    this.user = null;
     this.settings = {
-      serverUrl: "http://localhost:8000",
-      apiTimeout: 30,
-      extensionEnabled: true,
       autoExpand: true,
       showNotifications: true,
-      soundEffects: false,
-      triggerDelay: 100,
-      syncInterval: 30,
+      syncInterval: 5, // minutos
+      triggerPattern: "//",
+      enableShortcuts: true,
       debugMode: false,
-      betaFeatures: false,
     };
-
-    this.user = null;
-    this.stats = {};
-    this.isAuthenticated = false;
 
     this.init();
   }
 
   async init() {
-    console.log("Symplifika Options page initializing...");
+    console.log("Symplifika Options inicializado");
 
-    // Setup event listeners
-    this.setupEventListeners();
-
-    // Load settings
-    await this.loadSettings();
-
-    // Load user data
-    await this.loadUserData();
-
-    // Update UI
-    this.updateUI();
-
-    // Test connection
-    this.testConnection();
-  }
-
-  setupEventListeners() {
-    // Save button
-    document
-      .getElementById("saveBtn")
-      .addEventListener("click", () => this.saveSettings());
-
-    // Connection test
-    document
-      .getElementById("testConnectionBtn")
-      .addEventListener("click", () => this.testConnection());
-
-    // Account actions
-    document
-      .getElementById("openLoginBtn")
-      .addEventListener("click", () => this.openLogin());
-    document
-      .getElementById("logoutBtn")
-      .addEventListener("click", () => this.logout());
-
-    // Advanced actions
-    document
-      .getElementById("clearCacheBtn")
-      .addEventListener("click", () => this.clearCache());
-    document
-      .getElementById("exportSettingsBtn")
-      .addEventListener("click", () => this.exportSettings());
-    document
-      .getElementById("importSettingsBtn")
-      .addEventListener("click", () => this.importSettings());
-
-    // File input for import
-    document
-      .getElementById("importFileInput")
-      .addEventListener("change", (e) => this.handleFileImport(e));
-
-    // Form inputs
-    document.getElementById("serverUrl").addEventListener("change", (e) => {
-      this.settings.serverUrl = e.target.value;
-    });
-
-    document.getElementById("apiTimeout").addEventListener("change", (e) => {
-      this.settings.apiTimeout = parseInt(e.target.value);
-    });
-
-    document
-      .getElementById("extensionEnabled")
-      .addEventListener("change", (e) => {
-        this.settings.extensionEnabled = e.target.checked;
-      });
-
-    document.getElementById("autoExpand").addEventListener("change", (e) => {
-      this.settings.autoExpand = e.target.checked;
-    });
-
-    document
-      .getElementById("showNotifications")
-      .addEventListener("change", (e) => {
-        this.settings.showNotifications = e.target.checked;
-      });
-
-    document.getElementById("soundEffects").addEventListener("change", (e) => {
-      this.settings.soundEffects = e.target.checked;
-    });
-
-    document.getElementById("debugMode").addEventListener("change", (e) => {
-      this.settings.debugMode = e.target.checked;
-    });
-
-    document.getElementById("betaFeatures").addEventListener("change", (e) => {
-      this.settings.betaFeatures = e.target.checked;
-    });
-
-    // Range inputs
-    document.getElementById("triggerDelay").addEventListener("input", (e) => {
-      this.settings.triggerDelay = parseInt(e.target.value);
-      document.getElementById("triggerDelayValue").textContent = e.target.value;
-    });
-
-    document.getElementById("syncInterval").addEventListener("input", (e) => {
-      this.settings.syncInterval = parseInt(e.target.value);
-      document.getElementById("syncIntervalValue").textContent = e.target.value;
-    });
+    try {
+      await this.loadSettings();
+      await this.loadUserData();
+      this.setupEventListeners();
+      this.renderSettings();
+      this.updateUI();
+    } catch (error) {
+      console.error("Erro na inicialização das opções:", error);
+      this.showNotification("Erro ao carregar configurações", "error");
+    }
   }
 
   async loadSettings() {
-    try {
-      const stored = await chrome.storage.local.get("settings");
-      if (stored.settings) {
-        this.settings = { ...this.settings, ...stored.settings };
-      }
-    } catch (error) {
-      console.error("Error loading settings:", error);
-      this.showToast("Erro ao carregar configurações", "error");
-    }
-  }
-
-  async saveSettings() {
-    const saveBtn = document.getElementById("saveBtn");
-    this.setButtonLoading(saveBtn, true);
-
-    try {
-      // Save to local storage
-      await chrome.storage.local.set({ settings: this.settings });
-
-      // Send to background script
-      await this.sendMessage({
-        action: "updateSettings",
-        settings: this.settings,
-      });
-
-      this.showToast("Configurações salvas com sucesso!", "success");
-    } catch (error) {
-      console.error("Error saving settings:", error);
-      this.showToast("Erro ao salvar configurações", "error");
-    } finally {
-      this.setButtonLoading(saveBtn, false);
-    }
+    return new Promise((resolve) => {
+      chrome.storage.sync.get(
+        [
+          "serverUrl",
+          "authToken",
+          "autoExpand",
+          "showNotifications",
+          "syncInterval",
+          "triggerPattern",
+          "enableShortcuts",
+          "debugMode",
+        ],
+        (result) => {
+          this.serverUrl = result.serverUrl || "http://localhost:8000";
+          this.authToken = result.authToken || null;
+          this.isAuthenticated = !!this.authToken;
+          this.settings = {
+            autoExpand: result.autoExpand !== false,
+            showNotifications: result.showNotifications !== false,
+            syncInterval: result.syncInterval || 5,
+            triggerPattern: result.triggerPattern || "//",
+            enableShortcuts: result.enableShortcuts !== false,
+            debugMode: result.debugMode || false,
+          };
+          resolve();
+        },
+      );
+    });
   }
 
   async loadUserData() {
+    if (!this.isAuthenticated) return;
+
     try {
-      const response = await this.sendMessage({ action: "init" });
-
-      if (response && response.authenticated) {
-        this.isAuthenticated = true;
-
-        // Load user stats
-        const statsResponse = await this.sendMessage({ action: "getStats" });
-        if (statsResponse && statsResponse.authenticated) {
-          this.stats = statsResponse;
-        }
-
-        // Load user info from storage
-        const stored = await chrome.storage.local.get("user");
-        if (stored.user) {
-          this.user = stored.user;
-        }
-      } else {
-        this.isAuthenticated = false;
+      const response = await this.apiRequest("GET", "/users/api/users/me/");
+      if (response.ok) {
+        this.user = await response.json();
       }
     } catch (error) {
-      console.error("Error loading user data:", error);
-      this.isAuthenticated = false;
+      console.error("Erro ao carregar dados do usuário:", error);
     }
   }
 
-  updateUI() {
-    // Update form values
-    document.getElementById("serverUrl").value = this.settings.serverUrl;
-    document.getElementById("apiTimeout").value = this.settings.apiTimeout;
-    document.getElementById("extensionEnabled").checked =
-      this.settings.extensionEnabled;
+  async apiRequest(method, endpoint, data = null) {
+    const url = `${this.serverUrl}${endpoint}`;
+    const options = {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    if (this.authToken) {
+      options.headers["Authorization"] = `Token ${this.authToken}`;
+    }
+
+    if (data) {
+      options.body = JSON.stringify(data);
+    }
+
+    return fetch(url, options);
+  }
+
+  setupEventListeners() {
+    // Formulário de configurações
+    const settingsForm = document.getElementById("settingsForm");
+    if (settingsForm) {
+      settingsForm.addEventListener(
+        "submit",
+        this.handleSaveSettings.bind(this),
+      );
+    }
+
+    // Botão de teste de conexão
+    const testConnectionBtn = document.getElementById("testConnection");
+    if (testConnectionBtn) {
+      testConnectionBtn.addEventListener(
+        "click",
+        this.testConnection.bind(this),
+      );
+    }
+
+    // Botão de logout
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", this.handleLogout.bind(this));
+    }
+
+    // Botão de sincronização
+    const syncBtn = document.getElementById("syncBtn");
+    if (syncBtn) {
+      syncBtn.addEventListener("click", this.syncShortcuts.bind(this));
+    }
+
+    // Reset para padrões
+    const resetBtn = document.getElementById("resetSettings");
+    if (resetBtn) {
+      resetBtn.addEventListener("click", this.resetToDefaults.bind(this));
+    }
+
+    // Validação em tempo real da URL do servidor
+    const serverUrlInput = document.getElementById("serverUrl");
+    if (serverUrlInput) {
+      serverUrlInput.addEventListener(
+        "blur",
+        this.validateServerUrl.bind(this),
+      );
+    }
+
+    // Atualizar intervalo de sincronização em tempo real
+    const syncIntervalInput = document.getElementById("syncInterval");
+    if (syncIntervalInput) {
+      syncIntervalInput.addEventListener(
+        "input",
+        this.updateSyncIntervalDisplay.bind(this),
+      );
+    }
+
+    // Importar/Exportar configurações
+    const exportBtn = document.getElementById("exportSettings");
+    if (exportBtn) {
+      exportBtn.addEventListener("click", this.exportSettings.bind(this));
+    }
+
+    const importBtn = document.getElementById("importSettings");
+    if (importBtn) {
+      importBtn.addEventListener("click", this.importSettings.bind(this));
+    }
+
+    const importFileInput = document.getElementById("importFile");
+    if (importFileInput) {
+      importFileInput.addEventListener(
+        "change",
+        this.handleImportFile.bind(this),
+      );
+    }
+  }
+
+  renderSettings() {
+    // Preencher campos do formulário
+    document.getElementById("serverUrl").value = this.serverUrl;
     document.getElementById("autoExpand").checked = this.settings.autoExpand;
     document.getElementById("showNotifications").checked =
       this.settings.showNotifications;
-    document.getElementById("soundEffects").checked =
-      this.settings.soundEffects;
-    document.getElementById("debugMode").checked = this.settings.debugMode;
-    document.getElementById("betaFeatures").checked =
-      this.settings.betaFeatures;
-
-    // Range inputs
-    document.getElementById("triggerDelay").value = this.settings.triggerDelay;
-    document.getElementById("triggerDelayValue").textContent =
-      this.settings.triggerDelay;
     document.getElementById("syncInterval").value = this.settings.syncInterval;
-    document.getElementById("syncIntervalValue").textContent =
-      this.settings.syncInterval;
+    document.getElementById("triggerPattern").value =
+      this.settings.triggerPattern;
+    document.getElementById("enableShortcuts").checked =
+      this.settings.enableShortcuts;
+    document.getElementById("debugMode").checked = this.settings.debugMode;
 
-    // Update account section
+    this.updateSyncIntervalDisplay();
+  }
+
+  updateUI() {
+    const authStatus = document.getElementById("authStatus");
+    const userInfo = document.getElementById("userInfo");
+    const logoutBtn = document.getElementById("logoutBtn");
+
     if (this.isAuthenticated && this.user) {
-      this.showAccountInfo();
+      authStatus.innerHTML = `
+        <div class="status-badge status-success">
+          <i class="fas fa-check-circle"></i>
+          Conectado
+        </div>
+      `;
+
+      userInfo.innerHTML = `
+        <div class="user-card">
+          <div class="user-avatar">
+            ${this.user.username?.charAt(0).toUpperCase() || "U"}
+          </div>
+          <div class="user-details">
+            <div class="user-name">${this.user.username}</div>
+            <div class="user-email">${this.user.email || "N/A"}</div>
+            <div class="user-plan">Plano: ${this.user.profile?.plan_type || "Free"}</div>
+          </div>
+        </div>
+      `;
+
+      if (logoutBtn) {
+        logoutBtn.style.display = "block";
+      }
     } else {
-      this.showNotLoggedIn();
+      authStatus.innerHTML = `
+        <div class="status-badge status-error">
+          <i class="fas fa-times-circle"></i>
+          Desconectado
+        </div>
+      `;
+
+      userInfo.innerHTML = `
+        <div class="auth-message">
+          <p>Faça login através do popup da extensão para acessar todas as funcionalidades.</p>
+        </div>
+      `;
+
+      if (logoutBtn) {
+        logoutBtn.style.display = "none";
+      }
+    }
+  }
+
+  async handleSaveSettings(event) {
+    event.preventDefault();
+
+    const saveBtn = document.getElementById("saveSettings");
+    const originalText = saveBtn.textContent;
+
+    try {
+      saveBtn.textContent = "Salvando...";
+      saveBtn.disabled = true;
+
+      // Coletar dados do formulário
+      const formData = new FormData(event.target);
+      const newSettings = {
+        serverUrl: formData.get("serverUrl").trim(),
+        autoExpand: formData.has("autoExpand"),
+        showNotifications: formData.has("showNotifications"),
+        syncInterval: parseInt(formData.get("syncInterval")) || 5,
+        triggerPattern: formData.get("triggerPattern").trim() || "//",
+        enableShortcuts: formData.has("enableShortcuts"),
+        debugMode: formData.has("debugMode"),
+      };
+
+      // Validar configurações
+      if (!this.validateSettings(newSettings)) {
+        return;
+      }
+
+      // Salvar configurações
+      await this.saveSettings(newSettings);
+
+      this.showNotification("Configurações salvas com sucesso!", "success");
+    } catch (error) {
+      console.error("Erro ao salvar configurações:", error);
+      this.showNotification("Erro ao salvar configurações", "error");
+    } finally {
+      saveBtn.textContent = originalText;
+      saveBtn.disabled = false;
+    }
+  }
+
+  validateSettings(settings) {
+    // Validar URL do servidor
+    try {
+      new URL(settings.serverUrl);
+    } catch {
+      this.showNotification("URL do servidor inválida", "error");
+      return false;
     }
 
-    // Update extension version
-    const manifest = chrome.runtime.getManifest();
-    document.getElementById("extensionVersion").textContent = manifest.version;
+    // Validar intervalo de sincronização
+    if (settings.syncInterval < 1 || settings.syncInterval > 60) {
+      this.showNotification(
+        "Intervalo de sincronização deve ser entre 1 e 60 minutos",
+        "error",
+      );
+      return false;
+    }
+
+    // Validar padrão de trigger
+    if (!settings.triggerPattern || settings.triggerPattern.length === 0) {
+      this.showNotification("Padrão de ativação não pode estar vazio", "error");
+      return false;
+    }
+
+    return true;
   }
 
-  showAccountInfo() {
-    document.getElementById("accountInfo").style.display = "block";
-    document.getElementById("notLoggedIn").style.display = "none";
-
-    // User info
-    document.getElementById("userName").textContent =
-      this.user.username || "--";
-    document.getElementById("userEmail").textContent = this.user.email || "--";
-
-    // User plan
-    const planEl = document.getElementById("userPlan");
-    const plan = this.user.profile?.plan || "free";
-    planEl.textContent = this.getPlanLabel(plan);
-    planEl.className = `user-plan ${plan}`;
-
-    // User avatar
-    const avatarEl = document.getElementById("userAvatar");
-    const initials = this.user.username
-      ? this.user.username.substring(0, 2).toUpperCase()
-      : "??";
-    avatarEl.textContent = initials;
-
-    // Stats
-    document.getElementById("totalShortcuts").textContent =
-      this.stats.total_shortcuts || "--";
-    document.getElementById("totalUsage").textContent =
-      this.stats.total_usage_count || "--";
-    document.getElementById("aiUsage").textContent =
-      this.stats.ai_requests_used || "--";
-  }
-
-  showNotLoggedIn() {
-    document.getElementById("accountInfo").style.display = "none";
-    document.getElementById("notLoggedIn").style.display = "block";
-  }
-
-  getPlanLabel(plan) {
-    const labels = {
-      free: "Gratuito",
-      premium: "Premium",
-      enterprise: "Enterprise",
-    };
-    return labels[plan] || plan;
+  async saveSettings(newSettings) {
+    return new Promise((resolve, reject) => {
+      chrome.storage.sync.set(newSettings, () => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          // Atualizar configurações locais
+          Object.assign(this.settings, newSettings);
+          this.serverUrl = newSettings.serverUrl;
+          resolve();
+        }
+      });
+    });
   }
 
   async testConnection() {
-    const statusDot = document.getElementById("connectionDot");
-    const statusText = document.getElementById("connectionStatus");
-    const testBtn = document.getElementById("testConnectionBtn");
-
-    // Set checking state
-    statusDot.className = "status-dot checking";
-    statusText.textContent = "Testando conexão...";
-    this.setButtonLoading(testBtn, true);
+    const testBtn = document.getElementById("testConnection");
+    const statusIcon = testBtn.querySelector("i");
+    const statusText = testBtn.querySelector(".status-text");
 
     try {
-      // Prefer a user endpoint that always exists and does not require authentication for health check
-      const response = await fetch(
-        `${this.settings.serverUrl}/users/api/users/me/`,
-        {
-          method: "GET",
-          // timeout: this.settings.apiTimeout * 1000 // fetch does not support timeout natively
-        },
-      );
+      testBtn.disabled = true;
+      statusIcon.className = "fas fa-spinner fa-spin";
+      statusText.textContent = "Testando...";
+
+      const response = await fetch(`${this.serverUrl}/api/root/`);
 
       if (response.ok) {
-        statusDot.className = "status-dot connected";
-        statusText.textContent = "Conectado";
-        this.showToast("Conexão estabelecida com sucesso!", "success");
+        const data = await response.json();
+        statusIcon.className = "fas fa-check-circle";
+        statusText.textContent = "Conexão OK";
+        this.showNotification(
+          `Conectado com sucesso ao ${data.message || "servidor"}`,
+          "success",
+        );
       } else {
         throw new Error(`HTTP ${response.status}`);
       }
     } catch (error) {
-      console.error("Connection test failed:", error);
-      statusDot.className = "status-dot disconnected";
+      console.error("Erro no teste de conexão:", error);
+      statusIcon.className = "fas fa-times-circle";
       statusText.textContent = "Falha na conexão";
-      this.showToast("Erro na conexão: " + error.message, "error");
+      this.showNotification("Falha na conexão com o servidor", "error");
     } finally {
-      this.setButtonLoading(testBtn, false);
+      testBtn.disabled = false;
+
+      // Resetar ícone após 3 segundos
+      setTimeout(() => {
+        statusIcon.className = "fas fa-plug";
+        statusText.textContent = "Testar Conexão";
+      }, 3000);
     }
   }
 
-  openLogin() {
-    chrome.tabs.create({
-      url: `${this.settings.serverUrl.replace(/\/$/, "")}/users/auth/login/`,
-    });
-  }
+  async validateServerUrl() {
+    const input = document.getElementById("serverUrl");
+    const url = input.value.trim();
 
-  async logout() {
+    if (!url) return;
+
     try {
-      await this.sendMessage({ action: "logout" });
-      this.isAuthenticated = false;
-      this.user = null;
-      this.stats = {};
-      this.updateUI();
-      this.showToast("Logout realizado com sucesso!", "info");
-    } catch (error) {
-      console.error("Logout error:", error);
-      this.showToast("Erro no logout", "error");
+      new URL(url);
+      input.classList.remove("invalid");
+      input.classList.add("valid");
+    } catch {
+      input.classList.remove("valid");
+      input.classList.add("invalid");
     }
   }
 
-  async clearCache() {
-    const clearBtn = document.getElementById("clearCacheBtn");
-    this.setButtonLoading(clearBtn, true);
+  updateSyncIntervalDisplay() {
+    const input = document.getElementById("syncInterval");
+    const display = document.getElementById("syncIntervalDisplay");
+    const value = parseInt(input.value) || 5;
 
-    try {
-      // Clear extension storage
-      await chrome.storage.local.clear();
+    display.textContent = value === 1 ? "1 minuto" : `${value} minutos`;
+  }
 
-      // Reset settings to defaults
-      this.settings = {
-        serverUrl: "http://localhost:8000",
-        apiTimeout: 30,
-        extensionEnabled: true,
-        autoExpand: true,
-        showNotifications: true,
-        soundEffects: false,
-        triggerDelay: 100,
-        syncInterval: 30,
-        debugMode: false,
-        betaFeatures: false,
-      };
+  async handleLogout() {
+    if (confirm("Tem certeza que deseja fazer logout?")) {
+      try {
+        // Notificar background script
+        await chrome.runtime.sendMessage({ action: "logout" });
 
-      // Reset authentication
-      this.isAuthenticated = false;
-      this.user = null;
-      this.stats = {};
+        // Limpar dados locais
+        await chrome.storage.sync.remove("authToken");
 
-      // Update UI
-      this.updateUI();
+        this.authToken = null;
+        this.isAuthenticated = false;
+        this.user = null;
 
-      this.showToast("Cache limpo com sucesso!", "success");
-    } catch (error) {
-      console.error("Clear cache error:", error);
-      this.showToast("Erro ao limpar cache", "error");
-    } finally {
-      this.setButtonLoading(clearBtn, false);
+        this.updateUI();
+        this.showNotification("Logout realizado com sucesso!", "success");
+      } catch (error) {
+        console.error("Erro no logout:", error);
+        this.showNotification("Erro ao fazer logout", "error");
+      }
     }
   }
 
-  async exportSettings() {
-    try {
-      const exportData = {
-        version: "1.0.0",
-        timestamp: new Date().toISOString(),
-        settings: this.settings,
-        user: this.user
-          ? {
-              username: this.user.username,
-              email: this.user.email,
-            }
-          : null,
-      };
+  async syncShortcuts() {
+    if (!this.isAuthenticated) {
+      this.showNotification("Faça login para sincronizar atalhos", "warning");
+      return;
+    }
 
-      const blob = new Blob([JSON.stringify(exportData, null, 2)], {
-        type: "application/json",
+    const syncBtn = document.getElementById("syncBtn");
+    const syncIcon = syncBtn.querySelector("i");
+    const syncText = syncBtn.querySelector(".sync-text");
+
+    try {
+      syncBtn.disabled = true;
+      syncIcon.classList.add("fa-spin");
+      syncText.textContent = "Sincronizando...";
+
+      const response = await chrome.runtime.sendMessage({
+        action: "syncShortcuts",
       });
 
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `symplifika-settings-${new Date().toISOString().split("T")[0]}.json`;
-      a.click();
-
-      URL.revokeObjectURL(url);
-      this.showToast("Configurações exportadas com sucesso!", "success");
+      if (response && response.success) {
+        this.showNotification(
+          `${response.shortcuts || 0} atalhos sincronizados com sucesso!`,
+          "success",
+        );
+      } else {
+        throw new Error("Falha na sincronização");
+      }
     } catch (error) {
-      console.error("Export error:", error);
-      this.showToast("Erro ao exportar configurações", "error");
+      console.error("Erro na sincronização:", error);
+      this.showNotification("Erro ao sincronizar atalhos", "error");
+    } finally {
+      syncBtn.disabled = false;
+      syncIcon.classList.remove("fa-spin");
+      syncText.textContent = "Sincronizar Agora";
     }
+  }
+
+  async resetToDefaults() {
+    if (
+      confirm(
+        "Tem certeza que deseja restaurar as configurações padrão? Esta ação não pode ser desfeita.",
+      )
+    ) {
+      const defaultSettings = {
+        serverUrl: "http://localhost:8000",
+        autoExpand: true,
+        showNotifications: true,
+        syncInterval: 5,
+        triggerPattern: "//",
+        enableShortcuts: true,
+        debugMode: false,
+      };
+
+      try {
+        await this.saveSettings(defaultSettings);
+        this.renderSettings();
+        this.showNotification(
+          "Configurações restauradas para os padrões",
+          "success",
+        );
+      } catch (error) {
+        console.error("Erro ao restaurar configurações:", error);
+        this.showNotification("Erro ao restaurar configurações", "error");
+      }
+    }
+  }
+
+  exportSettings() {
+    const exportData = {
+      version: "1.0.0",
+      timestamp: new Date().toISOString(),
+      settings: {
+        ...this.settings,
+        serverUrl: this.serverUrl,
+      },
+    };
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+      type: "application/json",
+    });
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `symplifika-settings-${new Date().toISOString().split("T")[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    this.showNotification("Configurações exportadas com sucesso!", "success");
   }
 
   importSettings() {
-    document.getElementById("importFileInput").click();
+    document.getElementById("importFile").click();
   }
 
-  async handleFileImport(event) {
+  async handleImportFile(event) {
     const file = event.target.files[0];
     if (!file) return;
 
@@ -408,146 +510,75 @@ class SymphilikaOptions {
       const text = await file.text();
       const importData = JSON.parse(text);
 
-      // Validate import data
-      if (!importData.version || !importData.settings) {
-        throw new Error("Arquivo de configuração inválido");
+      if (!importData.settings || !importData.version) {
+        throw new Error("Formato de arquivo inválido");
       }
 
-      // Merge settings
-      this.settings = { ...this.settings, ...importData.settings };
-
-      // Update UI
-      this.updateUI();
-
-      // Auto-save
-      await this.saveSettings();
-
-      this.showToast("Configurações importadas com sucesso!", "success");
+      if (
+        confirm(
+          "Tem certeza que deseja importar essas configurações? As configurações atuais serão substituídas.",
+        )
+      ) {
+        await this.saveSettings(importData.settings);
+        await this.loadSettings();
+        this.renderSettings();
+        this.showNotification(
+          "Configurações importadas com sucesso!",
+          "success",
+        );
+      }
     } catch (error) {
-      console.error("Import error:", error);
-      this.showToast(
+      console.error("Erro ao importar configurações:", error);
+      this.showNotification(
         "Erro ao importar configurações: " + error.message,
         "error",
       );
-    }
-
-    // Clear file input
-    event.target.value = "";
-  }
-
-  // Utility methods
-  setButtonLoading(button, loading) {
-    if (loading) {
-      button.disabled = true;
-      button.innerHTML = `
-        <div class="spinner"></div>
-        Carregando...
-      `;
-    } else {
-      button.disabled = false;
-      // Restore original content
-      const originalContent = button.dataset.originalContent;
-      if (originalContent) {
-        button.innerHTML = originalContent;
-      } else {
-        // Find original content from button ID
-        const btnTexts = {
-          saveBtn:
-            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>Salvar',
-          testConnectionBtn: "Testar Conexão",
-          clearCacheBtn:
-            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>Limpar Cache',
-        };
-        button.innerHTML = btnTexts[button.id] || "Ação";
-      }
+    } finally {
+      event.target.value = ""; // Limpar input
     }
   }
 
-  showToast(message, type = "info") {
-    const container = document.getElementById("toastContainer");
+  showNotification(message, type = "info") {
+    const container = document.getElementById("notifications");
+    if (!container) return;
 
-    const toast = document.createElement("div");
-    toast.className = `toast ${type}`;
-
-    const icons = {
-      success: "✓",
-      error: "✗",
-      warning: "⚠",
-      info: "ℹ",
-    };
-
-    toast.innerHTML = `
-      <div class="toast-content">
-        <div class="toast-icon">${icons[type] || icons.info}</div>
-        <div class="toast-message">${message}</div>
-        <button class="toast-close">&times;</button>
+    const notification = document.createElement("div");
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+      <div class="notification-content">
+        <i class="fas fa-${
+          type === "success"
+            ? "check-circle"
+            : type === "error"
+              ? "exclamation-circle"
+              : type === "warning"
+                ? "exclamation-triangle"
+                : "info-circle"
+        }"></i>
+        <span class="notification-message">${message}</span>
+        <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
+          <i class="fas fa-times"></i>
+        </button>
       </div>
     `;
 
-    // Close button
-    toast.querySelector(".toast-close").addEventListener("click", () => {
-      container.removeChild(toast);
-    });
+    container.appendChild(notification);
 
-    container.appendChild(toast);
-
-    // Auto remove after 5 seconds
+    // Auto remove após 5 segundos
     setTimeout(() => {
-      if (toast.parentNode) {
-        container.removeChild(toast);
+      if (notification.parentElement) {
+        notification.remove();
       }
     }, 5000);
-  }
 
-  async sendMessage(message) {
-    return new Promise((resolve, reject) => {
-      chrome.runtime.sendMessage(message, (response) => {
-        if (chrome.runtime.lastError) {
-          reject(new Error(chrome.runtime.lastError.message));
-        } else {
-          resolve(response);
-        }
-      });
-    });
+    // Mostrar animação
+    setTimeout(() => {
+      notification.classList.add("show");
+    }, 10);
   }
 }
 
-// Initialize options page when DOM is loaded
+// Inicializar quando o DOM estiver carregado
 document.addEventListener("DOMContentLoaded", () => {
   new SymphilikaOptions();
 });
-
-// Handle messages from other parts of the extension
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "settingsUpdated") {
-    // Reload page to reflect changes
-    window.location.reload();
-  }
-});
-
-// Banner de debugMode
-document.addEventListener("DOMContentLoaded", () => {
-  chrome.storage.local.get("settings", (result) => {
-    const settings = result.settings || {};
-    if (settings.debugMode) {
-      const banner = document.createElement("div");
-      banner.style.position = "fixed";
-      banner.style.top = "0";
-      banner.style.left = "0";
-      banner.style.right = "0";
-      banner.style.background = "#ffc107";
-      banner.style.color = "#222";
-      banner.style.fontWeight = "bold";
-      banner.style.textAlign = "center";
-      banner.style.zIndex = "9999";
-      banner.style.padding = "6px 0";
-      banner.textContent = "⚡ MODO DEBUG ATIVO";
-      document.body.appendChild(banner);
-      // Ajusta o topo do header para não sobrepor
-      const header = document.querySelector(".options-header");
-      if (header) header.style.marginTop = "32px";
-    }
-  });
-});
-
-console.log("Symplifika Options Script loaded");

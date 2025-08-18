@@ -39,14 +39,18 @@ certifi==2025.8.3
 urllib3==2.5.0
 charset-normalizer==3.4.3
 
+# Production dependencies
+gunicorn==21.2.0
+psycopg2-binary==2.9.9
+whitenoise==6.8.2
+dj-database-url==2.3.0
+
 # Development dependencies (optional)
 # pytest==7.4.3
 # pytest-django==4.7.0
 # black==23.11.0
 # flake8==6.1.0
 
-# Production dependencies (optional)
-# gunicorn==21.2.0
-# psycopg2-binary==2.9.9
+# Optional production dependencies
 # redis==5.0.1
 # celery==5.3.4

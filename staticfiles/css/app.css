@@ -1,0 +1,429 @@
+/* Symplifika App CSS - Enhanced Modal Styles */
+
+/* Modal Enhancements */
+.modal {
+    backdrop-filter: blur(4px);
+    transition: opacity 0.3s ease;
+}
+
+.modal.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.modal:not(.hidden) {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Expansion Type Options */
+.expansion-type-option {
+    position: relative;
+}
+
+.expansion-type-label {
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.expansion-type-label:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Radio button styling for expansion types */
+input[type="radio"]:checked + .expansion-type-label {
+    border-color: #3b82f6 !important;
+    background-color: #eff6ff !important;
+}
+
+.dark input[type="radio"]:checked + .expansion-type-label {
+    background-color: rgba(59, 130, 246, 0.1) !important;
+    border-color: #60a5fa !important;
+}
+
+/* Variable Fields */
+.variable-field {
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Color Preset Buttons */
+.color-preset {
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.color-preset:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Character Counter */
+#charCount {
+    transition: color 0.2s ease;
+}
+
+/* Form Input Focus States */
+.form-input:focus {
+    ring-color: #3b82f6;
+    border-color: #3b82f6;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Loading States */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn .animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Tooltip for trigger input */
+.trigger-tooltip {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #1f2937;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    margin-top: 4px;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        opacity 0.2s ease,
+        visibility 0.2s ease;
+}
+
+.trigger-tooltip.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.trigger-tooltip::before {
+    content: "";
+    position: absolute;
+    top: -4px;
+    left: 12px;
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-bottom: 4px solid #1f2937;
+}
+
+/* Enhanced Modal Sizing */
+.modal .bg-white {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* Scrollbar Styling */
+.modal .bg-white::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal .bg-white::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.modal .bg-white::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.modal .bg-white::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+.dark .modal .bg-white::-webkit-scrollbar-track {
+    background: #374151;
+}
+
+.dark .modal .bg-white::-webkit-scrollbar-thumb {
+    background: #6b7280;
+}
+
+.dark .modal .bg-white::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+/* Responsive Modal */
+@media (max-width: 768px) {
+    .modal .bg-white {
+        margin: 1rem;
+        max-height: calc(100vh - 2rem);
+    }
+
+    .grid.grid-cols-1.md\\:grid-cols-2 {
+        grid-template-columns: 1fr;
+    }
+
+    .grid.grid-cols-1.md\\:grid-cols-3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Form Validation Styles */
+.form-input:invalid {
+    border-color: #ef4444;
+}
+
+.form-input:invalid:focus {
+    ring-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Success and Error States */
+.field-success .form-input {
+    border-color: #10b981;
+}
+
+.field-error .form-input {
+    border-color: #ef4444;
+}
+
+.field-error .error-message {
+    color: #ef4444;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+/* Enhanced Button Styles */
+.btn {
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    transition: left 0.5s ease;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+/* Dark Mode Enhancements */
+.dark .modal {
+    color: #f3f4f6;
+}
+
+.dark .form-input {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #f3f4f6;
+}
+
+.dark .form-input:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+}
+
+/* Category Color Preview */
+.category-color-preview {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 1px solid #e5e7eb;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+.dark .category-color-preview {
+    border-color: #4b5563;
+}
+
+/* AI Enhancement Badge */
+.ai-badge {
+    background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Dynamic Badge */
+.dynamic-badge {
+    background: linear-gradient(135deg, #f59e0b, #fbbf24);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Static Badge */
+.static-badge {
+    background: linear-gradient(135deg, #10b981, #34d399);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Modal Animation */
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal:not(.hidden) .bg-white {
+    animation: modalSlideIn 0.3s ease;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    border-radius: 8px;
+}
+
+.dark .loading-overlay {
+    background: rgba(17, 24, 39, 0.9);
+}
+
+.loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #e5e7eb;
+    border-top: 3px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.dark .loading-spinner {
+    border-color: #4b5563;
+    border-top-color: #60a5fa;
+}
+
+/* Form Section Spacing */
+.form-section {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.dark .form-section {
+    border-bottom-color: #4b5563;
+}
+
+.form-section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+/* Enhanced Focus Styles */
+.form-input:focus-within {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+}
+
+/* Accessibility Improvements */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .form-input {
+        border-width: 2px;
+    }
+
+    .btn {
+        border-width: 2px;
+        border-style: solid;
+    }
+
+    .expansion-type-label {
+        border-width: 2px;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .modal,
+    .expansion-type-label,
+    .variable-field,
+    .color-preset,
+    .btn,
+    .form-input {
+        transition: none;
+    }
+
+    .modal:not(.hidden) .bg-white {
+        animation: none;
+    }
+
+    .btn .animate-spin,
+    .loading-spinner {
+        animation: none;
+    }
+}

@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: symplifika-django
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn symplifika.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: DEBUG
+        value: False
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: symplifika-db
+          property: connectionString
+    healthCheckPath: /
+
+databases:
+  - name: symplifika-db
+    databaseName: symplifika
+    user: symplifika
+    ipAllowList: []

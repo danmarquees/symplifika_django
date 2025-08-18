@@ -4,12 +4,24 @@
   "version": "1.0.0",
   "description": "Expanda atalhos de texto automaticamente em qualquer site com inteligência artificial",
 
-  "permissions": ["storage", "activeTab", "scripting"],
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "contextMenus",
+    "notifications",
+    "alarms"
+  ],
 
-  "host_permissions": ["http://localhost:8000/*", "https://*.symplifika.com/*"],
+  "host_permissions": [
+    "http://localhost:8000/*",
+    "http://127.0.0.1:8000/*",
+    "https://*.symplifika.com/*"
+  ],
 
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
 
   "content_scripts": [
@@ -17,7 +29,8 @@
       "matches": ["<all_urls>"],
       "js": ["content.js"],
       "css": ["content.css"],
-      "run_at": "document_end"
+      "run_at": "document_end",
+      "all_frames": true
     }
   ],
 
@@ -25,26 +38,35 @@
     "default_popup": "popup.html",
     "default_title": "Symplifika - Atalhos de Texto",
     "default_icon": {
-      "16": "https://upload.wikimedia.org/wikipedia/commons/4/48/Markdown-mark.png",
-      "32": "https://upload.wikimedia.org/wikipedia/commons/4/48/Markdown-mark.png",
-      "48": "https://upload.wikimedia.org/wikipedia/commons/4/48/Markdown-mark.png",
-      "128": "https://upload.wikimedia.org/wikipedia/commons/4/48/Markdown-mark.png"
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon48.png"
     }
   },
 
   "options_page": "options.html",
 
   "icons": {
-    "16": "https://upload.wikimedia.org/wikipedia/commons/4/48/Markdown-mark.png",
-    "32": "https://upload.wikimedia.org/wikipedia/commons/4/48/Markdown-mark.png",
-    "48": "https://upload.wikimedia.org/wikipedia/commons/4/48/Markdown-mark.png",
-    "128": "https://upload.wikimedia.org/wikipedia/commons/4/48/Markdown-mark.png"
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon48.png"
   },
 
   "web_accessible_resources": [
     {
-      "resources": ["popup.html", "options.html", "icons/*"],
+      "resources": [
+        "popup.html",
+        "options.html",
+        "icons/*",
+        "popup.css",
+        "options.css",
+        "content.css"
+      ],
       "matches": ["<all_urls>"]
     }
-  ]
+  ],
+
+  "minimum_chrome_version": "88"
 }

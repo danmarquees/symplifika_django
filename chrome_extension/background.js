@@ -3,16 +3,21 @@
 
 class SymphilikaAPI {
   constructor() {
-    this.baseURL = 'http://localhost:8000';
+    this.baseURL = "http://localhost:8000";
     this.token = null;
     this.shortcuts = [];
     this.lastSync = null;
   }
 
   async init() {
-    const stored = await chrome.storage.local.get(['token', 'baseURL', 'shortcuts', 'lastSync']);
+    const stored = await chrome.storage.local.get([
+      "token",
+      "baseURL",
+      "shortcuts",
+      "lastSync",
+    ]);
     this.token = stored.token || null;
-    this.baseURL = stored.baseURL || 'http://localhost:8000';
+    this.baseURL = stored.baseURL || "http://localhost:8000";
     this.shortcuts = stored.shortcuts || [];
     this.lastSync = stored.lastSync || null;
   }
@@ -24,16 +29,17 @@ class SymphilikaAPI {
 
   async login(username, password) {
     try {
-      const response = await fetch(`${this.baseURL}/users/auth/login/`, {
-        method: 'POST',
+      const response = await fetch(`${this.baseURL}/users/api/auth/login/`, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username, password }),
       });
 
       if (!response.ok) {
-        throw new Error('Login failed');
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Login failed");
       }
 
       const data = await response.json();
@@ -41,7 +47,7 @@ class SymphilikaAPI {
 
       await chrome.storage.local.set({
         token: this.token,
-        user: data.user
+        user: data.user,
       });
 
       // Sync shortcuts after login
@@ -49,7 +55,7 @@ class SymphilikaAPI {
 
       return { success: true, user: data.user };
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
       return { success: false, error: error.message };
     }
   }
@@ -57,16 +63,16 @@ class SymphilikaAPI {
   async logout() {
     try {
       if (this.token) {
-        await fetch(`${this.baseURL}/users/auth/logout/`, {
-          method: 'POST',
+        await fetch(`${this.baseURL}/users/api/auth/logout/`, {
+          method: "POST",
           headers: {
-            'Authorization': `Token ${this.token}`,
-            'Content-Type': 'application/json',
-          }
+            Authorization: `Token ${this.token}`,
+            "Content-Type": "application/json",
+          },
         });
       }
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     }
 
     this.token = null;
@@ -80,15 +86,15 @@ class SymphilikaAPI {
     if (!this.token) return false;
 
     try {
-      const response = await fetch(`${this.baseURL}/shortcuts/api/shortcuts/`, {
+      const response = await fetch(`${this.baseURL}/api/shortcuts/`, {
         headers: {
-          'Authorization': `Token ${this.token}`,
-          'Content-Type': 'application/json',
-        }
+          Authorization: `Token ${this.token}`,
+          "Content-Type": "application/json",
+        },
       });
 
       if (!response.ok) {
-        throw new Error('Failed to sync shortcuts');
+        throw new Error("Failed to sync shortcuts");
       }
 
       const data = await response.json();
@@ -97,12 +103,12 @@ class SymphilikaAPI {
 
       await chrome.storage.local.set({
         shortcuts: this.shortcuts,
-        lastSync: this.lastSync
+        lastSync: this.lastSync,
       });
 
       return true;
     } catch (error) {
-      console.error('Sync error:', error);
+      console.error("Sync error:", error);
       return false;
     }
   }
@@ -111,23 +117,26 @@ class SymphilikaAPI {
     if (!this.token) return null;
 
     try {
-      const response = await fetch(`${this.baseURL}/shortcuts/api/shortcuts/${shortcutId}/use/`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Token ${this.token}`,
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `${this.baseURL}/api/shortcuts/${shortcutId}/use/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Token ${this.token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ variables }),
         },
-        body: JSON.stringify({ variables })
-      });
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to use shortcut');
+        throw new Error("Failed to use shortcut");
       }
 
       const data = await response.json();
       return data.expanded_content || data.content;
     } catch (error) {
-      console.error('Use shortcut error:', error);
+      console.error("Use shortcut error:", error);
       return null;
     }
   }
@@ -136,30 +145,145 @@ class SymphilikaAPI {
     if (!this.token) return [];
 
     try {
-      const response = await fetch(`${this.baseURL}/shortcuts/api/shortcuts/search/`, {
-        method: 'POST',
+      const response = await fetch(`${this.baseURL}/api/shortcuts/search/`, {
+        method: "POST",
         headers: {
-          'Authorization': `Token ${this.token}`,
-          'Content-Type': 'application/json',
+          Authorization: `Token ${this.token}`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ query })
+        body: JSON.stringify({ query }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to search shortcuts');
+        throw new Error("Failed to search shortcuts");
       }
 
       const data = await response.json();
       return data.results || [];
     } catch (error) {
-      console.error('Search error:', error);
+      console.error("Search error:", error);
       return [];
     }
   }
 
+  async getCategories() {
+    if (!this.token) return [];
+
+    try {
+      const response = await fetch(`${this.baseURL}/api/categories/`, {
+        headers: {
+          Authorization: `Token ${this.token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to get categories");
+      }
+
+      const data = await response.json();
+      return data.results || [];
+    } catch (error) {
+      console.error("Get categories error:", error);
+      return [];
+    }
+  }
+
+  async getMostUsedShortcuts() {
+    if (!this.token) return [];
+
+    try {
+      const response = await fetch(`${this.baseURL}/api/shortcuts/most-used/`, {
+        headers: {
+          Authorization: `Token ${this.token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to get most used shortcuts");
+      }
+
+      const data = await response.json();
+      return data.results || [];
+    } catch (error) {
+      console.error("Get most used shortcuts error:", error);
+      return [];
+    }
+  }
+
+  async getShortcutStats() {
+    if (!this.token) return {};
+
+    try {
+      const response = await fetch(`${this.baseURL}/api/shortcuts/stats/`, {
+        headers: {
+          Authorization: `Token ${this.token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to get shortcut stats");
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Get shortcut stats error:", error);
+      return {};
+    }
+  }
+
+  async getUserStats() {
+    if (!this.token) return {};
+
+    try {
+      const response = await fetch(`${this.baseURL}/users/api/users/stats/`, {
+        headers: {
+          Authorization: `Token ${this.token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to get user stats");
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Get user stats error:", error);
+      return {};
+    }
+  }
+
+  async getUserProfile() {
+    if (!this.token) return null;
+
+    try {
+      const response = await fetch(`${this.baseURL}/users/api/users/me/`, {
+        headers: {
+          Authorization: `Token ${this.token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to get user profile");
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Get user profile error:", error);
+      return null;
+    }
+  }
+
   findShortcutByTrigger(trigger) {
-    return this.shortcuts.find(shortcut =>
-      shortcut.trigger === trigger && shortcut.is_active
+    return this.shortcuts.find(
+      (shortcut) => shortcut.trigger === trigger && shortcut.is_active,
     );
   }
 
@@ -180,12 +304,12 @@ chrome.runtime.onInstalled.addListener(async () => {
   await api.init();
 
   // Configurar alarme para sync periódico
-  chrome.alarms.create('syncShortcuts', { periodInMinutes: 30 });
+  chrome.alarms.create("syncShortcuts", { periodInMinutes: 30 });
 });
 
 // Sync periódico
 chrome.alarms.onAlarm.addListener(async (alarm) => {
-  if (alarm.name === 'syncShortcuts' && api.isAuthenticated()) {
+  if (alarm.name === "syncShortcuts" && api.isAuthenticated()) {
     await api.syncShortcuts();
   }
 });
@@ -199,95 +323,89 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 async function handleMessage(request, sender, sendResponse) {
   try {
     switch (request.action) {
-      case 'init':
+      case "init":
         await api.init();
         sendResponse({
           success: true,
           authenticated: api.isAuthenticated(),
           shortcuts: api.shortcuts.length,
-          lastSync: api.lastSync
+          lastSync: api.lastSync,
         });
         break;
 
-      case 'login':
+      case "login":
         const loginResult = await api.login(request.username, request.password);
         sendResponse(loginResult);
         break;
 
-      case 'logout':
+      case "logout":
         await api.logout();
         sendResponse({ success: true });
         break;
 
-      case 'setBaseURL':
+      case "setBaseURL":
         await api.setBaseURL(request.url);
         sendResponse({ success: true });
         break;
 
-      case 'syncShortcuts':
+      case "syncShortcuts":
         const syncResult = await api.syncShortcuts();
         sendResponse({
           success: syncResult,
           shortcuts: api.shortcuts.length,
-          lastSync: api.lastSync
+          lastSync: api.lastSync,
         });
         break;
 
-      case 'findShortcut':
+      case "findShortcut":
         const shortcut = api.findShortcutByTrigger(request.trigger);
         sendResponse({ shortcut });
         break;
 
-      case 'useShortcut':
-        const expandedContent = await api.useShortcut(request.shortcutId, request.variables);
+      case "useShortcut":
+        const expandedContent = await api.useShortcut(
+          request.shortcutId,
+          request.variables,
+        );
         sendResponse({ content: expandedContent });
         break;
 
-      case 'searchShortcuts':
+      case "searchShortcuts":
         const searchResults = await api.searchShortcuts(request.query);
         sendResponse({ results: searchResults });
         break;
 
-      case 'getShortcuts':
+      case "getShortcuts":
         sendResponse({ shortcuts: api.shortcuts });
         break;
 
-      case 'getStats':
-        const stats = await getStats();
-        sendResponse(stats);
+      case "getCategories":
+        const categories = await api.getCategories();
+        sendResponse({ categories });
+        break;
+
+      case "getMostUsed":
+        const mostUsed = await api.getMostUsedShortcuts();
+        sendResponse({ shortcuts: mostUsed });
+        break;
+
+      case "getStats":
+        const userStats = await api.getUserStats();
+        const shortcutStats = await api.getShortcutStats();
+        sendResponse({ userStats, shortcutStats });
+        break;
+
+      case "getUserProfile":
+        const profile = await api.getUserProfile();
+        sendResponse({ profile });
         break;
 
       default:
-        sendResponse({ success: false, error: 'Unknown action' });
+        sendResponse({ success: false, error: "Unknown action" });
     }
   } catch (error) {
-    console.error('Background message handler error:', error);
+    console.error("Background message handler error:", error);
     sendResponse({ success: false, error: error.message });
-  }
-}
-
-async function getStats() {
-  if (!api.isAuthenticated()) {
-    return { authenticated: false };
-  }
-
-  try {
-    const response = await fetch(`${api.baseURL}/users/api/users/stats/`, {
-      headers: {
-        'Authorization': `Token ${api.token}`,
-        'Content-Type': 'application/json',
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to get stats');
-    }
-
-    const stats = await response.json();
-    return { authenticated: true, ...stats };
-  } catch (error) {
-    console.error('Stats error:', error);
-    return { authenticated: true, error: error.message };
   }
 }
 
@@ -299,12 +417,12 @@ chrome.action.onClicked.addListener(async (tab) => {
   }
 });
 
-// Context menu para páginas web (futuro)
+// Context menu para páginas web
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: "symphilikaExpand",
     title: "Expandir com Symplifika",
-    contexts: ["selection"]
+    contexts: ["selection"],
   });
 });
 
@@ -316,30 +434,30 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     if (results.length > 0) {
       // Enviar resultado para o content script
       chrome.tabs.sendMessage(tab.id, {
-        action: 'expandSelection',
-        shortcut: results[0]
+        action: "expandSelection",
+        shortcut: results[0],
       });
     }
   }
 });
 
 // Notification helpers
-function showNotification(title, message, type = 'basic') {
+function showNotification(title, message, type = "basic") {
   chrome.notifications.create({
     type: type,
-    iconUrl: 'icons/icon48.png',
+    iconUrl: "icons/icon48.png",
     title: title,
-    message: message
+    message: message,
   });
 }
 
 // Error handling global
-self.addEventListener('error', (event) => {
-  console.error('Background script error:', event.error);
+self.addEventListener("error", (event) => {
+  console.error("Background script error:", event.error);
 });
 
-self.addEventListener('unhandledrejection', (event) => {
-  console.error('Unhandled promise rejection:', event.reason);
+self.addEventListener("unhandledrejection", (event) => {
+  console.error("Unhandled promise rejection:", event.reason);
 });
 
-console.log('Symplifika Background Service Worker loaded');
+console.log("Symplifika Background Service Worker loaded");
