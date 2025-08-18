@@ -972,77 +972,344 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                         Estatísticas
                     </h1>
                     <p class="text-gray-600 dark:text-gray-300 mt-1">
-                        Acompanhe o uso dos seus atalhos
+                        Acompanhe o desempenho e uso dos seus atalhos
                     </p>
                 </header>
 
-                <!-- Stats Grid -->
+                <!-- Quick Stats Cards -->
                 <div
                     class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
                 >
-                    <div class="card p-6 text-center">
-                        <div
-                            class="text-3xl font-bold text-symplifika-primary mb-2"
-                            id="totalShortcuts"
-                        >
-                            0
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700"
+                    >
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div
+                                    class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center"
+                                >
+                                    <svg
+                                        class="w-6 h-6 text-blue-600 dark:text-blue-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M13 10V3L4 14h7v7l9-11h-7z"
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <div
+                                    class="text-2xl font-bold text-gray-900 dark:text-white"
+                                    id="statsTotalShortcuts"
+                                >
+                                    0
+                                </div>
+                                <div
+                                    class="text-sm text-gray-600 dark:text-gray-300"
+                                >
+                                    Total de Atalhos
+                                </div>
+                            </div>
                         </div>
-                        <div class="text-gray-600 dark:text-gray-300">
-                            Total de Atalhos
+                        <div class="mt-4">
+                            <div
+                                class="text-xs text-gray-500 dark:text-gray-400"
+                            >
+                                <span id="statsActiveShortcuts">0</span> ativos
+                            </div>
                         </div>
                     </div>
-                    <div class="card p-6 text-center">
-                        <div
-                            class="text-3xl font-bold text-symplifika-primary mb-2"
-                            id="totalCategories"
-                        >
-                            0
+
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700"
+                    >
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div
+                                    class="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center"
+                                >
+                                    <svg
+                                        class="w-6 h-6 text-green-600 dark:text-green-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <div
+                                    class="text-2xl font-bold text-gray-900 dark:text-white"
+                                    id="statsTotalUsages"
+                                >
+                                    0
+                                </div>
+                                <div
+                                    class="text-sm text-gray-600 dark:text-gray-300"
+                                >
+                                    Total de Usos
+                                </div>
+                            </div>
                         </div>
-                        <div class="text-gray-600 dark:text-gray-300">
-                            Categorias
+                        <div class="mt-4">
+                            <div
+                                class="text-xs text-green-600 dark:text-green-400"
+                            >
+                                +<span id="statsUsagesToday">0</span> hoje
+                            </div>
                         </div>
                     </div>
-                    <div class="card p-6 text-center">
-                        <div
-                            class="text-3xl font-bold text-symplifika-primary mb-2"
-                            id="totalUsages"
-                        >
-                            0
+
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700"
+                    >
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div
+                                    class="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center"
+                                >
+                                    <svg
+                                        class="w-6 h-6 text-purple-600 dark:text-purple-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <div
+                                    class="text-2xl font-bold text-gray-900 dark:text-white"
+                                    id="statsTotalCategories"
+                                >
+                                    0
+                                </div>
+                                <div
+                                    class="text-sm text-gray-600 dark:text-gray-300"
+                                >
+                                    Categorias
+                                </div>
+                            </div>
                         </div>
-                        <div class="text-gray-600 dark:text-gray-300">
-                            Usos Totais
+                        <div class="mt-4">
+                            <div
+                                class="text-xs text-gray-500 dark:text-gray-400"
+                            >
+                                Organização
+                            </div>
                         </div>
                     </div>
-                    <div class="card p-6 text-center">
-                        <div
-                            class="text-3xl font-bold text-symplifika-primary mb-2"
-                            id="todayUsages"
-                        >
-                            0
+
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700"
+                    >
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div
+                                    class="w-10 h-10 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center"
+                                >
+                                    <svg
+                                        class="w-6 h-6 text-orange-600 dark:text-orange-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <div
+                                    class="text-2xl font-bold text-gray-900 dark:text-white"
+                                    id="statsTimeSaved"
+                                >
+                                    0h
+                                </div>
+                                <div
+                                    class="text-sm text-gray-600 dark:text-gray-300"
+                                >
+                                    Tempo Economizado
+                                </div>
+                            </div>
                         </div>
-                        <div class="text-gray-600 dark:text-gray-300">
-                            Usos Hoje
+                        <div class="mt-4">
+                            <div
+                                class="text-xs text-orange-600 dark:text-orange-400"
+                            >
+                                Este mês
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Charts -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="card p-6">
+                <!-- Usage Trends -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700"
+                    >
                         <h3
                             class="text-lg font-semibold text-gray-900 dark:text-white mb-4"
                         >
-                            Atalhos Mais Usados
+                            Uso nos Últimos 7 Dias
                         </h3>
-                        <div id="topShortcutsChart" class="h-64"></div>
+                        <div id="weeklyUsageChart" class="h-64">
+                            <canvas id="weeklyChart"></canvas>
+                        </div>
                     </div>
-                    <div class="card p-6">
+
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700"
+                    >
                         <h3
                             class="text-lg font-semibold text-gray-900 dark:text-white mb-4"
                         >
-                            Uso por Categoria
+                            Distribuição por Categoria
                         </h3>
-                        <div id="categoryUsageChart" class="h-64"></div>
+                        <div id="categoryDistributionChart" class="h-64">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Shortcuts -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700"
+                    >
+                        <h3
+                            class="text-lg font-semibold text-gray-900 dark:text-white mb-4"
+                        >
+                            Atalhos Mais Utilizados
+                        </h3>
+                        <div id="topShortcutsList" class="space-y-3">
+                            <div
+                                class="text-center py-8 text-gray-500 dark:text-gray-400"
+                            >
+                                <span>Carregando estatísticas...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700"
+                    >
+                        <h3
+                            class="text-lg font-semibold text-gray-900 dark:text-white mb-4"
+                        >
+                            Atividade Recente
+                        </h3>
+                        <div id="recentActivityList" class="space-y-3">
+                            <div
+                                class="text-center py-8 text-gray-500 dark:text-gray-400"
+                            >
+                                <span>Carregando atividades...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Usage Stats -->
+                <div class="mt-8">
+                    <div
+                        class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-6 border border-blue-200 dark:border-blue-800"
+                    >
+                        <h3
+                            class="text-lg font-semibold text-gray-900 dark:text-white mb-4"
+                        >
+                            <svg
+                                class="w-5 h-5 inline mr-2 text-blue-600 dark:text-blue-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                                />
+                            </svg>
+                            Uso da IA este mês
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="text-center">
+                                <div
+                                    class="text-2xl font-bold text-blue-600 dark:text-blue-400"
+                                    id="statsAIUsed"
+                                >
+                                    {{
+                                    user.userprofile.ai_requests_used|default:0
+                                    }}
+                                </div>
+                                <div
+                                    class="text-sm text-gray-600 dark:text-gray-300"
+                                >
+                                    Prompts Utilizados
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <div
+                                    class="text-2xl font-bold text-blue-600 dark:text-blue-400"
+                                    id="statsAILimit"
+                                >
+                                    <!--prettier-ignore -->
+                                    {{ user.userprofile.max_ai_requests|default:100 }}
+                                </div>
+                                <div
+                                    class="text-sm text-gray-600 dark:text-gray-300"
+                                >
+                                    Limite do Plano
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <div
+                                    class="text-2xl font-bold text-green-600 dark:text-green-400"
+                                    id="statsAIRemaining"
+                                >
+                                    <!--prettier-ignore -->
+                                    {{ user.userprofile.ai_requests_remaining|default:100 }}
+                                </div>
+                                <div
+                                    class="text-sm text-gray-600 dark:text-gray-300"
+                                >
+                                    Restantes
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div
+                                class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2"
+                            >
+                                <div
+                                    class="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                                    style="width: {{ user.userprofile.ai_usage_percentage }}%"
+                                    id="statsAIProgressBar"
+                                ></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1109,6 +1376,7 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                         </div>
 
                         <button
+                            id="exportShortcutsBtn"
                             onclick="window.app && window.app.exportShortcuts()"
                             class="w-full mt-6 btn btn-primary"
                         >
@@ -1174,6 +1442,7 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                         </div>
 
                         <button
+                            id="importShortcutsBtn"
                             onclick="window.app && window.app.importShortcuts()"
                             class="w-full mt-6 btn btn-outline border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                         >
@@ -1278,7 +1547,7 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                         >
                             Perfil
                         </h3>
-                        <form id="profileForm" class="space-y-4">
+                        <form id="settingsForm" class="space-y-4">
                             {% csrf_token %}
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>

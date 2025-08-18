@@ -21,6 +21,7 @@ class SymphilikaApp {
     this.bindEvents();
     this.loadInitialData();
     this.setupFormHandlers();
+    this.loadSettings();
   }
 
   /**
@@ -47,6 +48,7 @@ class SymphilikaApp {
     document.addEventListener("DOMContentLoaded", () => {
       this.loadRecentShortcuts();
       this.loadDashboardStats();
+      this.setupSettingsForm();
     });
   }
 
@@ -1408,6 +1410,22 @@ class SymphilikaApp {
   }
 
   /**
+   * Configura eventos globais
+   */
+  setupGlobalEvents() {
+    // Configurar botões de export/import
+    const exportBtn = document.getElementById("exportShortcutsBtn");
+    if (exportBtn) {
+      exportBtn.addEventListener("click", () => this.exportShortcuts());
+    }
+
+    const importBtn = document.getElementById("importShortcutsBtn");
+    if (importBtn) {
+      importBtn.addEventListener("click", () => this.importShortcuts());
+    }
+  }
+
+  /**
    * Sistema de navegação entre páginas
    */
   setupNavigation() {
@@ -1503,6 +1521,26 @@ class SymphilikaApp {
         this.openCreateCategoryModal(),
       );
     }
+
+    // Atalhos de teclado
+    document.addEventListener("keydown", (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key.toLowerCase()) {
+          case "n":
+            e.preventDefault();
+            this.openCreateShortcutModal();
+            break;
+          case "f":
+            e.preventDefault();
+            if (searchInput) searchInput.focus();
+            break;
+          case "/":
+            e.preventDefault();
+            if (searchInput) searchInput.focus();
+            break;
+        }
+      }
+    });
   }
 
   /**
@@ -1565,8 +1603,10 @@ class SymphilikaApp {
     const elements = {
       totalShortcuts: document.getElementById("statsTotalShortcuts"),
       totalUsages: document.getElementById("statsTotalUsages"),
-      avgUsage: document.getElementById("statsAvgUsage"),
-      topShortcut: document.getElementById("statsTopShortcut"),
+      totalCategories: document.getElementById("statsTotalCategories"),
+      timeSaved: document.getElementById("statsTimeSaved"),
+      activeShortcuts: document.getElementById("statsActiveShortcuts"),
+      usagesToday: document.getElementById("statsUsagesToday"),
     };
 
     if (elements.totalShortcuts) {
@@ -1575,12 +1615,133 @@ class SymphilikaApp {
     if (elements.totalUsages) {
       elements.totalUsages.textContent = stats.total_usages || 0;
     }
-    if (elements.avgUsage) {
-      elements.avgUsage.textContent = (stats.avg_usage || 0).toFixed(1);
+    if (elements.totalCategories) {
+      elements.totalCategories.textContent = stats.total_categories || 0;
     }
-    if (elements.topShortcut && stats.top_shortcut) {
-      elements.topShortcut.textContent = stats.top_shortcut.title || "N/A";
+    if (elements.timeSaved) {
+      const hours = Math.floor((stats.time_saved || 0) / 3600);
+      elements.timeSaved.textContent = hours + "h";
     }
+    if (elements.activeShortcuts) {
+      elements.activeShortcuts.textContent = stats.active_shortcuts || 0;
+    }
+    if (elements.usagesToday) {
+      elements.usagesToday.textContent = stats.usages_today || 0;
+    }
+
+    // Atualizar lista de top atalhos
+    this.displayTopShortcuts(stats.top_shortcuts || []);
+
+    // Atualizar atividade recente
+    this.displayRecentActivity(stats.recent_activity || []);
+  }
+
+  /**
+   * Exibe top atalhos
+   */
+  displayTopShortcuts(topShortcuts) {
+    const container = document.getElementById("topShortcutsList");
+    if (!container) return;
+
+    if (topShortcuts.length === 0) {
+      container.innerHTML = `
+        <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+          <span>Nenhum atalho usado ainda</span>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = topShortcuts
+      .slice(0, 5)
+      .map(
+        (shortcut, index) => `
+        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <div class="flex items-center space-x-3">
+            <div class="flex-shrink-0">
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-symplifika-primary text-white text-xs font-bold">
+                ${index + 1}
+              </span>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-900 dark:text-white">
+                ${this.escapeHtml(shortcut.title)}
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                ${this.escapeHtml(shortcut.trigger)}
+              </p>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="text-sm font-semibold text-gray-900 dark:text-white">
+              ${shortcut.use_count || 0}
+            </p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">usos</p>
+          </div>
+        </div>
+      `,
+      )
+      .join("");
+  }
+
+  /**
+   * Exibe atividade recente
+   */
+  displayRecentActivity(recentActivity) {
+    const container = document.getElementById("recentActivityList");
+    if (!container) return;
+
+    if (recentActivity.length === 0) {
+      container.innerHTML = `
+        <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+          <span>Nenhuma atividade recente</span>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = recentActivity
+      .slice(0, 5)
+      .map(
+        (activity) => `
+        <div class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <div class="flex-shrink-0">
+            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-gray-900 dark:text-white">
+              Usou <strong>${this.escapeHtml(activity.shortcut_title)}</strong>
+            </p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              ${this.formatRelativeTime(activity.used_at)}
+            </p>
+          </div>
+        </div>
+      `,
+      )
+      .join("");
+  }
+
+  /**
+   * Formata tempo relativo
+   */
+  formatRelativeTime(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInMs = now - date;
+    const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    const diffInDays = Math.floor(diffInHours / 24);
+
+    if (diffInMinutes < 1) return "agora mesmo";
+    if (diffInMinutes < 60) return `${diffInMinutes}min atrás`;
+    if (diffInHours < 24) return `${diffInHours}h atrás`;
+    if (diffInDays === 1) return "ontem";
+    if (diffInDays < 7) return `${diffInDays} dias atrás`;
+
+    return date.toLocaleDateString();
   }
 
   /**
@@ -1722,6 +1883,422 @@ class SymphilikaApp {
   }
 
   /**
+   * Exporta atalhos para JSON
+   */
+  async exportShortcuts() {
+    try {
+      const includeStats =
+        document.getElementById("includeStats")?.checked || false;
+      const includeCategories =
+        document.getElementById("includeCategories")?.checked || true;
+
+      // Buscar atalhos
+      const shortcutsResponse = await fetch(`${this.apiBaseUrl}/shortcuts/`, {
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": this.csrfToken,
+        },
+      });
+
+      if (!shortcutsResponse.ok) {
+        throw new Error("Erro ao buscar atalhos");
+      }
+
+      const shortcutsData = await shortcutsResponse.json();
+      const shortcuts = shortcutsData.results || shortcutsData;
+
+      let exportData = {
+        version: "1.0",
+        exported_at: new Date().toISOString(),
+        shortcuts: shortcuts.map((shortcut) => ({
+          trigger: shortcut.trigger,
+          title: shortcut.title,
+          content: shortcut.content,
+          expansion_type: shortcut.expansion_type,
+          ai_prompt: shortcut.ai_prompt,
+          variables: shortcut.variables,
+          category_name: shortcut.category?.name || null,
+          is_active: shortcut.is_active,
+          use_count: includeStats ? shortcut.use_count : 0,
+          created_at: shortcut.created_at,
+        })),
+      };
+
+      if (includeCategories) {
+        const categoriesResponse = await fetch(
+          `${this.apiBaseUrl}/categories/`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": this.csrfToken,
+            },
+          },
+        );
+
+        if (categoriesResponse.ok) {
+          const categoriesData = await categoriesResponse.json();
+          exportData.categories = (
+            categoriesData.results || categoriesData
+          ).map((cat) => ({
+            name: cat.name,
+            description: cat.description,
+            color: cat.color,
+          }));
+        }
+      }
+
+      // Criar e baixar arquivo
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+        type: "application/json",
+      });
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `symplifika-atalhos-${new Date().toISOString().split("T")[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      this.showToast("Atalhos exportados com sucesso!", "success");
+    } catch (error) {
+      console.error("Erro ao exportar atalhos:", error);
+      this.showToast("Erro ao exportar atalhos", "error");
+    }
+  }
+
+  /**
+   * Importa atalhos de arquivo JSON
+   */
+  async importShortcuts() {
+    const fileInput = document.getElementById("importFile");
+    const overwriteExisting =
+      document.getElementById("overwriteExisting")?.checked || false;
+
+    if (!fileInput?.files || fileInput.files.length === 0) {
+      this.showToast("Selecione um arquivo para importar", "warning");
+      return;
+    }
+
+    const file = fileInput.files[0];
+
+    if (file.type !== "application/json") {
+      this.showToast("Arquivo deve ser do tipo JSON", "error");
+      return;
+    }
+
+    try {
+      const text = await file.text();
+      const importData = JSON.parse(text);
+
+      // Validar estrutura
+      if (!importData.shortcuts || !Array.isArray(importData.shortcuts)) {
+        throw new Error("Formato de arquivo inválido");
+      }
+
+      let importedCount = 0;
+      let skippedCount = 0;
+      let errorCount = 0;
+
+      // Importar categorias primeiro (se existirem)
+      if (importData.categories && Array.isArray(importData.categories)) {
+        for (const categoryData of importData.categories) {
+          try {
+            // Verificar se categoria já existe
+            const existingCategory = this.categories.find(
+              (c) => c.name === categoryData.name,
+            );
+
+            if (!existingCategory) {
+              await fetch(`${this.apiBaseUrl}/categories/`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "X-CSRFToken": this.csrfToken,
+                },
+                body: JSON.stringify(categoryData),
+              });
+            }
+          } catch (error) {
+            console.warn(
+              "Erro ao importar categoria:",
+              categoryData.name,
+              error,
+            );
+          }
+        }
+
+        // Recarregar categorias
+        await this.loadCategories();
+      }
+
+      // Importar atalhos
+      for (const shortcutData of importData.shortcuts) {
+        try {
+          // Verificar se atalho já existe
+          const existingShortcut = this.shortcuts.find(
+            (s) => s.trigger === shortcutData.trigger,
+          );
+
+          if (existingShortcut && !overwriteExisting) {
+            skippedCount++;
+            continue;
+          }
+
+          // Encontrar categoria por nome
+          let categoryId = null;
+          if (shortcutData.category_name) {
+            const category = this.categories.find(
+              (c) => c.name === shortcutData.category_name,
+            );
+            categoryId = category?.id || null;
+          }
+
+          const shortcutPayload = {
+            trigger: shortcutData.trigger,
+            title: shortcutData.title,
+            content: shortcutData.content,
+            expansion_type: shortcutData.expansion_type || "static",
+            ai_prompt: shortcutData.ai_prompt || "",
+            variables: shortcutData.variables || {},
+            category: categoryId,
+            is_active: shortcutData.is_active !== false,
+          };
+
+          const method = existingShortcut && overwriteExisting ? "PUT" : "POST";
+          const url =
+            existingShortcut && overwriteExisting
+              ? `${this.apiBaseUrl}/shortcuts/${existingShortcut.id}/`
+              : `${this.apiBaseUrl}/shortcuts/`;
+
+          const response = await fetch(url, {
+            method: method,
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": this.csrfToken,
+            },
+            body: JSON.stringify(shortcutPayload),
+          });
+
+          if (response.ok) {
+            importedCount++;
+          } else {
+            errorCount++;
+            console.error("Erro ao importar atalho:", shortcutData.trigger);
+          }
+        } catch (error) {
+          errorCount++;
+          console.error(
+            "Erro ao processar atalho:",
+            shortcutData.trigger,
+            error,
+          );
+        }
+      }
+
+      // Mostrar resultado
+      let message = `Importação concluída: ${importedCount} importados`;
+      if (skippedCount > 0) message += `, ${skippedCount} ignorados`;
+      if (errorCount > 0) message += `, ${errorCount} erros`;
+
+      this.showToast(message, importedCount > 0 ? "success" : "warning");
+
+      // Recarregar dados
+      if (importedCount > 0) {
+        await this.loadAllShortcuts();
+        await this.loadRecentShortcuts();
+        await this.loadDashboardStats();
+      }
+
+      // Limpar formulário
+      fileInput.value = "";
+
+      // Adicionar ao histórico
+      this.addImportHistory({
+        date: new Date().toISOString(),
+        filename: file.name,
+        imported: importedCount,
+        skipped: skippedCount,
+        errors: errorCount,
+      });
+    } catch (error) {
+      console.error("Erro ao importar arquivo:", error);
+      this.showToast("Erro ao processar arquivo de importação", "error");
+    }
+  }
+
+  /**
+   * Adiciona entrada ao histórico de importações
+   */
+  addImportHistory(entry) {
+    const container = document.getElementById("importHistory");
+    if (!container) return;
+
+    // Remover estado vazio
+    const emptyState = container.querySelector(".text-center");
+    if (emptyState) {
+      container.innerHTML = "";
+    }
+
+    const historyItem = document.createElement("div");
+    historyItem.className =
+      "flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg";
+
+    historyItem.innerHTML = `
+      <div>
+        <p class="text-sm font-medium text-gray-900 dark:text-white">
+          ${this.escapeHtml(entry.filename)}
+        </p>
+        <p class="text-xs text-gray-500 dark:text-gray-400">
+          ${new Date(entry.date).toLocaleString()}
+        </p>
+      </div>
+      <div class="text-right">
+        <p class="text-sm text-green-600 dark:text-green-400">
+          ${entry.imported} importados
+        </p>
+        ${entry.skipped > 0 ? `<p class="text-xs text-yellow-600 dark:text-yellow-400">${entry.skipped} ignorados</p>` : ""}
+        ${entry.errors > 0 ? `<p class="text-xs text-red-600 dark:text-red-400">${entry.errors} erros</p>` : ""}
+      </div>
+    `;
+
+    container.insertBefore(historyItem, container.firstChild);
+  }
+
+  /**
+   * Salva configurações do usuário
+   */
+  async saveSettings() {
+    try {
+      const form = document.getElementById("settingsForm");
+      if (!form) return;
+
+      const formData = new FormData(form);
+      const settings = {};
+
+      for (let [key, value] of formData.entries()) {
+        settings[key] = value;
+      }
+
+      // Adicionar configurações de checkboxes
+      const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+      checkboxes.forEach((checkbox) => {
+        settings[checkbox.name || checkbox.id] = checkbox.checked;
+      });
+
+      // Salvar no localStorage e/ou enviar para API
+      localStorage.setItem("symplifika_settings", JSON.stringify(settings));
+
+      // Aplicar configurações imediatamente
+      this.applySettings(settings);
+
+      this.showToast("Configurações salvas com sucesso!", "success");
+    } catch (error) {
+      console.error("Erro ao salvar configurações:", error);
+      this.showToast("Erro ao salvar configurações", "error");
+    }
+  }
+
+  /**
+   * Aplica configurações salvas
+   */
+  applySettings(settings) {
+    // Aplicar tema
+    if (settings.theme) {
+      document.documentElement.className =
+        settings.theme === "dark" ? "dark" : "";
+    }
+
+    // Outras configurações podem ser aplicadas aqui
+    console.log("Configurações aplicadas:", settings);
+  }
+
+  /**
+   * Carrega configurações salvas
+   */
+  loadSettings() {
+    try {
+      const savedSettings = localStorage.getItem("symplifika_settings");
+      if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        this.applySettings(settings);
+
+        // Preencher formulário de configurações
+        const form = document.getElementById("settingsForm");
+        if (form) {
+          Object.entries(settings).forEach(([key, value]) => {
+            const input = form.querySelector(`[name="${key}"], #${key}`);
+            if (input) {
+              if (input.type === "checkbox") {
+                input.checked = Boolean(value);
+              } else if (input.type === "radio") {
+                const radio = form.querySelector(
+                  `[name="${key}"][value="${value}"]`,
+                );
+                if (radio) radio.checked = true;
+              } else {
+                input.value = value;
+              }
+            }
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao carregar configurações:", error);
+    }
+  }
+
+  /**
+   * Configura formulário de configurações
+   */
+  setupSettingsForm() {
+    const settingsForm = document.getElementById("settingsForm");
+    if (settingsForm) {
+      settingsForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        this.saveSettings();
+      });
+    }
+
+    // Eventos para alteração de tema
+    const themeRadios = document.querySelectorAll('input[name="theme"]');
+    themeRadios.forEach((radio) => {
+      radio.addEventListener("change", (e) => {
+        this.applyTheme(e.target.value);
+      });
+    });
+
+    // Auto-salvar configurações em mudanças
+    const autoSaveInputs = document.querySelectorAll(
+      "#settingsForm input, #settingsForm select",
+    );
+    autoSaveInputs.forEach((input) => {
+      input.addEventListener("change", () => {
+        setTimeout(() => this.saveSettings(), 100);
+      });
+    });
+  }
+
+  /**
+   * Aplica tema específico
+   */
+  applyTheme(theme) {
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else if (theme === "light") {
+      document.documentElement.classList.remove("dark");
+    } else {
+      // Auto theme - detectar preferência do sistema
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    }
+  }
+
+  /**
    * Escapa HTML
    */
   escapeHtml(unsafe) {
@@ -1737,6 +2314,9 @@ class SymphilikaApp {
 // Inicializar aplicação quando DOM estiver carregado
 document.addEventListener("DOMContentLoaded", () => {
   window.app = new SymphilikaApp();
+
+  // Configurar eventos globais
+  window.app.setupGlobalEvents();
 });
 
 // Compatibilidade com código legado

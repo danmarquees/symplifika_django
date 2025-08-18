@@ -80,7 +80,7 @@ input[type="radio"]:checked + .expansion-type-label {
 }
 
 .action-button:before {
-    content: '';
+    content: "";
     position: absolute;
     top: 50%;
     left: 50%;
@@ -90,7 +90,9 @@ input[type="radio"]:checked + .expansion-type-label {
     background: currentColor;
     opacity: 0.1;
     transform: translate(-50%, -50%);
-    transition: width 0.3s ease, height 0.3s ease;
+    transition:
+        width 0.3s ease,
+        height 0.3s ease;
 }
 
 .action-button:hover:before {
@@ -144,13 +146,18 @@ input[type="radio"]:checked + .expansion-type-label {
 }
 
 .upgrade-card::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+    background: linear-gradient(
+        45deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 70%
+    );
     animation: shimmer 3s infinite;
 }
 
@@ -171,13 +178,18 @@ input[type="radio"]:checked + .expansion-type-label {
 }
 
 .ai-usage-bar::after {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
     animation: progress-shimmer 2s infinite;
 }
 
@@ -201,7 +213,7 @@ input[type="radio"]:checked + .expansion-type-label {
 }
 
 .sidebar-item::before {
-    content: '';
+    content: "";
     position: absolute;
     left: 0;
     top: 0;
@@ -277,14 +289,162 @@ input[type="radio"]:checked + .expansion-type-label {
         transform: translateY(0);
     }
 }
+
+/* Toggle Switch */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+    background-color: #cbd5e0;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.toggle-switch:checked {
+    background-color: #3b82f6;
+}
+
+.toggle-switch::before {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-switch:checked::before {
+    transform: translateX(26px);
+}
+
+.dark .toggle-switch {
+    background-color: #4a5568;
+}
+
+.dark .toggle-switch:checked {
+    background-color: #60a5fa;
+}
+
+/* Keyboard Shortcuts */
+kbd {
+    font-family: monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    background-color: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.25rem;
+    color: #2d3748;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.dark kbd {
+    background-color: #2d3748;
+    border-color: #4a5568;
+    color: #e2e8f0;
+}
+
+/* Statistics Cards */
+.stats-card {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.dark .stats-card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Chart Container */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+.chart-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 8px;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.dark .chart-placeholder {
+    background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+    color: #9ca3af;
+}
+
+/* Import History */
+.import-history-item {
+    transition: all 0.2s ease;
+    animation: slideInLeft 0.3s ease;
+}
+
+.import-history-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes slideInLeft {
     from {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: translateX(-20px);
     }
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateX(0);
     }
+}
+
+/* Page Transitions */
+.page {
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+}
+
+.page.hidden {
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+}
+
+.page:not(.hidden) {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Settings Form */
+.settings-section {
+    transition: all 0.2s ease;
+}
+
+.settings-section:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.dark .settings-section:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Color Preset Buttons */
