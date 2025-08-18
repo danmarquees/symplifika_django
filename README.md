@@ -43,13 +43,15 @@ A **Symplifika** é uma aplicação web moderna e completa, projetada para aumen
 ### Backend
 - **Django 5.2.5**: Framework web principal
 - **Django REST Framework**: API RESTful
-- **SQLite/PostgreSQL**: Banco de dados
+- **PostgreSQL/SQLite**: Banco de dados (PostgreSQL em produção, SQLite em desenvolvimento)
 - **Google Gemini API**: Integração com inteligência artificial
 
 ### Bibliotecas Principais
 - **python-decouple**: Gerenciamento de configurações
 - **django-cors-headers**: Suporte a CORS para frontend
 - **pydantic**: Validação de dados
+- **psycopg2-binary**: Driver PostgreSQL
+- **dj-database-url**: Configuração de database via URL
 
 ## 🌐 Interface Web Integrada
 
@@ -102,25 +104,16 @@ pip install -r requirements.txt
 ```
 
 ### 4. Configure as Variáveis de Ambiente
-Copie o arquivo `.env` e configure suas variáveis:
+Crie o arquivo `.env` com suas configurações:
 
-```bash
-cp .env.example .env
-```
-
-Edite o arquivo `.env` com suas configurações:
 ```env
 # Django Settings
 SECRET_KEY=sua-chave-secreta-aqui
 DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1
 
-# Database (SQLite por padrão)
-DB_NAME=symplifika_db
-DB_USER=seu_usuario
-DB_PASSWORD=sua_senha
-DB_HOST=localhost
-DB_PORT=5432
+# Database - PostgreSQL (opcional para desenvolvimento local)
+# DATABASE_URL=postgresql://symplifika_user:senha@localhost:5432/symplifika_db
 
 # CORS Settings
 CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
@@ -132,9 +125,22 @@ GEMINI_API_KEY=sua-chave-gemini-aqui
 CSRF_TRUSTED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
 ```
 
-### 5. Execute as Migrações
+**Nota:** Por padrão, o projeto usa SQLite em desenvolvimento. Para usar PostgreSQL localmente, descomente e configure a linha `DATABASE_URL`.
+
+### 5. Configure o Banco de Dados
+
+#### Opção A: SQLite (Padrão - Mais Simples)
 ```bash
+# Executar migrações
 python manage.py migrate
+```
+
+#### Opção B: PostgreSQL Local (Recomendado para Produção)
+```bash
+# Usar o script automático
+python setup_postgresql.py
+
+# OU configurar manualmente (veja POSTGRESQL_SETUP.md)
 ```
 
 ### 6. Setup Inicial do Projeto
@@ -323,6 +329,7 @@ Os logs são salvos em `logs/django.log` e incluem:
 
 ## 🧪 Testes
 
+### Testes Básicos
 ```bash
 # Executar todos os testes
 python manage.py test
@@ -336,9 +343,40 @@ coverage run manage.py test
 coverage report
 ```
 
+### Teste de PostgreSQL
+```bash
+# Testar configuração PostgreSQL
+python test_postgresql.py
+
+# Verificar ambiente
+python check_environment.py
+```
+
 ## 🚀 Deploy
 
-### Preparação para Produção
+### Deploy no Render.com com PostgreSQL
+
+Para deploy em produção com maior persistência de dados:
+
+1. **Configure PostgreSQL no Render:**
+   ```bash
+   # Veja o guia completo em POSTGRESQL_SETUP.md
+   # Principais passos:
+   # - Criar database PostgreSQL no Render
+   # - Configurar DATABASE_URL no web service
+   # - Usar symplifika.production_settings
+   ```
+
+2. **Variáveis de ambiente de produção:**
+   ```env
+   DATABASE_URL=postgresql://user:pass@hostname:port/database
+   DJANGO_SETTINGS_MODULE=symplifika.production_settings
+   DEBUG=False
+   SECRET_KEY=your-secret-key
+   GEMINI_API_KEY=your-api-key
+   ```
+
+### Preparação para Produção Local
 
 1. **Configure as variáveis de ambiente de produção**
 2. **Use PostgreSQL ao invés de SQLite**
@@ -369,6 +407,7 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 - **Email**: suporte@symplifika.com
 - **Issues**: Use as issues do GitHub para reportar bugs
 - **Documentação**: Wiki do projeto no GitHub
+- **PostgreSQL**: Veja `POSTGRESQL_SETUP.md` para configuração detalhada
 
 ## 🎯 Roadmap
 

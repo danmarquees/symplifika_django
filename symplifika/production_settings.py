@@ -1,9 +1,10 @@
 """
 Production settings for symplifika project on Render.com
-Uses SQLite by default for simplicity and compatibility
+Uses PostgreSQL for better data persistence and scalability
 """
 
 import os
+import dj_database_url
 from .settings import *
 
 # Override settings for production
@@ -19,14 +20,24 @@ ALLOWED_HOSTS = [
 # Remove any empty strings from ALLOWED_HOSTS
 ALLOWED_HOSTS = [host for host in ALLOWED_HOSTS if host]
 
-# Use SQLite for simplicity - works reliably on Render free tier
-# This avoids PostgreSQL driver compatibility issues
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Use PostgreSQL for production - better persistence and performance
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
-}
+else:
+    # Fallback to SQLite if DATABASE_URL is not set
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Static files configuration
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
@@ -115,4 +126,7 @@ print(f"  - DEBUG: {DEBUG}")
 print(f"  - ALLOWED_HOSTS: {ALLOWED_HOSTS}")
 print(f"  - DATABASE ENGINE: {DATABASES['default']['ENGINE']}")
 print(f"  - RENDER_EXTERNAL_HOSTNAME: {RENDER_EXTERNAL_HOSTNAME}")
-print(f"  - Using SQLite for maximum compatibility")
+if DATABASE_URL:
+    print(f"  - Using PostgreSQL from DATABASE_URL")
+else:
+    print(f"  - Using SQLite fallback (no DATABASE_URL found)")

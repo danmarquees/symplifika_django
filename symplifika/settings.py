@@ -96,13 +96,28 @@ WSGI_APPLICATION = 'symplifika.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# Use SQLite for all environments for maximum compatibility
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# PostgreSQL configuration for production (Render)
+DATABASE_URL = config('DATABASE_URL', default='')
+
+if DATABASE_URL:
+    # Use PostgreSQL in production (Render) with psycopg3
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
-}
+    # Ensure we use psycopg3 driver
+    DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
+else:
+    # Use SQLite for local development
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
