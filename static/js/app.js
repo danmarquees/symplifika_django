@@ -39,6 +39,10 @@ class SymphilikaApp {
     this.setupShortcutForm();
     this.setupCategoryForm();
 
+    // Eventos de navegação
+    this.setupNavigation();
+    this.setupSearchAndFilters();
+
     // Eventos de interface
     document.addEventListener("DOMContentLoaded", () => {
       this.loadRecentShortcuts();
@@ -55,6 +59,7 @@ class SymphilikaApp {
         this.loadCategories(),
         this.loadRecentShortcuts(),
         this.loadDashboardStats(),
+        this.loadAllShortcuts(),
       ]);
     } catch (error) {
       console.error("Erro ao carregar dados iniciais:", error);
@@ -307,6 +312,7 @@ class SymphilikaApp {
 
       this.closeCreateShortcutModal();
       this.loadRecentShortcuts(); // Recarregar atalhos recentes
+      this.loadAllShortcuts(); // Recarregar lista completa
 
       // Disparar evento customizado
       document.dispatchEvent(
@@ -712,20 +718,201 @@ class SymphilikaApp {
                     <span class="text-xs text-gray-500 dark:text-gray-400">
                         ${shortcut.use_count || 0} usos
                     </span>
-                    <button
-                        onclick="window.app.useShortcut(${shortcut.id})"
-                        class="text-symplifika-primary hover:text-symplifika-primary-dark"
-                        title="Usar atalho"
-                    >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                        </svg>
-                    </button>
+                    <div class="flex items-center space-x-1">
+                        <button
+                            onclick="window.app.editShortcut(${shortcut.id})"
+                            class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 p-1 rounded transition-colors"
+                            title="Editar atalho"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                        </button>
+                        <button
+                            onclick="window.app.deleteShortcut(${shortcut.id})"
+                            class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 p-1 rounded transition-colors"
+                            title="Excluir atalho"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                        </button>
+                        <button
+                            onclick="window.app.useShortcut(${shortcut.id})"
+                            class="text-symplifika-primary hover:text-symplifika-primary-dark p-1 rounded transition-colors"
+                            title="Usar atalho"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         `,
       )
       .join("");
+  }
+
+  /**
+   * Carrega todos os atalhos do usuário
+   */
+  async loadAllShortcuts() {
+    try {
+      const response = await fetch(`${this.apiBaseUrl}/shortcuts/`, {
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": this.csrfToken,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao carregar atalhos");
+      }
+
+      const data = await response.json();
+      this.shortcuts = data.results || data;
+      this.displayAllShortcuts(this.shortcuts);
+    } catch (error) {
+      console.error("Erro ao carregar atalhos:", error);
+      this.displayShortcutsError();
+    }
+  }
+
+  /**
+   * Exibe todos os atalhos na página de atalhos
+   */
+  displayAllShortcuts(shortcuts) {
+    const container = document.getElementById("shortcutsList");
+    const loadingEl = document.getElementById("loadingShortcuts");
+    const emptyEl = document.getElementById("emptyShortcuts");
+
+    if (!container) return;
+
+    // Esconder loading
+    if (loadingEl) loadingEl.classList.add("hidden");
+
+    if (shortcuts.length === 0) {
+      if (emptyEl) emptyEl.classList.remove("hidden");
+      return;
+    }
+
+    // Esconder empty state
+    if (emptyEl) emptyEl.classList.add("hidden");
+
+    container.innerHTML = shortcuts
+      .map(
+        (shortcut) => `
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                  ${this.escapeHtml(shortcut.title)}
+                </h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                  ${this.escapeHtml(shortcut.trigger)}
+                </p>
+                ${
+                  shortcut.category
+                    ? `
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-${shortcut.category.color || "gray"}-100 text-${shortcut.category.color || "gray"}-800 dark:bg-${shortcut.category.color || "gray"}-900 dark:text-${shortcut.category.color || "gray"}-200">
+                    ${this.escapeHtml(shortcut.category.name)}
+                  </span>
+                `
+                    : ""
+                }
+              </div>
+              <div class="flex items-center space-x-2 ml-4">
+                <button
+                  onclick="window.app.editShortcut(${shortcut.id})"
+                  class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                  title="Editar atalho"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                  </svg>
+                </button>
+                <button
+                  onclick="window.app.deleteShortcut(${shortcut.id})"
+                  class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                  title="Excluir atalho"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                </button>
+                <button
+                  onclick="window.app.useShortcut(${shortcut.id})"
+                  class="text-symplifika-primary hover:text-symplifika-primary-dark p-2 rounded-lg hover:bg-symplifika-primary/10 transition-colors"
+                  title="Usar atalho"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 mb-4">
+              <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-3">
+                ${this.escapeHtml(shortcut.content)}
+              </p>
+            </div>
+
+            <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+              <div class="flex items-center space-x-4">
+                <span class="flex items-center">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                  </svg>
+                  ${shortcut.use_count || 0} usos
+                </span>
+                <span class="flex items-center">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  ${shortcut.last_used ? new Date(shortcut.last_used).toLocaleDateString() : "Nunca usado"}
+                </span>
+              </div>
+              <div class="flex items-center space-x-2">
+                ${shortcut.expansion_type === "ai_enhanced" ? '<span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded text-xs">IA</span>' : ""}
+                ${shortcut.expansion_type === "dynamic" ? '<span class="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded text-xs">Dinâmico</span>' : ""}
+                ${shortcut.is_active ? '<span class="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded text-xs">Ativo</span>' : '<span class="px-2 py-1 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded text-xs">Inativo</span>'}
+              </div>
+            </div>
+          </div>
+        `,
+      )
+      .join("");
+  }
+
+  /**
+   * Exibe erro ao carregar atalhos
+   */
+  displayShortcutsError() {
+    const container = document.getElementById("shortcutsList");
+    const loadingEl = document.getElementById("loadingShortcuts");
+
+    if (loadingEl) loadingEl.classList.add("hidden");
+
+    if (container) {
+      container.innerHTML = `
+        <div class="col-span-full flex flex-col items-center justify-center py-12">
+          <svg class="w-16 h-16 text-red-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <h3 class="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2">
+            Erro ao carregar atalhos
+          </h3>
+          <p class="text-gray-500 dark:text-gray-500 mb-6">
+            Ocorreu um erro ao carregar seus atalhos. Tente novamente.
+          </p>
+          <button onclick="window.app.loadAllShortcuts()" class="btn btn-primary">
+            Tentar Novamente
+          </button>
+        </div>
+      `;
+    }
   }
 
   /**
@@ -978,12 +1165,559 @@ class SymphilikaApp {
     // Implementar sistema de notificações
     console.log(`[${type.toUpperCase()}] ${message}`);
 
-    // Usar toast/notification existente se disponível
-    if (window.Symplifika && window.Symplifika.Toast) {
-      window.Symplifika.Toast.show(message, type);
-    } else {
-      // Fallback para alert
-      alert(message);
+    // Usar toast personalizado se disponível
+    this.showToast(message, type);
+  }
+
+  /**
+   * Abre modal para editar atalho
+   */
+  async editShortcut(shortcutId) {
+    try {
+      // Carregar dados do atalho
+      const response = await fetch(
+        `${this.apiBaseUrl}/shortcuts/${shortcutId}/`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": this.csrfToken,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Erro ao carregar dados do atalho");
+      }
+
+      const shortcut = await response.json();
+
+      // Abrir modal de criação em modo edição
+      this.openCreateShortcutModal(shortcut);
+    } catch (error) {
+      console.error("Erro ao editar atalho:", error);
+      this.showNotification("Erro ao carregar atalho para edição", "error");
+    }
+  }
+
+  /**
+   * Exclui um atalho
+   */
+  async deleteShortcut(shortcutId) {
+    this.showConfirmationModal(
+      "Excluir Atalho",
+      "Tem certeza que deseja excluir este atalho? Esta ação não pode ser desfeita.",
+      "Excluir",
+      async () => {
+        try {
+          const response = await fetch(
+            `${this.apiBaseUrl}/shortcuts/${shortcutId}/`,
+            {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": this.csrfToken,
+              },
+            },
+          );
+
+          if (!response.ok) {
+            throw new Error("Erro ao excluir atalho");
+          }
+
+          this.showToast("Atalho excluído com sucesso!", "success");
+
+          // Recarregar atalhos recentes e lista completa
+          this.loadRecentShortcuts();
+          this.loadAllShortcuts();
+
+          // Disparar evento customizado
+          document.dispatchEvent(
+            new CustomEvent("shortcutDeleted", {
+              detail: { shortcutId },
+            }),
+          );
+        } catch (error) {
+          console.error("Erro ao excluir atalho:", error);
+          this.showToast("Erro ao excluir atalho", "error");
+        }
+      },
+    );
+  }
+
+  /**
+   * Abre modal de upgrade
+   */
+  showUpgradeModal() {
+    // Verificar se já existe um modal de upgrade
+    let modal = document.getElementById("upgradeModal");
+
+    if (!modal) {
+      // Criar modal de upgrade
+      modal = document.createElement("div");
+      modal.id = "upgradeModal";
+      modal.className =
+        "modal fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden";
+
+      modal.innerHTML = `
+        <div class="modal-content bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+          <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+              Planos Premium
+            </h3>
+            <button
+              type="button"
+              onclick="window.app.closeUpgradeModal()"
+              class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Plano Premium -->
+              <div class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-6 border border-blue-200 dark:border-blue-700">
+                <div class="text-center mb-4">
+                  <h4 class="text-xl font-bold text-gray-900 dark:text-white">Premium</h4>
+                  <p class="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">R$ 19<span class="text-lg">/mês</span></p>
+                </div>
+                <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-300">
+                  <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    500 atalhos
+                  </li>
+                  <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    1.000 expansões IA/mês
+                  </li>
+                  <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Estatísticas avançadas
+                  </li>
+                  <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Suporte prioritário
+                  </li>
+                </ul>
+                <button class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                  Escolher Premium
+                </button>
+              </div>
+
+              <!-- Plano Enterprise -->
+              <div class="bg-gradient-to-br from-purple-50 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg p-6 border border-purple-200 dark:border-purple-700 relative">
+                <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                  <span class="bg-purple-600 text-white text-xs px-3 py-1 rounded-full">Mais Popular</span>
+                </div>
+                <div class="text-center mb-4">
+                  <h4 class="text-xl font-bold text-gray-900 dark:text-white">Enterprise</h4>
+                  <p class="text-3xl font-bold text-purple-600 dark:text-purple-400 mt-2">R$ 49<span class="text-lg">/mês</span></p>
+                </div>
+                <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-300">
+                  <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Atalhos ilimitados
+                  </li>
+                  <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    10.000 expansões IA/mês
+                  </li>
+                  <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    API personalizada
+                  </li>
+                  <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Suporte dedicado
+                  </li>
+                </ul>
+                <button class="w-full mt-6 bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                  Escolher Enterprise
+                </button>
+              </div>
+            </div>
+
+            <div class="text-center mt-8 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <p class="text-sm text-gray-600 dark:text-gray-300">
+                🔒 Pagamento seguro • 💸 7 dias grátis • ❌ Cancele quando quiser
+              </p>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(modal);
+    }
+
+    // Mostrar modal
+    modal.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  }
+
+  /**
+   * Fecha modal de upgrade
+   */
+  closeUpgradeModal() {
+    const modal = document.getElementById("upgradeModal");
+    if (modal) {
+      modal.classList.add("hidden");
+      document.body.style.overflow = "";
+    }
+  }
+
+  /**
+   * Atualiza estatísticas de uso de IA
+   */
+  updateAIUsageStats(used, max) {
+    const usageBar = document.getElementById("aiUsageBar");
+    const usageText = document.getElementById("aiUsageText");
+
+    if (usageBar && usageText) {
+      const percentage = Math.min((used / max) * 100, 100);
+      usageBar.style.width = `${percentage}%`;
+      usageText.textContent = `${used}/${max}`;
+
+      // Alterar cor da barra baseado no uso
+      usageBar.className = usageBar.className.replace(/bg-\w+-\d+/g, "");
+      if (percentage >= 90) {
+        usageBar.classList.add("bg-red-500");
+      } else if (percentage >= 70) {
+        usageBar.classList.add("bg-yellow-500");
+      } else {
+        usageBar.classList.add("bg-symplifika-primary");
+      }
+    }
+  }
+
+  /**
+   * Sistema de navegação entre páginas
+   */
+  setupNavigation() {
+    // Adicionar event listeners para itens de navegação
+    const navItems = document.querySelectorAll("[data-page]");
+    navItems.forEach((item) => {
+      item.addEventListener("click", (e) => {
+        e.preventDefault();
+        const page = item.getAttribute("data-page");
+        this.showPage(page);
+
+        // Atualizar estado ativo
+        navItems.forEach((nav) => nav.classList.remove("active"));
+        item.classList.add("active");
+      });
+    });
+  }
+
+  /**
+   * Exibe uma página específica
+   */
+  showPage(pageName) {
+    // Esconder todas as páginas
+    const pages = document.querySelectorAll(".page");
+    pages.forEach((page) => page.classList.add("hidden"));
+
+    // Mostrar página específica
+    const targetPage = document.getElementById(`${pageName}Page`);
+    if (targetPage) {
+      targetPage.classList.remove("hidden");
+
+      // Carregar dados específicos da página
+      this.loadPageData(pageName);
+    }
+  }
+
+  /**
+   * Carrega dados específicos de cada página
+   */
+  loadPageData(pageName) {
+    switch (pageName) {
+      case "shortcuts":
+        this.loadAllShortcuts();
+        break;
+      case "categories":
+        this.loadCategories();
+        break;
+      case "statistics":
+        this.loadStatistics();
+        break;
+      case "dashboard":
+        this.loadDashboardStats();
+        this.loadRecentShortcuts();
+        break;
+    }
+  }
+
+  /**
+   * Configurar pesquisa e filtros
+   */
+  setupSearchAndFilters() {
+    // Pesquisa de atalhos
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) {
+      let searchTimeout;
+      searchInput.addEventListener("input", (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          this.searchShortcuts(e.target.value);
+        }, 300);
+      });
+    }
+
+    // Filtro de categoria
+    const categoryFilter = document.getElementById("categoryFilter");
+    if (categoryFilter) {
+      categoryFilter.addEventListener("change", (e) => {
+        this.filterShortcutsByCategory(e.target.value);
+      });
+    }
+
+    // Botões de criar
+    const createShortcutBtns = document.querySelectorAll(
+      "#createShortcutBtn, .create-shortcut-btn",
+    );
+    createShortcutBtns.forEach((btn) => {
+      btn.addEventListener("click", () => this.openCreateShortcutModal());
+    });
+
+    const createCategoryBtn = document.getElementById("createCategoryBtn");
+    if (createCategoryBtn) {
+      createCategoryBtn.addEventListener("click", () =>
+        this.openCreateCategoryModal(),
+      );
+    }
+  }
+
+  /**
+   * Pesquisa atalhos
+   */
+  searchShortcuts(query) {
+    const filteredShortcuts = this.shortcuts.filter(
+      (shortcut) =>
+        shortcut.title.toLowerCase().includes(query.toLowerCase()) ||
+        shortcut.trigger.toLowerCase().includes(query.toLowerCase()) ||
+        shortcut.content.toLowerCase().includes(query.toLowerCase()),
+    );
+    this.displayAllShortcuts(filteredShortcuts);
+  }
+
+  /**
+   * Filtra atalhos por categoria
+   */
+  filterShortcutsByCategory(categoryId) {
+    let filteredShortcuts = this.shortcuts;
+
+    if (categoryId && categoryId !== "") {
+      filteredShortcuts = this.shortcuts.filter(
+        (shortcut) =>
+          shortcut.category && shortcut.category.id.toString() === categoryId,
+      );
+    }
+
+    this.displayAllShortcuts(filteredShortcuts);
+  }
+
+  /**
+   * Carrega estatísticas
+   */
+  async loadStatistics() {
+    try {
+      const response = await fetch(`${this.apiBaseUrl}/shortcuts/stats/`, {
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": this.csrfToken,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao carregar estatísticas");
+      }
+
+      const stats = await response.json();
+      this.displayStatistics(stats);
+    } catch (error) {
+      console.error("Erro ao carregar estatísticas:", error);
+    }
+  }
+
+  /**
+   * Exibe estatísticas
+   */
+  displayStatistics(stats) {
+    // Atualizar elementos de estatísticas na página
+    const elements = {
+      totalShortcuts: document.getElementById("statsTotalShortcuts"),
+      totalUsages: document.getElementById("statsTotalUsages"),
+      avgUsage: document.getElementById("statsAvgUsage"),
+      topShortcut: document.getElementById("statsTopShortcut"),
+    };
+
+    if (elements.totalShortcuts) {
+      elements.totalShortcuts.textContent = stats.total_shortcuts || 0;
+    }
+    if (elements.totalUsages) {
+      elements.totalUsages.textContent = stats.total_usages || 0;
+    }
+    if (elements.avgUsage) {
+      elements.avgUsage.textContent = (stats.avg_usage || 0).toFixed(1);
+    }
+    if (elements.topShortcut && stats.top_shortcut) {
+      elements.topShortcut.textContent = stats.top_shortcut.title || "N/A";
+    }
+  }
+
+  /**
+   * Exibe modal de confirmação personalizado
+   */
+  showConfirmationModal(title, message, confirmText, onConfirm) {
+    const modal = document.getElementById("confirmationModal");
+    const titleEl = document.getElementById("confirmationTitle");
+    const messageEl = document.getElementById("confirmationMessage");
+    const confirmBtn = document.getElementById("confirmationConfirm");
+    const confirmTextEl = document.getElementById("confirmationConfirmText");
+
+    if (!modal || !titleEl || !messageEl || !confirmBtn || !confirmTextEl) {
+      // Fallback para alert nativo se modal não estiver disponível
+      if (confirm(message)) {
+        onConfirm();
+      }
+      return;
+    }
+
+    titleEl.textContent = title;
+    messageEl.textContent = message;
+    confirmTextEl.textContent = confirmText;
+
+    // Limpar event listeners anteriores
+    const newConfirmBtn = confirmBtn.cloneNode(true);
+    confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+    // Adicionar novo event listener
+    newConfirmBtn.addEventListener("click", async () => {
+      const loadingIcon = document.getElementById("confirmationConfirmLoading");
+
+      // Mostrar loading
+      if (loadingIcon) {
+        loadingIcon.classList.remove("hidden");
+      }
+      newConfirmBtn.disabled = true;
+
+      try {
+        await onConfirm();
+        this.closeConfirmationModal();
+      } catch (error) {
+        console.error("Erro na confirmação:", error);
+      } finally {
+        // Remover loading
+        if (loadingIcon) {
+          loadingIcon.classList.add("hidden");
+        }
+        newConfirmBtn.disabled = false;
+      }
+    });
+
+    // Mostrar modal
+    modal.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  }
+
+  /**
+   * Fecha modal de confirmação
+   */
+  closeConfirmationModal() {
+    const modal = document.getElementById("confirmationModal");
+    if (modal) {
+      modal.classList.add("hidden");
+      document.body.style.overflow = "";
+    }
+  }
+
+  /**
+   * Exibe notificação toast
+   */
+  showToast(message, type = "info", duration = 5000) {
+    const container = document.getElementById("toastContainer");
+    if (!container) {
+      // Fallback para notificação existente
+      this.showNotification(message, type);
+      return;
+    }
+
+    const toastId = Date.now().toString();
+    const typeClasses = {
+      success: "bg-green-500 text-white",
+      error: "bg-red-500 text-white",
+      warning: "bg-yellow-500 text-white",
+      info: "bg-blue-500 text-white",
+    };
+
+    const typeIcons = {
+      success: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>`,
+      error: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>`,
+      warning: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"/>`,
+      info: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>`,
+    };
+
+    const toast = document.createElement("div");
+    toast.id = `toast-${toastId}`;
+    toast.className = `${typeClasses[type] || typeClasses.info} rounded-lg shadow-lg p-4 transform transition-all duration-300 translate-x-full opacity-0`;
+
+    toast.innerHTML = `
+      <div class="flex items-center">
+        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          ${typeIcons[type] || typeIcons.info}
+        </svg>
+        <p class="flex-1 text-sm font-medium">${this.escapeHtml(message)}</p>
+        <button onclick="window.app.closeToast('${toastId}')" class="ml-3 text-white hover:text-gray-200">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    `;
+
+    container.appendChild(toast);
+
+    // Animar entrada
+    setTimeout(() => {
+      toast.classList.remove("translate-x-full", "opacity-0");
+    }, 100);
+
+    // Auto remover
+    setTimeout(() => {
+      this.closeToast(toastId);
+    }, duration);
+  }
+
+  /**
+   * Fecha toast específico
+   */
+  closeToast(toastId) {
+    const toast = document.getElementById(`toast-${toastId}`);
+    if (toast) {
+      toast.classList.add("translate-x-full", "opacity-0");
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.parentNode.removeChild(toast);
+        }
+      }, 300);
     }
   }
 

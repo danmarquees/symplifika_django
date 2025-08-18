@@ -75,8 +75,69 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                     <p
                         class="text-xs lg:text-sm text-gray-500 dark:text-gray-400"
                     >
-                        Plano Free
+                        Plano {% if user.userprofile.plan == 'free' %}Free{%
+                        elif user.userprofile.plan == 'premium' %}Premium{% else
+                        %}Enterprise{% endif %}
                     </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Usage Stats -->
+        <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+                <div class="flex items-center justify-between mb-2">
+                    <span
+                        class="text-xs font-medium text-gray-600 dark:text-gray-300"
+                        >Prompts IA</span
+                    >
+                    <svg
+                        class="w-4 h-4 text-symplifika-primary"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M13 10V3L4 14h7v7l9-11h-7z"
+                        />
+                    </svg>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <div
+                        class="flex-1 bg-gray-200 dark:bg-gray-600 rounded-full h-2"
+                    >
+                        <div
+                            class="bg-symplifika-primary h-2 rounded-full transition-all duration-300"
+                            style="width: {{ user.userprofile.ai_usage_percentage }}%"
+                            id="aiUsageBar"
+                        ></div>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center mt-1">
+                    <span
+                        class="text-xs text-gray-500 dark:text-gray-400"
+                        id="aiUsageText"
+                    >
+                        <!-- prerttier-ignore -->
+                        {{ user.userprofile.ai_requests_used|default:0 }}/
+                        {{user.userprofile.max_ai_requests|default:100 }}
+                    </span>
+                    {% if user.userprofile.plan == 'free' %}
+                    <span class="text-xs text-symplifika-primary font-medium"
+                        >Free</span
+                    >
+                    {% elif user.userprofile.plan == 'premium' %}
+                    <span class="text-xs text-blue-600 font-medium"
+                        >Premium</span
+                    >
+                    {% else %}
+                    <span class="text-xs text-purple-600 font-medium"
+                        >Enterprise</span
+                    >
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -215,6 +276,45 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                 <span>Configurações</span>
             </a>
         </nav>
+
+        <!-- Upgrade Card (Only for Free Plan) -->
+        {% if user.userprofile.plan == 'free' %}
+        <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+            <div
+                class="bg-gradient-to-r from-symplifika-primary to-blue-600 rounded-lg p-4 text-white"
+            >
+                <div class="flex items-center space-x-3">
+                    <div class="flex-shrink-0">
+                        <svg
+                            class="w-8 h-8"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                            />
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="font-semibold text-sm">Upgrade to Pro</h4>
+                        <p class="text-xs opacity-90 mt-1">
+                            Desbloqueie recursos premium e mais prompts IA
+                        </p>
+                    </div>
+                </div>
+                <button
+                    onclick="window.app && window.app.showUpgradeModal()"
+                    class="w-full mt-3 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-md py-2 px-3 text-xs font-medium transition-all duration-200 backdrop-blur-sm"
+                >
+                    Ver Planos
+                </button>
+            </div>
+        </div>
+        {% endif %}
 
         <!-- Sidebar Footer -->
         <div
@@ -2105,6 +2205,94 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
         </form>
     </div>
 </div>
+
+<!-- Confirmation Modal -->
+<div
+    id="confirmationModal"
+    class="modal fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden"
+>
+    <div
+        class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4"
+    >
+        <div class="p-6">
+            <div class="flex items-center mb-4">
+                <div
+                    class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center mr-3"
+                >
+                    <svg
+                        class="w-6 h-6 text-red-600 dark:text-red-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"
+                        />
+                    </svg>
+                </div>
+                <h3
+                    id="confirmationTitle"
+                    class="text-lg font-semibold text-gray-900 dark:text-white"
+                >
+                    Confirmar Ação
+                </h3>
+            </div>
+            <p
+                id="confirmationMessage"
+                class="text-gray-600 dark:text-gray-300 mb-6"
+            >
+                Tem certeza que deseja realizar esta ação?
+            </p>
+            <div class="flex justify-end space-x-3">
+                <button
+                    id="confirmationCancel"
+                    type="button"
+                    class="btn btn-outline border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                >
+                    Cancelar
+                </button>
+                <button
+                    id="confirmationConfirm"
+                    type="button"
+                    class="btn bg-red-600 hover:bg-red-700 text-white"
+                >
+                    <span id="confirmationConfirmText">Confirmar</span>
+                    <svg
+                        id="confirmationConfirmLoading"
+                        class="hidden animate-spin -mr-1 ml-2 h-4 w-4 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                    >
+                        <circle
+                            class="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            stroke-width="4"
+                        ></circle>
+                        <path
+                            class="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notifications Container -->
+<div
+    id="toastContainer"
+    class="fixed top-4 right-4 z-50 space-y-2"
+    style="max-width: 400px"
+></div>
+
 {% endblock %} {% block footer %}
 <!-- No footer in app layout -->
 {% endblock %} {% block extra_css %}
@@ -2157,6 +2345,54 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
         window.addEventListener("resize", () => {
             if (window.innerWidth >= 1024) {
                 closeSidebar();
+            }
+        });
+
+        // Configurar eventos de formulários
+        const createShortcutForm =
+            document.getElementById("createShortcutForm");
+        if (createShortcutForm) {
+            createShortcutForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                if (window.app) {
+                    window.app.handleShortcutSubmit(createShortcutForm);
+                }
+            });
+        }
+
+        const createCategoryForm =
+            document.getElementById("createCategoryForm");
+        if (createCategoryForm) {
+            createCategoryForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                if (window.app) {
+                    window.app.handleCategorySubmit(createCategoryForm);
+                }
+            });
+        }
+
+        // Configurar modal de confirmação
+        const confirmationModal = document.getElementById("confirmationModal");
+        const confirmationCancel =
+            document.getElementById("confirmationCancel");
+
+        if (confirmationCancel) {
+            confirmationCancel.addEventListener("click", () => {
+                if (window.app) {
+                    window.app.closeConfirmationModal();
+                }
+            });
+        }
+
+        // Fechar modais com ESC
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                // Fechar todos os modais visíveis
+                const modals = document.querySelectorAll(".modal:not(.hidden)");
+                modals.forEach((modal) => {
+                    modal.classList.add("hidden");
+                });
+                document.body.style.overflow = "";
             }
         });
     });
