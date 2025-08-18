@@ -57,7 +57,7 @@ class Command(BaseCommand):
             self.style.WARNING('📝 Lembre-se de configurar as variáveis de ambiente no arquivo .env')
         )
         self.stdout.write(
-            self.style.WARNING('🔑 Especialmente a OPENAI_API_KEY para funcionalidades de IA')
+            self.style.WARNING('🔑 Especialmente a GEMINI_API_KEY para funcionalidades de IA')
         )
 
     def create_superuser(self, options):

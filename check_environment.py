@@ -67,7 +67,7 @@ def check_environment_variables():
         'SECRET_KEY',
         'DATABASE_URL',
         'ALLOWED_HOSTS',
-        'OPENAI_API_KEY',
+        'GEMINI_API_KEY',
         'RENDER_EXTERNAL_HOSTNAME',
         'PORT'
     ]
@@ -75,7 +75,7 @@ def check_environment_variables():
     for var in important_vars:
         value = os.environ.get(var)
         if value:
-            if var in ['SECRET_KEY', 'OPENAI_API_KEY', 'DATABASE_URL']:
+            if var in ['SECRET_KEY', 'GEMINI_API_KEY', 'DATABASE_URL']:
                 # Mask sensitive values
                 masked_value = value[:10] + '...' if len(value) > 10 else '***'
                 print(f"✅ {var}: {masked_value}")
@@ -155,7 +155,7 @@ def check_installed_packages():
         'djangorestframework',
         'django-cors-headers',
         'python-decouple',
-        'openai',
+        'google-generativeai',
         'requests',
         'gunicorn',
         'psycopg2-binary',

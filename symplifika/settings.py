@@ -201,7 +201,7 @@ else:
 CORS_ALLOW_CREDENTIALS = True
 
 # AI Configuration
-OPENAI_API_KEY = config('OPENAI_API_KEY', default='')
+GEMINI_API_KEY = config('GEMINI_API_KEY', default='')
 
 # Custom User Model (if needed)
 # AUTH_USER_MODEL = 'users.User'

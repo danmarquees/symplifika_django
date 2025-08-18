@@ -22,7 +22,7 @@ A **Symplifika** é uma aplicação web moderna e completa, projetada para aumen
 
 ### 🚀 Core Features
 - **Atalhos Personalizados**: Crie gatilhos únicos que se expandem para textos completos
-- **Expansão com IA**: Use OpenAI para expandir e melhorar automaticamente seus textos
+- **Expansão com IA**: Use Google Gemini para expandir e melhorar automaticamente seus textos
 - **Variáveis Dinâmicas**: Suporte a placeholders que podem ser substituídos dinamicamente
 - **Categorização**: Organize seus atalhos em categorias personalizadas
 - **Busca Avançada**: Encontre rapidamente qualquer atalho usando filtros inteligentes
@@ -44,7 +44,7 @@ A **Symplifika** é uma aplicação web moderna e completa, projetada para aumen
 - **Django 5.2.5**: Framework web principal
 - **Django REST Framework**: API RESTful
 - **SQLite/PostgreSQL**: Banco de dados
-- **OpenAI API**: Integração com inteligência artificial
+- **Google Gemini API**: Integração com inteligência artificial
 
 ### Bibliotecas Principais
 - **python-decouple**: Gerenciamento de configurações
@@ -125,8 +125,8 @@ DB_PORT=5432
 # CORS Settings
 CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
 
-# OpenAI API (obrigatório para funcionalidades de IA)
-OPENAI_API_KEY=sua-chave-openai-aqui
+# Google Gemini API (obrigatório para funcionalidades de IA)
+GEMINI_API_KEY=sua-chave-gemini-aqui
 
 # Security
 CSRF_TRUSTED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000

@@ -1,4 +1,4 @@
-from openai import OpenAI
+import google.generativeai as genai
 import logging
 from django.conf import settings
 from typing import Optional
@@ -8,18 +8,22 @@ logger = logging.getLogger(__name__)
 
 
 class AIService:
-    """Serviço para expansão de texto usando IA (OpenAI)"""
+    """Serviço para expansão de texto usando IA (Google Gemini)"""
 
     def __init__(self):
-        self.api_key = settings.OPENAI_API_KEY
-        self.model_name = "gpt-3.5-turbo"
+        self.api_key = settings.GEMINI_API_KEY
+        self.model_name = "gemini-1.5-flash"
         self.max_tokens = 500
         self.temperature = 0.7
 
         if not self.api_key:
-            logger.warning("OpenAI API key não configurada")
+            logger.warning("Gemini API key não configurada")
 
-        self.client = OpenAI(api_key=self.api_key) if self.api_key else None
+        if self.api_key:
+            genai.configure(api_key=self.api_key)
+            self.model = genai.GenerativeModel(self.model_name)
+        else:
+            self.model = None
 
     def enhance_text(self, content: str, custom_prompt: str = "") -> str:
         """
@@ -33,7 +37,7 @@ class AIService:
             Texto expandido pela IA
         """
         if not self.api_key:
-            raise Exception("API key do OpenAI não configurada")
+            raise Exception("API key do Gemini não configurada")
 
         try:
             # Constrói o prompt
@@ -44,43 +48,40 @@ class AIService:
             else:
                 full_prompt = f"{base_prompt}\n\nTexto a expandir: {content}"
 
-            # Faz a chamada para a API
-            response = self.client.chat.completions.create(
-                model=self.model_name,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "Você é um assistente especializado em expandir e melhorar textos de forma profissional e contextual."
-                    },
-                    {
-                        "role": "user",
-                        "content": full_prompt
-                    }
-                ],
-                max_tokens=self.max_tokens,
+            # Configura os parâmetros de geração
+            generation_config = genai.types.GenerationConfig(
+                max_output_tokens=self.max_tokens,
                 temperature=self.temperature,
-                timeout=30
+                candidate_count=1
             )
 
-            enhanced_content = response.choices[0].message.content.strip()
+            # Faz a chamada para a API
+            response = self.model.generate_content(
+                full_prompt,
+                generation_config=generation_config
+            )
+
+            if response.candidates and response.candidates[0].content:
+                enhanced_content = response.candidates[0].content.parts[0].text.strip()
+            else:
+                raise Exception("Resposta vazia do modelo")
 
             logger.info(f"Texto expandido com sucesso usando {self.model_name}")
             return enhanced_content
 
         except Exception as e:
-            if "rate_limit" in str(e).lower():
-                logger.error("Rate limit excedido na API do OpenAI")
+            if "quota" in str(e).lower() or "limit" in str(e).lower():
+                logger.error("Limite de uso excedido na API do Gemini")
                 raise Exception("Limite de uso da IA temporariamente excedido. Tente novamente em alguns minutos.")
-            elif "authentication" in str(e).lower():
-                logger.error("Erro de autenticação com a API do OpenAI")
+            elif "authentication" in str(e).lower() or "api_key" in str(e).lower():
+                logger.error("Erro de autenticação com a API do Gemini")
                 raise Exception("Erro de configuração da IA. Contate o administrador.")
             elif "invalid" in str(e).lower():
-                logger.error(f"Requisição inválida para a API do OpenAI: {e}")
+                logger.error(f"Requisição inválida para a API do Gemini: {e}")
                 raise Exception("Erro na requisição de expansão de texto.")
-
-        except Exception as e:
-            logger.error(f"Erro inesperado na expansão de texto: {e}")
-            raise Exception(f"Erro ao expandir texto: {str(e)}")
+            else:
+                logger.error(f"Erro inesperado na expansão de texto: {e}")
+                raise Exception(f"Erro ao expandir texto: {str(e)}")
 
     def _build_base_prompt(self) -> str:
         """Constrói o prompt base para expansão de texto"""
@@ -133,23 +134,21 @@ Assunto: [assunto aqui]
 Seja conciso mas completo.
             """
 
-            response = self.client.chat.completions.create(
-                model=self.model_name,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "Você é um especialista em comunicação empresarial e redação de emails."
-                    },
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
-                max_tokens=400,
-                temperature=0.6
+            generation_config = genai.types.GenerationConfig(
+                max_output_tokens=400,
+                temperature=0.6,
+                candidate_count=1
             )
 
-            return response.choices[0].message.content.strip()
+            response = self.model.generate_content(
+                prompt,
+                generation_config=generation_config
+            )
+
+            if response.candidates and response.candidates[0].content:
+                return response.candidates[0].content.parts[0].text.strip()
+            else:
+                return self._get_fallback_email_template(purpose)
 
         except Exception as e:
             logger.error(f"Erro ao gerar template de email: {e}")
@@ -250,20 +249,22 @@ Formato da resposta:
 Os triggers devem ser curtos, memoráveis e descritivos.
             """
 
-            response = self.client.chat.completions.create(
-                model=self.model_name,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
-                max_tokens=300,
-                temperature=0.8
+            generation_config = genai.types.GenerationConfig(
+                max_output_tokens=300,
+                temperature=0.8,
+                candidate_count=1
             )
 
-            suggestions_text = response.choices[0].message.content.strip()
-            return self._parse_suggestions(suggestions_text)
+            response = self.model.generate_content(
+                prompt,
+                generation_config=generation_config
+            )
+
+            if response.candidates and response.candidates[0].content:
+                suggestions_text = response.candidates[0].content.parts[0].text.strip()
+                return self._parse_suggestions(suggestions_text)
+            else:
+                return self._get_fallback_suggestions(text)
 
         except Exception as e:
             logger.error(f"Erro ao gerar sugestões de atalhos: {e}")
@@ -334,13 +335,21 @@ Os triggers devem ser curtos, memoráveis e descritivos.
 
         try:
             # Testa a API com uma requisição simples
-            response = self.client.chat.completions.create(
-                model=self.model_name,
-                messages=[{"role": "user", "content": "test"}],
-                max_tokens=1,
-                timeout=10
+            generation_config = genai.types.GenerationConfig(
+                max_output_tokens=1,
+                temperature=0.1,
+                candidate_count=1
             )
-            status_info['api_accessible'] = True
+
+            response = self.model.generate_content(
+                "test",
+                generation_config=generation_config
+            )
+
+            if response.candidates:
+                status_info['api_accessible'] = True
+            else:
+                status_info['error'] = 'Resposta vazia da API'
 
         except Exception as e:
             status_info['error'] = str(e)
