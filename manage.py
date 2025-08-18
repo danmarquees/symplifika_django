@@ -6,7 +6,11 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'symplifika.settings')
+    # Use production settings if running on Render or if explicitly set
+    if 'RENDER' in os.environ or 'RENDER_EXTERNAL_HOSTNAME' in os.environ:
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'symplifika.production_settings')
+    else:
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'symplifika.settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
