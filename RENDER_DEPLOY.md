@@ -54,27 +54,7 @@ DJANGO_SETTINGS_MODULE=symplifika.production_settings
 OPENAI_API_KEY=sua-chave-openai
 ```
 
-### 4. Criar o Banco de Dados PostgreSQL
-
-1. No dashboard do Render, clique em "New +" → "PostgreSQL"
-2. Configure:
-   - **Name**: `symplifika-db`
-   - **Database**: `symplifika`
-   - **User**: `symplifika`
-   - **Region**: Same as your web service
-   - **PostgreSQL Version**: `15`
-
-3. Após criar, copie a **Internal Database URL**
-
-### 5. Conectar Banco ao Web Service
-
-1. Volte ao seu Web Service
-2. Em "Environment", adicione:
-```
-DATABASE_URL=[cole a Internal Database URL aqui]
-```
-
-### 6. Deploy Automático
+### 4. Deploy Automático
 
 O deploy será iniciado automaticamente. Aguarde alguns minutos.
 
@@ -110,14 +90,14 @@ O script de build (`build.sh`) agora inclui logs detalhados para facilitar o tro
 - **Sleep Mode**: O serviço "dorme" após 15 minutos de inatividade
 - **Build Minutes**: 500 minutos por mês
 - **Bandwidth**: Unlimited
-- **Database**: 1 GB de storage, conexões limitadas
+- **Storage**: Files são temporários (reset a cada deploy)
 
 ## Troubleshooting
 
-### Problema: Build falha com erro "No such file or directory: logs/django.log"
-**Solução**: O script de build foi atualizado para criar os diretórios necessários automaticamente. Se ainda falhar:
-1. Verifique se o arquivo `build.sh` tem permissões de execução
-2. Certifique-se de que está usando `DJANGO_SETTINGS_MODULE=symplifika.production_settings`
+### Problema: Build falha com erro de PostgreSQL
+**Solução**: A configuração foi simplificada para usar SQLite por padrão, evitando problemas de compatibilidade:
+1. Certifique-se de que está usando `DJANGO_SETTINGS_MODULE=symplifika.production_settings`
+2. Verifique se o arquivo `build.sh` tem permissões de execução
 
 ### Problema: Build falha na instalação de dependências
 **Solução**: 
@@ -133,9 +113,9 @@ O script de build (`build.sh`) agora inclui logs detalhados para facilitar o tro
 
 ### Problema: Erro de database
 **Solução**: 
-- Verifique se a `DATABASE_URL` está configurada corretamente
-- Confirme que o banco PostgreSQL foi criado no Render
-- Verifique se as migrações foram executadas no build
+- O projeto usa SQLite por padrão para máxima compatibilidade
+- Dados são temporários e resetados a cada deploy (adequado para demos/testes)
+- Para dados persistentes, considere usar um banco externo
 
 ### Problema: Erro "Unable to configure handler 'file'"
 **Solução**: Use as configurações de produção que têm logging simplificado:
@@ -190,7 +170,7 @@ python check_environment.py
 A versão gratuita inclui:
 - 750 horas de runtime por mês (suficiente para sempre ativo)
 - 500 minutos de build por mês
-- 1 GB PostgreSQL storage
+- Storage temporário (dados resetados a cada deploy)
 
 ## Próximos Passos
 
@@ -211,6 +191,7 @@ A versão gratuita inclui:
 
 ### Configurações de Produção Separadas
 - Criado `symplifika/production_settings.py` específico para produção
+- Usa SQLite por padrão para máxima compatibilidade
 - Configurações de logging simplificadas para evitar erros
 - Configurações de segurança otimizadas para Render
 
@@ -223,4 +204,7 @@ A versão gratuita inclui:
 - Atualizado para Python 3.13.4 (compatível com Render)
 - Runtime especificado em `runtime.txt`
 
-**Nota**: Lembre-se de que na versão gratuita, o serviço pode ter latência inicial devido ao "cold start" após períodos de inatividade.
+**Notas Importantes**: 
+- Na versão gratuita, o serviço pode ter latência inicial devido ao "cold start" após períodos de inatividade
+- **Dados SQLite são temporários**: Todos os dados (usuários, posts, etc.) são perdidos a cada deploy
+- Para aplicações com dados persistentes, considere usar um banco de dados externo ou upgrade para plano pago

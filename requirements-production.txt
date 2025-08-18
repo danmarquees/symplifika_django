@@ -1,3 +1,6 @@
+# Production Requirements for Render.com
+# This file contains only the dependencies needed for production deployment
+
 # Django Framework
 Django==5.2.5
 djangorestframework==3.16.1
@@ -39,17 +42,19 @@ certifi==2025.8.3
 urllib3==2.5.0
 charset-normalizer==3.4.3
 
-# Production dependencies
+# Production web server
 gunicorn==21.2.0
+
+# Static files handling
 whitenoise==6.8.2
+
+# Database URL parsing
 dj-database-url==2.3.0
 
-# Development dependencies (optional)
-# pytest==7.4.3
-# pytest-django==4.7.0
-# black==23.11.0
-# flake8==6.1.0
+# PostgreSQL adapter - try multiple options for compatibility
+# Install in order of preference
+psycopg2-binary==2.9.9; python_version < "3.13"
+psycopg[binary]==3.2.3; python_version >= "3.13"
 
-# Optional production dependencies
-# redis==5.0.1
-# celery==5.3.4
+# Security and monitoring (optional)
+# sentry-sdk[django]==1.45.0

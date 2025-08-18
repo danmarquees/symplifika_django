@@ -1,10 +1,10 @@
 """
 Production settings for symplifika project on Render.com
+Uses SQLite by default for simplicity and compatibility
 """
 
 import os
 from .settings import *
-import dj_database_url
 
 # Override settings for production
 DEBUG = False
@@ -19,15 +19,14 @@ ALLOWED_HOSTS = [
 # Remove any empty strings from ALLOWED_HOSTS
 ALLOWED_HOSTS = [host for host in ALLOWED_HOSTS if host]
 
-# Database configuration for Render
-if 'DATABASE_URL' in os.environ:
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=os.environ['DATABASE_URL'],
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
+# Use SQLite for simplicity - works reliably on Render free tier
+# This avoids PostgreSQL driver compatibility issues
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
+}
 
 # Static files configuration
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
@@ -43,7 +42,7 @@ if RENDER_EXTERNAL_HOSTNAME:
         f"https://{RENDER_EXTERNAL_HOSTNAME}",
     ]
 
-# Security settings
+# Security settings for production
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
@@ -53,7 +52,7 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_HSTS_PRELOAD = True
 
-# Simplified logging for production
+# Simplified logging for production - console only
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -93,22 +92,9 @@ LOGGING = {
     },
 }
 
-# Cache configuration (optional, for better performance)
-if 'REDIS_URL' in os.environ:
-    CACHES = {
-        'default': {
-            'BACKEND': 'django_redis.cache.RedisCache',
-            'LOCATION': os.environ['REDIS_URL'],
-            'OPTIONS': {
-                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-            }
-        }
-    }
-    SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-    SESSION_CACHE_ALIAS = 'default'
-else:
-    # Use database sessions as fallback
-    SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+# Session configuration - use database sessions
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_AGE = 86400  # 24 hours
 
 # Email configuration (if needed)
 if all(key in os.environ for key in ['EMAIL_HOST', 'EMAIL_HOST_USER', 'EMAIL_HOST_PASSWORD']):
@@ -119,3 +105,14 @@ if all(key in os.environ for key in ['EMAIL_HOST', 'EMAIL_HOST_USER', 'EMAIL_HOS
     EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
     EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
     DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
+else:
+    # Use console backend for development/testing
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Print configuration info for debugging
+print(f"Production settings loaded:")
+print(f"  - DEBUG: {DEBUG}")
+print(f"  - ALLOWED_HOSTS: {ALLOWED_HOSTS}")
+print(f"  - DATABASE ENGINE: {DATABASES['default']['ENGINE']}")
+print(f"  - RENDER_EXTERNAL_HOSTNAME: {RENDER_EXTERNAL_HOSTNAME}")
+print(f"  - Using SQLite for maximum compatibility")

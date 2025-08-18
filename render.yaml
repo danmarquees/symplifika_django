@@ -13,16 +13,5 @@ services:
         value: False
       - key: SECRET_KEY
         generateValue: true
-      - key: DATABASE_URL
-        fromDatabase:
-          name: symplifika-db
-          property: connectionString
     healthCheckPath: /admin/login/
     plan: free
-
-databases:
-  - name: symplifika-db
-    databaseName: symplifika
-    user: symplifika
-    plan: free
-    ipAllowList: []
