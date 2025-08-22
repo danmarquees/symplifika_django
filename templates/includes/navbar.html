@@ -504,13 +504,15 @@
                     appSidebar.classList.add("-translate-x-full");
                     if (backdrop) backdrop.classList.add("hidden");
                     document.body.style.overflow = "";
-                    appSidebar.setAttribute("aria-hidden", "true");
+                    appSidebar.removeAttribute("aria-hidden");
+                    appSidebar.setAttribute("inert", "");
                     this.setAttribute("aria-expanded", "false");
                 } else {
                     // Open sidebar
                     appSidebar.classList.remove("-translate-x-full");
                     if (backdrop) backdrop.classList.remove("hidden");
                     document.body.style.overflow = "hidden";
+                    appSidebar.removeAttribute("inert");
                     appSidebar.setAttribute("aria-hidden", "false");
                     this.setAttribute("aria-expanded", "true");
 
@@ -554,7 +556,8 @@
                 appSidebar.classList.add("-translate-x-full");
                 backdrop.classList.add("hidden");
                 document.body.style.overflow = "";
-                appSidebar.setAttribute("aria-hidden", "true");
+                appSidebar.removeAttribute("aria-hidden");
+                appSidebar.setAttribute("inert", "");
                 toggleButton.setAttribute("aria-expanded", "false");
             }
         } else {
@@ -597,7 +600,8 @@
                 appSidebar.classList.add("-translate-x-full");
                 if (backdrop) backdrop.classList.add("hidden");
                 document.body.style.overflow = "";
-                appSidebar.setAttribute("aria-hidden", "true");
+                appSidebar.removeAttribute("aria-hidden");
+                appSidebar.setAttribute("inert", "");
                 if (toggleButton)
                     toggleButton.setAttribute("aria-expanded", "false");
 

@@ -2692,6 +2692,9 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
 
             // Update ARIA attributes
             if (openBtn) openBtn.setAttribute("aria-expanded", "true");
+            
+            // Remove inert attribute and set aria-hidden to false
+            sidebar.removeAttribute("inert");
             sidebar.setAttribute("aria-hidden", "false");
 
             // Focus management - focus first interactive element in sidebar
@@ -2720,7 +2723,10 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
 
             // Update ARIA attributes
             if (openBtn) openBtn.setAttribute("aria-expanded", "false");
-            sidebar.setAttribute("aria-hidden", "true");
+            
+            // Remove aria-hidden and use inert instead for better accessibility
+            sidebar.removeAttribute("aria-hidden");
+            sidebar.setAttribute("inert", "");
 
             // Return focus to open button
             if (openBtn) {
@@ -2853,7 +2859,8 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                 backdrop.classList.add("hidden");
                 document.body.style.overflow = "";
                 if (openBtn) openBtn.setAttribute("aria-expanded", "false");
-                sidebar.setAttribute("aria-hidden", "true");
+                sidebar.removeAttribute("aria-hidden");
+                sidebar.setAttribute("inert", "");
                 isAnimating = false;
             }
         });
