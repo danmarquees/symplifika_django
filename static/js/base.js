@@ -1,674 +1,492 @@
-// Symplifika Base JavaScript
+/**
+ * Symplifika Base System
+ * Sistema base para modals, notificações e utilitários
+ */
 
-// Utility functions
-const Utils = {
-  // Get CSRF token
-  getCSRFToken() {
-    const token = document.querySelector("[name=csrfmiddlewaretoken]");
-    const metaToken = document.querySelector('meta[name="csrf-token"]');
-    return token
-      ? token.value
-      : metaToken
-        ? metaToken.getAttribute("content")
-        : "";
-  },
+window.Symplifika = window.Symplifika || {};
 
-  // Check if element is in viewport
-  isInViewport(element) {
-    const rect = element.getBoundingClientRect();
-    return (
-      rect.top >= 0 &&
-      rect.left >= 0 &&
-      rect.bottom <=
-        (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
-  },
+/**
+ * Sistema de Modal
+ */
+window.Symplifika.Modal = {
+    /**
+     * Abre um modal
+     * @param {string} modalId - ID do modal a ser aberto
+     */
+    open(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
 
-  // Smooth scroll to element
-  scrollToElement(selector, offset = 0) {
-    const element = document.querySelector(selector);
-    if (element) {
-      const targetPosition = element.offsetTop - offset;
-      window.scrollTo({
-        top: targetPosition,
-        behavior: "smooth",
-      });
+            // Focar no primeiro input visível
+            const firstInput = modal.querySelector('input:not([type="hidden"]), textarea, select');
+            if (firstInput) {
+                setTimeout(() => firstInput.focus(), 100);
+            }
+
+            // Adicionar listener para ESC
+            this.addEscapeListener(modalId);
+        }
+    },
+
+    /**
+     * Fecha um modal
+     * @param {string} modalId - ID do modal a ser fechado
+     */
+    close(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+
+            // Remover listener do ESC
+            this.removeEscapeListener();
+        }
+    },
+
+    /**
+     * Adiciona listener para tecla ESC
+     * @param {string} modalId - ID do modal
+     */
+    addEscapeListener(modalId) {
+        this.escapeHandler = (e) => {
+            if (e.key === 'Escape') {
+                this.close(modalId);
+            }
+        };
+        document.addEventListener('keydown', this.escapeHandler);
+    },
+
+    /**
+     * Remove listener da tecla ESC
+     */
+    removeEscapeListener() {
+        if (this.escapeHandler) {
+            document.removeEventListener('keydown', this.escapeHandler);
+            this.escapeHandler = null;
+        }
     }
-  },
-
-  // Show/hide loading spinner
-  showLoader() {
-    const spinner = document.getElementById("loadingSpinner");
-    if (spinner) spinner.classList.remove("hidden");
-  },
-
-  hideLoader() {
-    const spinner = document.getElementById("loadingSpinner");
-    if (spinner) spinner.classList.add("hidden");
-  },
-
-  // Format date
-  formatDate(date, options = {}) {
-    const defaultOptions = {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    };
-    return new Date(date).toLocaleDateString("pt-BR", {
-      ...defaultOptions,
-      ...options,
-    });
-  },
-
-  // Debounce function
-  debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-      const later = () => {
-        clearTimeout(timeout);
-        func(...args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-    };
-  },
-
-  // Throttle function
-  throttle(func, limit) {
-    let inThrottle;
-    return function () {
-      const args = arguments;
-      const context = this;
-      if (!inThrottle) {
-        func.apply(context, args);
-        inThrottle = true;
-        setTimeout(() => (inThrottle = false), limit);
-      }
-    };
-  },
 };
 
-// Toast notifications
-const Toast = {
-  show(message, type = "info", duration = 5000) {
-    const toast = document.createElement("div");
-    toast.className = `toast toast-${type} animate-slide-in`;
-    toast.innerHTML = `
-            <div class="flex items-center justify-between">
-                <span>${message}</span>
-                <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
-                    ×
-                </button>
+/**
+ * Sistema de Notificações/Toast
+ */
+window.Symplifika.Toast = {
+    container: null,
+
+    /**
+     * Inicializa o container de notificações
+     */
+    init() {
+        if (!this.container) {
+            this.container = document.createElement('div');
+            this.container.id = 'toast-container';
+            this.container.className = 'fixed top-4 right-4 z-50 space-y-2';
+            document.body.appendChild(this.container);
+        }
+    },
+
+    /**
+     * Mostra uma notificação
+     * @param {string} message - Mensagem da notificação
+     * @param {string} type - Tipo da notificação (success, error, warning, info)
+     * @param {number} duration - Duração em ms (padrão: 5000)
+     */
+    show(message, type = 'info', duration = 5000) {
+        this.init();
+
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type} transform translate-x-full transition-transform duration-300 ease-in-out`;
+
+        const icons = {
+            success: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>`,
+            error: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+            </svg>`,
+            warning: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>`,
+            info: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+            </svg>`
+        };
+
+        const colors = {
+            success: 'bg-green-100 border-green-500 text-green-900 dark:bg-green-900 dark:border-green-600 dark:text-green-100',
+            error: 'bg-red-100 border-red-500 text-red-900 dark:bg-red-900 dark:border-red-600 dark:text-red-100',
+            warning: 'bg-yellow-100 border-yellow-500 text-yellow-900 dark:bg-yellow-900 dark:border-yellow-600 dark:text-yellow-100',
+            info: 'bg-blue-100 border-blue-500 text-blue-900 dark:bg-blue-900 dark:border-blue-600 dark:text-blue-100'
+        };
+
+        toast.innerHTML = `
+            <div class="flex items-center p-4 border-l-4 rounded-lg shadow-lg ${colors[type]} max-w-sm">
+                <div class="flex-shrink-0">
+                    ${icons[type]}
+                </div>
+                <div class="ml-3 flex-1">
+                    <p class="text-sm font-medium">${message}</p>
+                </div>
+                <div class="ml-4 flex-shrink-0">
+                    <button class="inline-flex text-current hover:opacity-75 focus:outline-none" onclick="this.closest('.toast').remove()">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
         `;
 
-    document.body.appendChild(toast);
+        this.container.appendChild(toast);
 
-    // Auto remove after duration
-    setTimeout(() => {
-      if (toast.parentNode) {
-        toast.classList.add("animate-fade-out");
-        setTimeout(() => toast.remove(), 300);
-      }
-    }, duration);
-  },
+        // Animar entrada
+        setTimeout(() => {
+            toast.classList.remove('translate-x-full');
+            toast.classList.add('translate-x-0');
+        }, 10);
 
-  success(message, duration) {
-    this.show(message, "success", duration);
-  },
-
-  error(message, duration) {
-    this.show(message, "error", duration);
-  },
-
-  warning(message, duration) {
-    this.show(message, "warning", duration);
-  },
-
-  info(message, duration) {
-    this.show(message, "info", duration);
-  },
-};
-
-// Modern Modal Component - replaces legacy functionality
-class ModalComponent {
-  constructor() {
-    this.openModals = new Set();
-    this.escapeHandler = this.handleEscape.bind(this);
-    this.clickHandler = this.handleOverlayClick.bind(this);
-    this.init();
-  }
-
-  init() {
-    // Initialize modal event listeners
-    document.addEventListener("keydown", this.escapeHandler);
-    document.addEventListener("click", this.clickHandler);
-    this.setupCloseButtons();
-  }
-
-  open(modalId, options = {}) {
-    const modal = document.getElementById(modalId);
-    if (!modal) {
-      console.warn(`Modal with ID "${modalId}" not found`);
-      return;
-    }
-
-    this.openModals.add(modalId);
-    modal.classList.remove("hidden");
-    modal.classList.add("show");
-    document.body.style.overflow = "hidden";
-
-    modal.setAttribute("aria-hidden", "false");
-    modal.setAttribute("role", "dialog");
-    modal.setAttribute("aria-modal", "true");
-
-    this.setFocus(modal);
-
-    modal.dispatchEvent(
-      new CustomEvent("modal:opened", { detail: { modalId, options } }),
-    );
-
-    requestAnimationFrame(() => {
-      modal.classList.add("animate-in");
-    });
-  }
-
-  close(modalId, options = {}) {
-    const modal = document.getElementById(modalId);
-    if (!modal) {
-      console.warn(`Modal with ID "${modalId}" not found`);
-      return;
-    }
-
-    this.openModals.delete(modalId);
-    modal.classList.add("animate-out");
-    modal.classList.remove("animate-in");
-
-    setTimeout(() => {
-      modal.classList.add("hidden");
-      modal.classList.remove("show", "animate-out");
-      modal.setAttribute("aria-hidden", "true");
-      modal.removeAttribute("role");
-      modal.removeAttribute("aria-modal");
-    }, 200);
-
-    if (this.openModals.size === 0) {
-      document.body.style.overflow = "";
-    }
-
-    this.restoreFocus(modal);
-
-    modal.dispatchEvent(
-      new CustomEvent("modal:closed", { detail: { modalId, options } }),
-    );
-  }
-
-  closeOnOverlay(event, modalId) {
-    if (event.target === event.currentTarget) {
-      this.close(modalId);
-    }
-  }
-
-  handleEscape(event) {
-    if (event.key === "Escape" && this.openModals.size > 0) {
-      const lastModal = Array.from(this.openModals).pop();
-      this.close(lastModal);
-    }
-  }
-
-  handleOverlayClick(event) {
-    if (event.target.classList.contains("modal-overlay")) {
-      const modalId = event.target.id;
-      if (modalId && this.openModals.has(modalId)) {
-        this.close(modalId);
-      }
-    }
-  }
-
-  setupCloseButtons() {
-    document.querySelectorAll("[data-modal-close]").forEach((button) => {
-      button.addEventListener("click", (event) => {
-        event.preventDefault();
-        const modalId =
-          button.getAttribute("data-modal-close") ||
-          button.closest(".modal-overlay")?.id;
-        if (modalId) {
-          this.close(modalId);
+        // Auto remover
+        if (duration > 0) {
+            setTimeout(() => {
+                this.remove(toast);
+            }, duration);
         }
-      });
-    });
-  }
+    },
 
-  setFocus(modal) {
-    modal._previousFocus = document.activeElement;
-    const autoFocusElement = modal.querySelector("[data-autofocus]");
+    /**
+     * Remove uma notificação
+     * @param {HTMLElement} toast - Elemento da notificação
+     */
+    remove(toast) {
+        if (toast && toast.parentNode) {
+            toast.classList.remove('translate-x-0');
+            toast.classList.add('translate-x-full');
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }
+    },
 
-    if (autoFocusElement) {
-      autoFocusElement.focus();
-      return;
+    /**
+     * Métodos de conveniência
+     */
+    success(message, duration = 5000) {
+        this.show(message, 'success', duration);
+    },
+
+    error(message, duration = 7000) {
+        this.show(message, 'error', duration);
+    },
+
+    warning(message, duration = 6000) {
+        this.show(message, 'warning', duration);
+    },
+
+    info(message, duration = 5000) {
+        this.show(message, 'info', duration);
     }
-
-    const focusableElements = modal.querySelectorAll(
-      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-    );
-
-    if (focusableElements.length > 0) {
-      const firstInput = Array.from(focusableElements).find(
-        (el) =>
-          el.tagName === "INPUT" ||
-          el.tagName === "TEXTAREA" ||
-          el.tagName === "SELECT",
-      );
-
-      if (firstInput) {
-        firstInput.focus();
-      } else {
-        focusableElements[0].focus();
-      }
-    }
-  }
-
-  restoreFocus(modal) {
-    if (modal._previousFocus && document.body.contains(modal._previousFocus)) {
-      modal._previousFocus.focus();
-    }
-  }
-}
-
-// Initialize Modal component
-const ModalManager = new ModalComponent();
-
-// Legacy Modal API for backward compatibility (no warnings)
-const Modal = {
-  open(modalId) {
-    return ModalManager.open(modalId);
-  },
-
-  close(modalId) {
-    return ModalManager.close(modalId);
-  },
-
-  closeOnOverlay(event, modalId) {
-    return ModalManager.closeOnOverlay(event, modalId);
-  },
 };
 
-// API helper
-const API = {
-  async request(url, options = {}) {
-    const defaultOptions = {
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": Utils.getCSRFToken(),
-      },
-    };
+/**
+ * Utilitários
+ */
+window.Symplifika.Utils = {
+    /**
+     * Mostra loader global
+     */
+    showLoader() {
+        let loader = document.getElementById('global-loader');
+        if (!loader) {
+            loader = document.createElement('div');
+            loader.id = 'global-loader';
+            loader.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            loader.innerHTML = `
+                <div class="bg-white dark:bg-gray-800 rounded-lg p-6 flex items-center space-x-3">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <span class="text-gray-900 dark:text-white">Carregando...</span>
+                </div>
+            `;
+            document.body.appendChild(loader);
+        }
+        loader.classList.remove('hidden');
+    },
 
-    const config = {
-      ...defaultOptions,
-      ...options,
-      headers: {
-        ...defaultOptions.headers,
-        ...options.headers,
-      },
-    };
+    /**
+     * Esconde loader global
+     */
+    hideLoader() {
+        const loader = document.getElementById('global-loader');
+        if (loader) {
+            loader.classList.add('hidden');
+        }
+    },
 
-    try {
-      Utils.showLoader();
-      const response = await fetch(url, config);
+    /**
+     * Remove loader global
+     */
+    removeLoader() {
+        const loader = document.getElementById('global-loader');
+        if (loader) {
+            loader.remove();
+        }
+    },
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+    /**
+     * Debounce function
+     * @param {Function} func - Função a ser executada
+     * @param {number} wait - Tempo de espera em ms
+     * @param {boolean} immediate - Executar imediatamente
+     */
+    debounce(func, wait, immediate) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                timeout = null;
+                if (!immediate) func(...args);
+            };
+            const callNow = immediate && !timeout;
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+            if (callNow) func(...args);
+        };
+    },
 
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error("API request failed:", error);
-      Toast.error("Erro na requisição. Tente novamente.");
-      throw error;
-    } finally {
-      Utils.hideLoader();
+    /**
+     * Throttle function
+     * @param {Function} func - Função a ser executada
+     * @param {number} limit - Limite em ms
+     */
+    throttle(func, limit) {
+        let inThrottle;
+        return function(...args) {
+            if (!inThrottle) {
+                func.apply(this, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        };
+    },
+
+    /**
+     * Escapa HTML
+     * @param {string} unsafe - String não segura
+     */
+    escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    },
+
+    /**
+     * Formata data
+     * @param {string|Date} date - Data a ser formatada
+     * @param {string} locale - Locale (padrão: pt-BR)
+     */
+    formatDate(date, locale = 'pt-BR') {
+        if (!date) return '';
+        const dateObj = typeof date === 'string' ? new Date(date) : date;
+        return dateObj.toLocaleDateString(locale);
+    },
+
+    /**
+     * Formata data e hora
+     * @param {string|Date} date - Data a ser formatada
+     * @param {string} locale - Locale (padrão: pt-BR)
+     */
+    formatDateTime(date, locale = 'pt-BR') {
+        if (!date) return '';
+        const dateObj = typeof date === 'string' ? new Date(date) : date;
+        return dateObj.toLocaleString(locale);
+    },
+
+    /**
+     * Copia texto para clipboard
+     * @param {string} text - Texto a ser copiado
+     */
+    async copyToClipboard(text) {
+        try {
+            await navigator.clipboard.writeText(text);
+            this.showSuccessMessage('Texto copiado para a área de transferência!');
+            return true;
+        } catch (err) {
+            console.error('Erro ao copiar texto:', err);
+            // Fallback para navegadores mais antigos
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                document.execCommand('copy');
+                this.showSuccessMessage('Texto copiado para a área de transferência!');
+                return true;
+            } catch (fallbackErr) {
+                console.error('Fallback copy failed:', fallbackErr);
+                window.Symplifika.Toast.error('Erro ao copiar texto');
+                return false;
+            } finally {
+                document.body.removeChild(textArea);
+            }
+        }
     }
-  },
-
-  async get(url, options = {}) {
-    return this.request(url, { ...options, method: "GET" });
-  },
-
-  async post(url, data, options = {}) {
-    return this.request(url, {
-      ...options,
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-  },
-
-  async put(url, data, options = {}) {
-    return this.request(url, {
-      ...options,
-      method: "PUT",
-      body: JSON.stringify(data),
-    });
-  },
-
-  async delete(url, options = {}) {
-    return this.request(url, { ...options, method: "DELETE" });
-  },
 };
 
-// Form handling
-const Form = {
-  serialize(form) {
-    const formData = new FormData(form);
-    const data = {};
-    for (let [key, value] of formData.entries()) {
-      data[key] = value;
-    }
-    return data;
-  },
+/**
+ * API Helper
+ */
+window.Symplifika.API = {
+    baseURL: '',
 
-  validate(form) {
-    const inputs = form.querySelectorAll(
-      "input[required], select[required], textarea[required]",
-    );
-    let isValid = true;
+    /**
+     * Obtém token CSRF
+     */
+    getCSRFToken() {
+        const token = document.querySelector('[name=csrfmiddlewaretoken]');
+        return token ? token.value : '';
+    },
 
-    inputs.forEach((input) => {
-      const errorElement = input.parentNode.querySelector(".error-message");
+    /**
+     * Faz requisição HTTP
+     * @param {string} url - URL da requisição
+     * @param {Object} options - Opções da requisição
+     */
+    async request(url, options = {}) {
+        const defaultOptions = {
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': this.getCSRFToken(),
+            },
+        };
 
-      if (!input.value.trim()) {
-        this.showFieldError(input, "Este campo é obrigatório");
-        isValid = false;
-      } else if (input.type === "email" && !this.isValidEmail(input.value)) {
-        this.showFieldError(input, "Digite um email válido");
-        isValid = false;
-      } else {
-        this.clearFieldError(input);
-      }
-    });
+        const mergedOptions = {
+            ...defaultOptions,
+            ...options,
+            headers: {
+                ...defaultOptions.headers,
+                ...options.headers,
+            },
+        };
 
-    return isValid;
-  },
+        try {
+            const response = await fetch(this.baseURL + url, mergedOptions);
 
-  showFieldError(input, message) {
-    input.classList.add("border-red-500");
-    let errorElement = input.parentNode.querySelector(".error-message");
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.detail || `HTTP Error: ${response.status}`);
+            }
 
-    if (!errorElement) {
-      errorElement = document.createElement("div");
-      errorElement.className = "error-message text-red-500 text-sm mt-1";
-      input.parentNode.appendChild(errorElement);
-    }
+            return await response.json();
+        } catch (error) {
+            console.error('API Error:', error);
+            throw error;
+        }
+    },
 
-    errorElement.textContent = message;
-  },
+    /**
+     * GET request
+     */
+    async get(url, params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        const fullUrl = queryString ? `${url}?${queryString}` : url;
+        return this.request(fullUrl, { method: 'GET' });
+    },
 
-  clearFieldError(input) {
-    input.classList.remove("border-red-500");
-    const errorElement = input.parentNode.querySelector(".error-message");
-    if (errorElement) {
-      errorElement.remove();
-    }
-  },
-
-  isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  },
-};
-
-// Theme handling
-const Theme = {
-  init() {
-    const savedTheme = localStorage.getItem("theme");
-    const systemPrefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)",
-    ).matches;
-
-    if (savedTheme === "dark" || (!savedTheme && systemPrefersDark)) {
-      this.setDark();
-    } else {
-      this.setLight();
-    }
-  },
-
-  setDark() {
-    document.documentElement.classList.add("dark");
-    localStorage.setItem("theme", "dark");
-    this.updateToggleButton();
-  },
-
-  setLight() {
-    document.documentElement.classList.remove("dark");
-    localStorage.setItem("theme", "light");
-    this.updateToggleButton();
-  },
-
-  toggle() {
-    if (document.documentElement.classList.contains("dark")) {
-      this.setLight();
-    } else {
-      this.setDark();
-    }
-  },
-
-  updateToggleButton() {
-    const buttons = document.querySelectorAll("[data-theme-toggle]");
-    const isDark = document.documentElement.classList.contains("dark");
-
-    buttons.forEach((button) => {
-      const icon = button.querySelector(".theme-icon");
-      if (icon) {
-        icon.textContent = isDark ? "☀️" : "🌙";
-      }
-    });
-  },
-};
-
-// Sidebar functionality
-const Sidebar = {
-  toggle() {
-    const sidebar = document.querySelector(".sidebar, .dashboard-sidebar");
-    if (sidebar) {
-      sidebar.classList.toggle("open");
-      // Update main content margin if dashboard layout
-      const main = document.querySelector(".dashboard-main");
-      if (main) {
-        main.classList.toggle("expanded");
-      }
-    }
-  },
-
-  close() {
-    const sidebar = document.querySelector(".sidebar, .dashboard-sidebar");
-    if (sidebar) {
-      sidebar.classList.remove("open");
-      // Reset main content margin if dashboard layout
-      const main = document.querySelector(".dashboard-main");
-      if (main) {
-        main.classList.remove("expanded");
-      }
-    }
-  },
-
-  collapse() {
-    const sidebar = document.querySelector(".dashboard-sidebar");
-    if (sidebar) {
-      sidebar.classList.add("collapsed");
-      const main = document.querySelector(".dashboard-main");
-      if (main) {
-        main.classList.add("expanded");
-      }
-    }
-  },
-
-  expand() {
-    const sidebar = document.querySelector(".dashboard-sidebar");
-    if (sidebar) {
-      sidebar.classList.remove("collapsed");
-      const main = document.querySelector(".dashboard-main");
-      if (main) {
-        main.classList.remove("expanded");
-      }
-    }
-  },
-};
-
-// Initialize when DOM is loaded
-document.addEventListener("DOMContentLoaded", function () {
-  // Initialize theme
-  Theme.init();
-
-  // Setup theme toggle buttons
-  document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
-    button.addEventListener("click", () => Theme.toggle());
-  });
-
-  // Setup sidebar toggle
-  document.querySelectorAll("[data-sidebar-toggle]").forEach((button) => {
-    button.addEventListener("click", () => Sidebar.toggle());
-  });
-
-  // Setup sidebar collapse/expand
-  document.querySelectorAll("[data-sidebar-collapse]").forEach((button) => {
-    button.addEventListener("click", () => Sidebar.collapse());
-  });
-
-  document.querySelectorAll("[data-sidebar-expand]").forEach((button) => {
-    button.addEventListener("click", () => Sidebar.expand());
-  });
-
-  // Close sidebar on outside click (mobile)
-  document.addEventListener("click", function (event) {
-    const sidebar = document.querySelector(".sidebar");
-    const sidebarToggle = document.querySelector("[data-sidebar-toggle]");
-
-    if (
-      sidebar &&
-      sidebar.classList.contains("open") &&
-      !sidebar.contains(event.target) &&
-      !sidebarToggle.contains(event.target)
-    ) {
-      Sidebar.close();
-    }
-  });
-
-  // Setup form validation
-  document.querySelectorAll("form[data-validate]").forEach((form) => {
-    form.addEventListener("submit", function (event) {
-      if (!Form.validate(this)) {
-        event.preventDefault();
-      }
-    });
-  });
-
-  // Setup modal close on escape key
-  document.addEventListener("keydown", function (event) {
-    if (event.key === "Escape") {
-      const openModals = document.querySelectorAll(
-        ".modal-overlay:not(.hidden)",
-      );
-      openModals.forEach((modal) => {
-        modal.classList.add("hidden");
-        document.body.style.overflow = "";
-      });
-    }
-  });
-
-  // Auto-hide alerts
-  document.querySelectorAll(".alert").forEach((alert) => {
-    setTimeout(() => {
-      alert.style.opacity = "0";
-      setTimeout(() => alert.remove(), 300);
-    }, 5000);
-  });
-
-  // Smooth scroll for anchor links
-  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-    anchor.addEventListener("click", function (e) {
-      e.preventDefault();
-      const target = document.querySelector(this.getAttribute("href"));
-      if (target) {
-        target.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
+    /**
+     * POST request
+     */
+    async post(url, data = {}) {
+        return this.request(url, {
+            method: 'POST',
+            body: JSON.stringify(data),
         });
-      }
+    },
+
+    /**
+     * PUT request
+     */
+    async put(url, data = {}) {
+        return this.request(url, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+        });
+    },
+
+    /**
+     * DELETE request
+     */
+    async delete(url) {
+        return this.request(url, { method: 'DELETE' });
+    }
+};
+
+/**
+ * Validação de Formulários
+ */
+window.Symplifika.Validation = {
+    /**
+     * Valida email
+     * @param {string} email - Email a ser validado
+     */
+    validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    },
+
+    /**
+     * Valida campo obrigatório
+     * @param {string} value - Valor a ser validado
+     */
+    validateRequired(value) {
+        return value && value.toString().trim().length > 0;
+    },
+
+    /**
+     * Valida tamanho mínimo
+     * @param {string} value - Valor a ser validado
+     * @param {number} min - Tamanho mínimo
+     */
+    validateMinLength(value, min) {
+        return value && value.toString().length >= min;
+    },
+
+    /**
+     * Valida tamanho máximo
+     * @param {string} value - Valor a ser validado
+     * @param {number} max - Tamanho máximo
+     */
+    validateMaxLength(value, max) {
+        return !value || value.toString().length <= max;
+    },
+
+    /**
+     * Valida padrão regex
+     * @param {string} value - Valor a ser validado
+     * @param {RegExp} pattern - Padrão regex
+     */
+    validatePattern(value, pattern) {
+        return !value || pattern.test(value);
+    }
+};
+
+// Inicialização automática
+document.addEventListener('DOMContentLoaded', function() {
+    // Configurar fechamento de modais clicando no backdrop
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('modal')) {
+            const modalId = e.target.id;
+            if (modalId) {
+                window.Symplifika.Modal.close(modalId);
+            }
+        }
     });
-  });
+
+    console.log('Symplifika Base System initialized');
 });
-
-// Global error handler
-window.addEventListener("error", function (event) {
-  console.error("Global error:", event.error);
-  if (
-    window.location.hostname !== "localhost" &&
-    window.location.hostname !== "127.0.0.1"
-  ) {
-    // Only show user-friendly messages in production
-    Toast.error("Ocorreu um erro inesperado. Tente recarregar a página.");
-  }
-});
-
-// Handle unhandled promise rejections
-window.addEventListener("unhandledrejection", function (event) {
-  console.error("Unhandled promise rejection:", event.reason);
-  if (
-    window.location.hostname !== "localhost" &&
-    window.location.hostname !== "127.0.0.1"
-  ) {
-    Toast.error("Erro de conexão. Verifique sua internet e tente novamente.");
-  }
-});
-
-// Performance monitoring
-const Performance = {
-  // Mark performance points
-  mark(name) {
-    if (window.performance && window.performance.mark) {
-      window.performance.mark(name);
-    }
-  },
-
-  // Measure performance between marks
-  measure(name, startMark, endMark) {
-    if (window.performance && window.performance.measure) {
-      window.performance.measure(name, startMark, endMark);
-    }
-  },
-
-  // Get navigation timing
-  getNavigationTiming() {
-    if (window.performance && window.performance.timing) {
-      const timing = window.performance.timing;
-      return {
-        dns: timing.domainLookupEnd - timing.domainLookupStart,
-        connect: timing.connectEnd - timing.connectStart,
-        request: timing.responseStart - timing.requestStart,
-        response: timing.responseEnd - timing.responseStart,
-        dom: timing.domContentLoadedEventEnd - timing.navigationStart,
-        load: timing.loadEventEnd - timing.navigationStart,
-      };
-    }
-    return null;
-  },
-};
-
-// Export for use in other scripts
-window.Symplifika = {
-  Utils,
-  Toast,
-  Modal: ModalManager,
-  API,
-  Form,
-  Theme,
-  Sidebar,
-  Performance,
-};
-
-// Compatibility aliases
-window.SymplifHelper = window.Symplifika; // Legacy support
-window.SUtils = Utils;
-window.SToast = Toast;
-window.SAPI = API;

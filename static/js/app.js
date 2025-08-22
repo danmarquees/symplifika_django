@@ -49,7 +49,35 @@ class SymphilikaApp {
       this.loadRecentShortcuts();
       this.loadDashboardStats();
       this.setupSettingsForm();
+      this.setupThemeToggle();
     });
+  }
+
+  /**
+   * Alterna o tema claro/escuro manualmente
+   */
+  setupThemeToggle() {
+    const themeToggleBtns = document.querySelectorAll("[data-theme-toggle]");
+    themeToggleBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        // Alternar classe dark no html
+        document.documentElement.classList.toggle("dark");
+        // Salvar preferência no localStorage
+        if (document.documentElement.classList.contains("dark")) {
+          localStorage.setItem("theme", "dark");
+        } else {
+          localStorage.setItem("theme", "light");
+        }
+      });
+    });
+
+    // Aplicar preferência salva ao carregar
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else if (savedTheme === "light") {
+      document.documentElement.classList.remove("dark");
+    }
   }
 
   /**
@@ -88,6 +116,7 @@ class SymphilikaApp {
       const data = await response.json();
       this.categories = data.results || data;
       this.updateCategorySelects();
+      this.displayAllCategories(this.categories);
     } catch (error) {
       console.error("Erro ao carregar categorias:", error);
     }
@@ -253,6 +282,11 @@ class SymphilikaApp {
         delete data.category;
       }
 
+      // Garantir que ai_prompt nunca seja nulo
+      if (!data.ai_prompt) {
+        data.ai_prompt = "";
+      }
+
       // Processar checkbox is_active
       data.is_active =
         form.querySelector('[name="is_active"]')?.checked ?? true;
@@ -346,6 +380,10 @@ class SymphilikaApp {
       const formData = new FormData(form);
       const data = this.formDataToObject(formData);
 
+      // Debug logging
+      console.log("[DEBUG] Form data collected:", data);
+      console.log("[DEBUG] CSRF Token:", this.csrfToken);
+
       const categoryId = data.category_id;
       const isEdit = categoryId && categoryId !== "";
 
@@ -354,6 +392,10 @@ class SymphilikaApp {
         : `${this.apiBaseUrl}/categories/`;
 
       const method = isEdit ? "PUT" : "POST";
+
+      console.log("[DEBUG] Request URL:", url);
+      console.log("[DEBUG] Request method:", method);
+      console.log("[DEBUG] Request body:", JSON.stringify(data));
 
       const response = await fetch(url, {
         method: method,
@@ -364,9 +406,40 @@ class SymphilikaApp {
         body: JSON.stringify(data),
       });
 
+      console.log("[DEBUG] Response status:", response.status);
+      console.log("[DEBUG] Response headers:", [...response.headers.entries()]);
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Erro ao salvar categoria");
+        const errorText = await response.text();
+        console.log("[DEBUG] Error response text:", errorText);
+
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch (e) {
+          console.log("[DEBUG] Could not parse error as JSON:", e);
+          errorData = { detail: errorText };
+        }
+
+        console.log("[DEBUG] Parsed error data:", errorData);
+
+        // Handle field-specific errors
+        if (errorData.name && Array.isArray(errorData.name)) {
+          throw new Error(errorData.name[0]);
+        }
+        if (errorData.color && Array.isArray(errorData.color)) {
+          throw new Error(errorData.color[0]);
+        }
+        if (errorData.description && Array.isArray(errorData.description)) {
+          throw new Error(errorData.description[0]);
+        }
+
+        throw new Error(
+          errorData.detail ||
+            errorData.message ||
+            errorData.non_field_errors?.[0] ||
+            "Erro ao salvar categoria",
+        );
       }
 
       const category = await response.json();
@@ -390,10 +463,26 @@ class SymphilikaApp {
       );
     } catch (error) {
       console.error("Erro ao salvar categoria:", error);
-      this.showNotification(
-        error.message || "Erro ao salvar categoria",
-        "error",
-      );
+
+      // Show user-friendly error message
+      let errorMessage = "Erro ao salvar categoria";
+
+      if (error.message.includes("Já existe uma categoria")) {
+        errorMessage =
+          "Já existe uma categoria com este nome. Escolha um nome diferente.";
+      } else if (error.message.includes("nome da categoria é obrigatório")) {
+        errorMessage = "O nome da categoria é obrigatório.";
+      } else if (error.message.includes("pelo menos 2 caracteres")) {
+        errorMessage = "O nome da categoria deve ter pelo menos 2 caracteres.";
+      } else if (error.message.includes("máximo 100 caracteres")) {
+        errorMessage = "O nome da categoria deve ter no máximo 100 caracteres.";
+      } else if (error.message.includes("formato hexadecimal")) {
+        errorMessage = "A cor deve estar no formato hexadecimal (#RRGGBB).";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      this.showNotification(errorMessage, "error");
     } finally {
       // Remover loading
       this.setLoadingState(submitBtn, loadingIcon, submitText, false);
@@ -761,6 +850,7 @@ class SymphilikaApp {
    */
   async loadAllShortcuts() {
     try {
+      console.log("Chamando loadAllShortcuts");
       const response = await fetch(`${this.apiBaseUrl}/shortcuts/`, {
         headers: {
           "Content-Type": "application/json",
@@ -774,6 +864,7 @@ class SymphilikaApp {
 
       const data = await response.json();
       this.shortcuts = data.results || data;
+      console.log("Atalhos carregados:", this.shortcuts);
       this.displayAllShortcuts(this.shortcuts);
     } catch (error) {
       console.error("Erro ao carregar atalhos:", error);
@@ -785,11 +876,15 @@ class SymphilikaApp {
    * Exibe todos os atalhos na página de atalhos
    */
   displayAllShortcuts(shortcuts) {
+    console.log("Chamando displayAllShortcuts com:", shortcuts);
     const container = document.getElementById("shortcutsList");
     const loadingEl = document.getElementById("loadingShortcuts");
     const emptyEl = document.getElementById("emptyShortcuts");
 
-    if (!container) return;
+    if (!container) {
+      console.warn("Container #shortcutsList não encontrado!");
+      return;
+    }
 
     // Esconder loading
     if (loadingEl) loadingEl.classList.add("hidden");
@@ -805,26 +900,26 @@ class SymphilikaApp {
     container.innerHTML = shortcuts
       .map(
         (shortcut) => `
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
-            <div class="flex items-start justify-between mb-4">
-              <div class="flex-1">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                  ${this.escapeHtml(shortcut.title)}
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6 border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow flex flex-col h-full">
+            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4 mb-4">
+              <div class="flex-1 min-w-0">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1 break-words">
+                  ${this.escapeHtml(shortcut.title || "")}
                 </h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                  ${this.escapeHtml(shortcut.trigger)}
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-2 truncate">
+                  ${this.escapeHtml(shortcut.trigger || "")}
                 </p>
                 ${
                   shortcut.category
                     ? `
                   <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-${shortcut.category.color || "gray"}-100 text-${shortcut.category.color || "gray"}-800 dark:bg-${shortcut.category.color || "gray"}-900 dark:text-${shortcut.category.color || "gray"}-200">
-                    ${this.escapeHtml(shortcut.category.name)}
+                    ${this.escapeHtml(shortcut.category?.name || "")}
                   </span>
                 `
                     : ""
                 }
               </div>
-              <div class="flex items-center space-x-2 ml-4">
+              <div class="flex flex-row flex-wrap items-center gap-2 sm:flex-col sm:items-end sm:gap-2 ml-0 sm:ml-4">
                 <button
                   onclick="window.app.editShortcut(${shortcut.id})"
                   class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
@@ -855,14 +950,14 @@ class SymphilikaApp {
               </div>
             </div>
 
-            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 mb-4">
-              <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-3">
-                ${this.escapeHtml(shortcut.content)}
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 mb-4 flex-1">
+              <p class="text-sm text-gray-600 dark:text-gray-300 break-words line-clamp-3">
+                ${this.escapeHtml(shortcut.content || "")}
               </p>
             </div>
 
-            <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-              <div class="flex items-center space-x-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between text-sm text-gray-500 dark:text-gray-400 gap-2">
+              <div class="flex flex-row flex-wrap items-center gap-4">
                 <span class="flex items-center">
                   <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
@@ -876,7 +971,7 @@ class SymphilikaApp {
                   ${shortcut.last_used ? new Date(shortcut.last_used).toLocaleDateString() : "Nunca usado"}
                 </span>
               </div>
-              <div class="flex items-center space-x-2">
+              <div class="flex flex-row flex-wrap items-center gap-2">
                 ${shortcut.expansion_type === "ai_enhanced" ? '<span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded text-xs">IA</span>' : ""}
                 ${shortcut.expansion_type === "dynamic" ? '<span class="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded text-xs">Dinâmico</span>' : ""}
                 ${shortcut.is_active ? '<span class="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded text-xs">Ativo</span>' : '<span class="px-2 py-1 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded text-xs">Inativo</span>'}
@@ -935,8 +1030,58 @@ class SymphilikaApp {
    * Atualiza estatísticas do dashboard
    */
   updateDashboardStats(stats) {
-    // Implementar conforme necessário baseado na estrutura do dashboard
-    console.log("Stats loaded:", stats);
+    // Atualizar cards rápidos
+    const totalShortcuts = document.getElementById("dashboardTotalShortcuts");
+    const todayUsages = document.getElementById("dashboardTodayUsages");
+    const totalCategories = document.getElementById("dashboardTotalCategories");
+    const totalUsages = document.getElementById("dashboardTotalUsages");
+
+    if (totalShortcuts) totalShortcuts.textContent = stats.total_shortcuts || 0;
+    if (todayUsages) todayUsages.textContent = stats.usages_today || 0;
+    if (totalCategories)
+      totalCategories.textContent = stats.total_categories || 0;
+    if (totalUsages) totalUsages.textContent = stats.total_usages || 0;
+
+    // --- Gráfico de atividades dos últimos 7 dias ---
+    if (window.dashboardWeeklyChartInstance) {
+      window.dashboardWeeklyChartInstance.destroy();
+    }
+    const weeklyUsage = stats.weekly_usage || [];
+    const weeklyLabels = weeklyUsage.map(
+      (item) => item.day || item.label || "",
+    );
+    const weeklyData = weeklyUsage.map((item) => item.count || 0);
+
+    const dashboardWeeklyChartCtx = document.getElementById(
+      "dashboardWeeklyChart",
+    );
+    if (dashboardWeeklyChartCtx && typeof Chart !== "undefined") {
+      window.dashboardWeeklyChartInstance = new Chart(dashboardWeeklyChartCtx, {
+        type: "bar",
+        data: {
+          labels: weeklyLabels,
+          datasets: [
+            {
+              label: "Usos",
+              data: weeklyData,
+              backgroundColor: "#2563eb",
+              borderRadius: 6,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+          },
+          scales: {
+            x: { grid: { display: false } },
+            y: { beginAtZero: true, grid: { color: "#e5e7eb" } },
+          },
+        },
+      });
+    }
   }
 
   /**
@@ -1261,110 +1406,110 @@ class SymphilikaApp {
         "modal fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden";
 
       modal.innerHTML = `
-        <div class="modal-content bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-          <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-              Planos Premium
-            </h3>
-            <button
-              type="button"
-              onclick="window.app.closeUpgradeModal()"
-              class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-            >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-              </svg>
-            </button>
-          </div>
+           <div class="modal-content bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+             <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+               <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                 Planos Premium
+               </h3>
+               <button
+                 type="button"
+                 onclick="window.app.closeUpgradeModal()"
+                 class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+               >
+                 <svg class="w-6 h-6" fill="none" stroke="currentColor">
+                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                 </svg>
+               </button>
+             </div>
 
-          <div class="p-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- Plano Premium -->
-              <div class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-6 border border-blue-200 dark:border-blue-700">
-                <div class="text-center mb-4">
-                  <h4 class="text-xl font-bold text-gray-900 dark:text-white">Premium</h4>
-                  <p class="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">R$ 19<span class="text-lg">/mês</span></p>
-                </div>
-                <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-300">
-                  <li class="flex items-center">
-                    <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    500 atalhos
-                  </li>
-                  <li class="flex items-center">
-                    <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    1.000 expansões IA/mês
-                  </li>
-                  <li class="flex items-center">
-                    <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    Estatísticas avançadas
-                  </li>
-                  <li class="flex items-center">
-                    <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    Suporte prioritário
-                  </li>
-                </ul>
-                <button class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                  Escolher Premium
-                </button>
-              </div>
+             <div class="p-6">
+               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <!-- Plano Premium -->
+                 <div class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-6 border border-blue-200 dark:border-blue-700">
+                   <div class="text-center mb-4">
+                     <h4 class="text-xl font-bold text-gray-900 dark:text-white">Premium</h4>
+                     <p class="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">R$ 19<span class="text-lg">/mês</span></p>
+                   </div>
+                   <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-300">
+                     <li class="flex items-center">
+                       <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                       </svg>
+                       500 atalhos
+                     </li>
+                     <li class="flex items-center">
+                       <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                       </svg>
+                       1.000 expansões IA/mês
+                     </li>
+                     <li class="flex items-center">
+                       <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                       </svg>
+                       Estatísticas avançadas
+                     </li>
+                     <li class="flex items-center">
+                       <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                       </svg>
+                       Suporte prioritário
+                     </li>
+                   </ul>
+                   <button class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                     Escolher Premium
+                   </button>
+                 </div>
 
-              <!-- Plano Enterprise -->
-              <div class="bg-gradient-to-br from-purple-50 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg p-6 border border-purple-200 dark:border-purple-700 relative">
-                <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <span class="bg-purple-600 text-white text-xs px-3 py-1 rounded-full">Mais Popular</span>
-                </div>
-                <div class="text-center mb-4">
-                  <h4 class="text-xl font-bold text-gray-900 dark:text-white">Enterprise</h4>
-                  <p class="text-3xl font-bold text-purple-600 dark:text-purple-400 mt-2">R$ 49<span class="text-lg">/mês</span></p>
-                </div>
-                <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-300">
-                  <li class="flex items-center">
-                    <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    Atalhos ilimitados
-                  </li>
-                  <li class="flex items-center">
-                    <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    10.000 expansões IA/mês
-                  </li>
-                  <li class="flex items-center">
-                    <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    API personalizada
-                  </li>
-                  <li class="flex items-center">
-                    <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    Suporte dedicado
-                  </li>
-                </ul>
-                <button class="w-full mt-6 bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                  Escolher Enterprise
-                </button>
-              </div>
-            </div>
+                 <!-- Plano Enterprise -->
+                 <div class="bg-gradient-to-br from-purple-50 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg p-6 border border-purple-200 dark:border-purple-700 relative">
+                   <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                     <span class="bg-purple-600 text-white text-xs px-3 py-1 rounded-full">Mais Popular</span>
+                   </div>
+                   <div class="text-center mb-4">
+                     <h4 class="text-xl font-bold text-gray-900 dark:text-white">Enterprise</h4>
+                     <p class="text-3xl font-bold text-purple-600 dark:text-purple-400 mt-2">R$ 49<span class="text-lg">/mês</span></p>
+                   </div>
+                   <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-300">
+                     <li class="flex items-center">
+                       <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                       </svg>
+                       Atalhos ilimitados
+                     </li>
+                     <li class="flex items-center">
+                       <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                       </svg>
+                       10.000 expansões IA/mês
+                     </li>
+                     <li class="flex items-center">
+                       <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                       </svg>
+                       API personalizada
+                     </li>
+                     <li class="flex items-center">
+                       <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                       </svg>
+                       Suporte dedicado
+                     </li>
+                   </ul>
+                   <button class="w-full mt-6 bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                     Escolher Enterprise
+                   </button>
+                 </div>
+               </div>
 
-            <div class="text-center mt-8 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <p class="text-sm text-gray-600 dark:text-gray-300">
-                🔒 Pagamento seguro • 💸 7 dias grátis • ❌ Cancele quando quiser
-              </p>
-            </div>
-          </div>
-        </div>
-      `;
+               <div class="text-center mt-8 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                 <p class="text-sm text-gray-600 dark:text-gray-300">
+                   🔒 Pagamento seguro • 💸 7 dias grátis • ❌ Cancele quando quiser
+                 </p>
+               </div>
+             </div>
+           </div>
+         `;
 
       document.body.appendChild(modal);
     }
@@ -1436,6 +1581,15 @@ class SymphilikaApp {
         e.preventDefault();
         const page = item.getAttribute("data-page");
         this.showPage(page);
+
+        // Se a aba selecionada for "Atalhos", carregar os atalhos
+        if (page === "shortcuts") {
+          this.loadAllShortcuts();
+        }
+        // Se a aba selecionada for "Categorias", carregar as categorias
+        if (page === "categories") {
+          this.loadCategories();
+        }
 
         // Atualizar estado ativo
         navItems.forEach((nav) => nav.classList.remove("active"));
@@ -1634,6 +1788,85 @@ class SymphilikaApp {
 
     // Atualizar atividade recente
     this.displayRecentActivity(stats.recent_activity || []);
+
+    // --- Gráficos ---
+    // Uso semanal
+    if (window.weeklyChartInstance) {
+      window.weeklyChartInstance.destroy();
+    }
+    const weeklyUsage = stats.weekly_usage || [];
+    const weeklyLabels = weeklyUsage.map(
+      (item) => item.day || item.label || "",
+    );
+    const weeklyData = weeklyUsage.map((item) => item.count || 0);
+
+    const weeklyChartCtx = document.getElementById("weeklyChart");
+    if (weeklyChartCtx && typeof Chart !== "undefined") {
+      window.weeklyChartInstance = new Chart(weeklyChartCtx, {
+        type: "bar",
+        data: {
+          labels: weeklyLabels,
+          datasets: [
+            {
+              label: "Usos",
+              data: weeklyData,
+              backgroundColor: "#2563eb",
+              borderRadius: 6,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+          },
+          scales: {
+            x: { grid: { display: false } },
+            y: { beginAtZero: true, grid: { color: "#e5e7eb" } },
+          },
+        },
+      });
+    }
+
+    // Distribuição por categoria
+    if (window.categoryChartInstance) {
+      window.categoryChartInstance.destroy();
+    }
+    const categoryDist = stats.category_distribution || [];
+    const categoryLabels = categoryDist.map(
+      (item) => item.category || item.label || "",
+    );
+    const categoryData = categoryDist.map((item) => item.count || 0);
+
+    const categoryChartCtx = document.getElementById("categoryChart");
+    if (categoryChartCtx && typeof Chart !== "undefined") {
+      window.categoryChartInstance = new Chart(categoryChartCtx, {
+        type: "doughnut",
+        data: {
+          labels: categoryLabels,
+          datasets: [
+            {
+              data: categoryData,
+              backgroundColor: [
+                "#2563eb",
+                "#22c55e",
+                "#f59e42",
+                "#a855f7",
+                "#f43f5e",
+                "#14b8a6",
+                "#eab308",
+              ],
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: "bottom" },
+          },
+        },
+      });
+    }
   }
 
   /**
@@ -2167,6 +2400,42 @@ class SymphilikaApp {
   }
 
   /**
+   * Exclui uma categoria
+   */
+  async deleteCategory(categoryId) {
+    if (
+      !confirm(
+        "Tem certeza que deseja excluir esta categoria? Esta ação não pode ser desfeita.",
+      )
+    ) {
+      return;
+    }
+    try {
+      const response = await fetch(
+        `${this.apiBaseUrl}/categories/${categoryId}/`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": this.csrfToken,
+          },
+        },
+      );
+      if (!response.ok) {
+        throw new Error("Erro ao excluir categoria");
+      }
+      this.showNotification("Categoria excluída com sucesso!", "success");
+      await this.loadCategories();
+    } catch (error) {
+      console.error("Erro ao excluir categoria:", error);
+      this.showNotification(
+        error.message || "Erro ao excluir categoria",
+        "error",
+      );
+    }
+  }
+
+  /**
    * Salva configurações do usuário
    */
   async saveSettings() {
@@ -2212,6 +2481,55 @@ class SymphilikaApp {
 
     // Outras configurações podem ser aplicadas aqui
     console.log("Configurações aplicadas:", settings);
+  }
+
+  /**
+   * Exibe todas as categorias na página de categorias
+   */
+  displayAllCategories(categories) {
+    const container = document.getElementById("categoriesList");
+    if (!container) return;
+
+    if (!categories || categories.length === 0) {
+      container.innerHTML = `
+        <div class="col-span-full flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
+          <svg class="w-16 h-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          <h3 class="text-xl font-semibold mb-2">Nenhuma categoria encontrada</h3>
+          <p class="mb-6">Crie sua primeira categoria para organizar seus atalhos!</p>
+          <button class="btn btn-primary" onclick="window.app.openCreateCategoryModal()">Criar Categoria</button>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = categories
+      .map(
+        (category) => `
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700 flex flex-col h-full">
+          <div class="flex items-center mb-4">
+            <span class="inline-block w-6 h-6 rounded-full mr-3" style="background-color: ${category.color || "#a3a3a3"}"></span>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white break-words">${this.escapeHtml(category.name || "")}</h3>
+          </div>
+          <p class="text-sm text-gray-600 dark:text-gray-300 flex-1 break-words mb-4">${this.escapeHtml(category.description || "Sem descrição")}</p>
+          <div class="flex items-center justify-between mt-auto">
+            <button class="btn btn-sm btn-outline" onclick="window.app.populateCategoryForm(${category.id})">Editar</button>
+            <button
+              class="ml-2 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+              title="Excluir categoria"
+              onclick="window.app.deleteCategory && window.app.deleteCategory(${category.id})"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+            </button>
+            <span class="text-xs text-gray-500 dark:text-gray-400">${category.shortcuts_count || 0} atalhos</span>
+          </div>
+        </div>
+      `,
+      )
+      .join("");
   }
 
   /**
@@ -2302,6 +2620,9 @@ class SymphilikaApp {
    * Escapa HTML
    */
   escapeHtml(unsafe) {
+    if (typeof unsafe !== "string") {
+      unsafe = unsafe == null ? "" : String(unsafe);
+    }
     return unsafe
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")

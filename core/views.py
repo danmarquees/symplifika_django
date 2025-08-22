@@ -53,19 +53,7 @@ def dashboard(request):
     return render(request, 'app.html')
 
 
-def register(request):
-    """Register view - redirects to users app"""
-    return redirect('users:register')
-
-
-def login_view(request):
-    """Login view - redirects to users app"""
-    return redirect('users:login')
-
-
-def logout_view(request):
-    """Logout view - redirects to users app"""
-    return redirect('users:logout')
+# Authentication views moved to users app - no redirects needed
 
 
 @login_required

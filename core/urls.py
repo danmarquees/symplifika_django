@@ -13,10 +13,7 @@ urlpatterns = [
     path('api/health/', views.health_check, name='health-check'),
     path('api/statistics/', views.statistics_view, name='api-statistics'),
 
-    # Authentication (redirects to users app)
-    path('register/', views.register, name='register'),
-    path('login/', views.login_view, name='login'),
-    path('logout/', views.logout_view, name='logout'),
+    # Authentication handled by users app
 
     # Profile management
     path('profile/', views.profile, name='profile'),

@@ -47,6 +47,9 @@ dj-database-url==2.3.0
 # PostgreSQL adapter (psycopg3 - better Python 3.13 support)
 psycopg[binary]==3.2.3
 
+# Stripe Payment Integration
+stripe==8.10.0
+
 # Development dependencies (optional)
 # pytest==7.4.3
 # pytest-django==4.7.0

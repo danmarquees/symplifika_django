@@ -12,11 +12,13 @@ bg-symplifika-gradient bg-mesh min-h-screen{% endblock %}
 <link rel="stylesheet" href="{% static 'css/pages/auth.css' %}" />
 {% endblock %} {% block navigation %}
 <!-- Simplified navigation for auth pages -->
-<nav class="absolute top-0 left-0 right-0 z-10 p-6">
+<nav
+    class="auth-nav absolute top-0 left-0 right-0 z-10 p-4 sm:p-6 safe-area-top"
+>
     <div class="flex justify-between items-center">
         <a
             href="{% url 'core:index' %}"
-            class="flex items-center space-x-2 text-black hover:text-black/80 transition-colors"
+            class="logo flex items-center space-x-2 text-black hover:text-black/80 transition-colors min-h-[44px]"
         >
             <svg
                 width="32"
@@ -24,7 +26,7 @@ bg-symplifika-gradient bg-mesh min-h-screen{% endblock %}
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                class="text-black"
+                class="text-black flex-shrink-0"
             >
                 <path
                     d="M16.8857 3.11429C13.8857 0.114286 9 1 6 4C3 7 2.11429 11.8857 5.11429 14.8857C8.11429 17.8857 13 19 16 16C19 13 19.8857 8.11429 16.8857 5.11429"
@@ -41,15 +43,16 @@ bg-symplifika-gradient bg-mesh min-h-screen{% endblock %}
                     stroke-linejoin="round"
                 />
             </svg>
-            <span class="text-xl font-bold">symplifika</span>
+            <span class="text-lg sm:text-xl font-bold">symplifika</span>
         </a>
 
         <!-- Theme toggle -->
         <button
             type="button"
-            class="p-2 text-black/70 hover:text-black rounded-md focus:outline-none focus:ring-2 focus:ring-black/20"
+            class="p-2 text-black/70 hover:text-black rounded-md focus:outline-none focus:ring-2 focus:ring-black/20 min-h-[44px] min-w-[44px] flex items-center justify-center"
             data-theme-toggle
             title="Alternar tema"
+            aria-label="Alternar tema"
         >
             <span class="theme-icon">🌙</span>
         </button>
@@ -57,19 +60,19 @@ bg-symplifika-gradient bg-mesh min-h-screen{% endblock %}
 </nav>
 {% endblock %} {% block main_class %}flex items-center justify-center
 min-h-screen px-4{% endblock %} {% block content %}
-<div class="w-full max-w-md">
+<div class="w-full max-w-md mx-auto">
     <!-- Header -->
-    <div class="text-center mb-6 sm:mb-8">
+    <div class="auth-header text-center mb-6 sm:mb-8">
         <div
             class="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 mb-4"
         >
             <svg
-                width="40"
-                height="40"
+                width="36"
+                height="36"
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                class="text-black sm:w-12 sm:h-12"
+                class="text-black sm:w-12 sm:h-12 flex-shrink-0"
             >
                 <path
                     d="M16.8857 3.11429C13.8857 0.114286 9 1 6 4C3 7 2.11429 11.8857 5.11429 14.8857C8.11429 17.8857 13 19 16 16C19 13 19.8857 8.11429 16.8857 5.11429"
@@ -87,12 +90,12 @@ min-h-screen px-4{% endblock %} {% block content %}
                 />
             </svg>
             <h1
-                class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-black"
+                class="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-extrabold text-black"
             >
                 symplifika
             </h1>
         </div>
-        <p class="text-black/80 text-base sm:text-lg px-4">
+        <p class="text-black/80 text-sm sm:text-base lg:text-lg px-2 sm:px-4">
             Entre na sua conta para acessar suas automações
         </p>
     </div>
@@ -174,23 +177,26 @@ min-h-screen px-4{% endblock %} {% block content %}
 
             <!-- Remember Me -->
             <div
-                class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0"
+                class="remember-section flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0"
             >
-                <div class="flex items-center">
+                <div class="flex items-center min-h-[44px]">
                     <input
                         type="checkbox"
                         name="remember_me"
                         id="remember_me"
-                        class="remember-checkbox w-5 h-5 sm:w-4 sm:h-4 rounded focus:ring-2"
+                        class="remember-checkbox w-5 h-5 sm:w-4 sm:h-4 rounded focus:ring-2 flex-shrink-0"
                     />
-                    <label for="remember_me" class="ml-2 text-sm text-gray-300">
+                    <label
+                        for="remember_me"
+                        class="ml-2 text-sm text-gray-300 cursor-pointer"
+                    >
                         Lembrar de mim
                     </label>
                 </div>
 
                 <a
                     href="#"
-                    class="auth-link text-sm transition-colors text-center sm:text-right"
+                    class="auth-link text-sm transition-colors text-center sm:text-right min-h-[44px] flex items-center justify-center sm:justify-end px-2"
                 >
                     Esqueceu a senha?
                 </a>
@@ -228,7 +234,7 @@ min-h-screen px-4{% endblock %} {% block content %}
             <p class="text-gray-400 text-sm mb-3">Ainda não tem uma conta?</p>
             <a
                 href="{% url 'users:register' %}"
-                class="btn btn-outline border-symplifika-secondary text-symplifika-secondary hover:bg-symplifika-secondary hover:text-black w-full min-h-[48px] text-base sm:text-sm"
+                class="btn btn-outline border-symplifika-secondary text-symplifika-secondary hover:bg-symplifika-secondary hover:text-black w-full min-h-[48px] text-base sm:text-sm flex items-center justify-center"
             >
                 Criar Nova Conta
             </a>
@@ -243,7 +249,8 @@ min-h-screen px-4{% endblock %} {% block content %}
         <div class="flex justify-center">
             <button
                 onclick="fillDemoCredentials()"
-                class="demo-btn text-sm sm:text-base px-4 py-2 min-h-[44px]"
+                class="demo-btn text-sm sm:text-base px-4 py-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                aria-label="Preencher com credenciais demo: demo / demo123"
             >
                 demo / demo123
             </button>

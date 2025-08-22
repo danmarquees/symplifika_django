@@ -30,6 +30,7 @@ def api_root(request):
             'auth': '/users/auth/',
             'shortcuts': '/shortcuts/api/',
             'users': '/users/api/',
+            'payments': '/payments/',
             'admin': '/admin/',
         }
     })
@@ -40,6 +41,7 @@ urlpatterns = [
     path('shortcuts/api/', include('shortcuts.urls')),  # Shortcuts API endpoints
     path('api/root/', api_root, name='api-root'),
     path('users/', include('users.urls')),
+    path('payments/', include('payments.urls')),  # Payments API endpoints
 ]
 
 # Serve media files in development

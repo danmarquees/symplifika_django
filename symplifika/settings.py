@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'core',
     'shortcuts',
     'users',
+    'payments',
 ]
 
 MIDDLEWARE = [
@@ -221,6 +222,12 @@ CORS_ALLOW_CREDENTIALS = True
 
 # AI Configuration
 GEMINI_API_KEY = config('GEMINI_API_KEY', default='')
+
+# Stripe Configuration
+STRIPE_PUBLISHABLE_KEY = config('STRIPE_PUBLISHABLE_KEY', default='')
+STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY', default='')
+STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET', default='')
+STRIPE_RETURN_URL = config('STRIPE_RETURN_URL', default='http://localhost:3000/account')
 
 # Custom User Model (if needed)
 # AUTH_USER_MODEL = 'users.User'

@@ -410,30 +410,6 @@ def login_view(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def register(request):
-    """Registra um novo usuário"""
-    from .serializers import UserSerializer
-    from django.contrib.auth.forms import UserCreationForm
-
-    serializer = UserSerializer(data=request.data)
-    if serializer.is_valid():
-        user = serializer.save()
-
-        # Criar perfil do usuário
-        UserProfile.objects.get_or_create(user=user)
-
-        # Cria token
-        token, created = Token.objects.get_or_create(user=user)
-
-        return Response({
-            'user': UserSerializer(user).data,
-            'token': token.key,
-            'message': 'Usuário registrado com sucesso'
-        }, status=status.HTTP_201_CREATED)
-
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])

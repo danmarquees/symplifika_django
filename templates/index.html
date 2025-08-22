@@ -100,28 +100,6 @@ text-gray-900 dark:text-gray-100 font-poppins{% endblock %}
                 </a>
                 {% endif %}
             </div>
-
-            <!-- Demo credentials -->
-            {% if not user.is_authenticated %}
-            <div
-                class="bg-black/20 backdrop-blur-sm p-4 sm:p-6 rounded-xl max-w-md mx-auto"
-            >
-                <p class="text-white/90 text-xs sm:text-sm mb-2">
-                    Credenciais de demonstração:
-                </p>
-                <p class="text-white font-semibold text-sm sm:text-base">
-                    <span
-                        class="bg-white/20 px-2 py-1 rounded text-xs sm:text-sm"
-                        >demo</span
-                    >
-                    /
-                    <span
-                        class="bg-white/20 px-2 py-1 rounded text-xs sm:text-sm"
-                        >demo123</span
-                    >
-                </p>
-            </div>
-            {% endif %}
         </div>
     </div>
 

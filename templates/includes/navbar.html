@@ -81,6 +81,12 @@
                         >symplifika</span
                     >
                 </a>
+                <a
+                    href="{% url 'core:pricing' %}"
+                    class="hidden sm:block text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                    Preços
+                </a>
             </div>
 
             <!-- Navigation links (desktop) -->
@@ -105,6 +111,12 @@
                     class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
                     Perfil
+                </a>
+                <a
+                    href="{% url 'core:pricing' %}"
+                    class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                    Preços
                 </a>
                 {% else %}
                 <a
@@ -135,7 +147,16 @@
                 <div class="hidden lg:block">
                     {% include 'includes/plan_status_widget.html' %}
                 </div>
-                {% endif %}
+                {% if user.profile.plan == 'free' %}
+                <!-- Botão Preços para usuários Free -->
+                <a
+                    href="{% url 'core:pricing' %}"
+                    class="text-symplifika-primary hover:text-symplifika-primary-dark px-3 py-2 rounded-md text-sm font-medium transition-colors border border-symplifika-primary bg-symplifika-primary/10 ml-2"
+                    title="Veja nossos planos e recursos premium"
+                >
+                    Planos
+                </a>
+                {% endif %} {% endif %}
 
                 <!-- Theme toggle -->
                 <button
@@ -272,6 +293,12 @@
             >
                 Perfil
             </a>
+            <a
+                href="{% url 'core:pricing' %}"
+                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-4 py-3 rounded-md text-base font-medium border-b border-gray-100 dark:border-gray-700 min-h-[44px] flex items-center"
+            >
+                Preços
+            </a>
             {% else %}
             <a
                 href="{% url 'core:index' %}"
@@ -342,43 +369,241 @@
         }
     });
 
-    // Toggle mobile menu
+    // Enhanced mobile menu functionality
+    document.addEventListener("DOMContentLoaded", function () {
+        const mobileMenuButton = document.getElementById("mobile-menu-button");
+        const mobileMenu = document.getElementById("mobile-menu");
+        const hamburgerIcon = document.querySelector(".hamburger-icon");
+        const closeIcon = document.querySelector(".close-icon");
+
+        if (mobileMenuButton && mobileMenu) {
+            // Toggle mobile menu
+            mobileMenuButton.addEventListener("click", function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const isOpen = !mobileMenu.classList.contains("hidden");
+
+                if (isOpen) {
+                    closeMobileMenu();
+                } else {
+                    openMobileMenu();
+                }
+            });
+
+            // Close mobile menu when clicking outside
+            document.addEventListener("click", function (event) {
+                if (
+                    !mobileMenu.contains(event.target) &&
+                    !mobileMenuButton.contains(event.target) &&
+                    !mobileMenu.classList.contains("hidden")
+                ) {
+                    closeMobileMenu();
+                }
+            });
+
+            // Close mobile menu on window resize to desktop
+            window.addEventListener("resize", function () {
+                if (window.innerWidth >= 768) {
+                    // md breakpoint
+                    closeMobileMenu();
+                }
+            });
+
+            // Close mobile menu on escape key
+            document.addEventListener("keydown", function (event) {
+                if (
+                    event.key === "Escape" &&
+                    !mobileMenu.classList.contains("hidden")
+                ) {
+                    closeMobileMenu();
+                }
+            });
+
+            // Auto-close menu when clicking on links (mobile)
+            const mobileMenuLinks = mobileMenu.querySelectorAll("a");
+            mobileMenuLinks.forEach((link) => {
+                link.addEventListener("click", function () {
+                    setTimeout(closeMobileMenu, 150); // Small delay for better UX
+                });
+            });
+        }
+
+        function openMobileMenu() {
+            mobileMenu.classList.remove("hidden");
+            hamburgerIcon.classList.add("hidden");
+            closeIcon.classList.remove("hidden");
+            mobileMenuButton.setAttribute("aria-expanded", "true");
+
+            // Prevent body scroll on mobile
+            if (window.innerWidth < 768) {
+                document.body.style.overflow = "hidden";
+            }
+
+            // Focus management
+            const firstLink = mobileMenu.querySelector("a");
+            if (firstLink) {
+                setTimeout(() => firstLink.focus(), 100);
+            }
+        }
+
+        function closeMobileMenu() {
+            mobileMenu.classList.add("hidden");
+            hamburgerIcon.classList.remove("hidden");
+            closeIcon.classList.add("hidden");
+            mobileMenuButton.setAttribute("aria-expanded", "false");
+
+            // Restore body scroll
+            document.body.style.overflow = "";
+
+            // Return focus to button
+            mobileMenuButton.focus();
+        }
+
+        // Keyboard navigation for mobile menu
+        mobileMenu.addEventListener("keydown", function (event) {
+            const focusableElements = mobileMenu.querySelectorAll(
+                'a, button, [tabindex]:not([tabindex="-1"])',
+            );
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+
+            if (event.key === "Tab") {
+                if (event.shiftKey) {
+                    // Shift + Tab
+                    if (document.activeElement === firstElement) {
+                        event.preventDefault();
+                        lastElement.focus();
+                    }
+                } else {
+                    // Tab
+                    if (document.activeElement === lastElement) {
+                        event.preventDefault();
+                        firstElement.focus();
+                    }
+                }
+            }
+        });
+    });
+
+    // Toggle mobile menu or sidebar depending on page context
     document
         .querySelector("[data-sidebar-toggle]")
         .addEventListener("click", function () {
-            const mobileMenu = document.getElementById("mobile-menu");
-            const button = document.getElementById("mobile-menu-button");
-            const hamburgerIcon = button.querySelector(".hamburger-icon");
-            const closeIcon = button.querySelector(".close-icon");
+            // Check if we're on the app dashboard page (has sidebar)
+            const appSidebar = document.getElementById("app-sidebar");
 
-            mobileMenu.classList.toggle("hidden");
-            hamburgerIcon.classList.toggle("hidden");
-            closeIcon.classList.toggle("hidden");
+            if (appSidebar) {
+                // We're on app page - toggle sidebar
+                const backdrop = document.getElementById("sidebar-backdrop");
+                const isOpen =
+                    !appSidebar.classList.contains("-translate-x-full");
 
-            // Update aria-expanded
-            const isExpanded = !mobileMenu.classList.contains("hidden");
-            button.setAttribute("aria-expanded", isExpanded);
+                if (isOpen) {
+                    // Close sidebar
+                    appSidebar.classList.add("-translate-x-full");
+                    if (backdrop) backdrop.classList.add("hidden");
+                    document.body.style.overflow = "";
+                    appSidebar.setAttribute("aria-hidden", "true");
+                    this.setAttribute("aria-expanded", "false");
+                } else {
+                    // Open sidebar
+                    appSidebar.classList.remove("-translate-x-full");
+                    if (backdrop) backdrop.classList.remove("hidden");
+                    document.body.style.overflow = "hidden";
+                    appSidebar.setAttribute("aria-hidden", "false");
+                    this.setAttribute("aria-expanded", "true");
+
+                    // Focus first interactive element in sidebar
+                    const firstFocusable = appSidebar.querySelector(
+                        'a, button, [tabindex]:not([tabindex="-1"])',
+                    );
+                    if (firstFocusable) {
+                        setTimeout(() => firstFocusable.focus(), 100);
+                    }
+                }
+            } else {
+                // We're on regular page - toggle navbar mobile menu
+                const mobileMenu = document.getElementById("mobile-menu");
+                const button = document.getElementById("mobile-menu-button");
+                const hamburgerIcon = button.querySelector(".hamburger-icon");
+                const closeIcon = button.querySelector(".close-icon");
+
+                mobileMenu.classList.toggle("hidden");
+                hamburgerIcon.classList.toggle("hidden");
+                closeIcon.classList.toggle("hidden");
+
+                // Update aria-expanded
+                const isExpanded = !mobileMenu.classList.contains("hidden");
+                button.setAttribute("aria-expanded", isExpanded);
+            }
         });
 
-    // Close mobile menu when clicking outside
+    // Close mobile menu or sidebar when clicking outside
     document.addEventListener("click", function (event) {
-        const mobileMenu = document.getElementById("mobile-menu");
         const toggleButton = document.querySelector("[data-sidebar-toggle]");
+        const appSidebar = document.getElementById("app-sidebar");
 
-        if (
-            mobileMenu &&
-            !mobileMenu.classList.contains("hidden") &&
-            !mobileMenu.contains(event.target) &&
-            !toggleButton.contains(event.target)
-        ) {
-            mobileMenu.classList.add("hidden");
-            const button = document.getElementById("mobile-menu-button");
-            const hamburgerIcon = button.querySelector(".hamburger-icon");
-            const closeIcon = button.querySelector(".close-icon");
+        if (appSidebar) {
+            // Handle sidebar backdrop clicks on app page
+            const backdrop = document.getElementById("sidebar-backdrop");
+            const isOpen = !appSidebar.classList.contains("-translate-x-full");
 
-            hamburgerIcon.classList.remove("hidden");
-            closeIcon.classList.add("hidden");
-            button.setAttribute("aria-expanded", "false");
+            if (isOpen && backdrop && backdrop.contains(event.target)) {
+                // Close sidebar
+                appSidebar.classList.add("-translate-x-full");
+                backdrop.classList.add("hidden");
+                document.body.style.overflow = "";
+                appSidebar.setAttribute("aria-hidden", "true");
+                toggleButton.setAttribute("aria-expanded", "false");
+            }
+        } else {
+            // Handle regular mobile menu clicks
+            const mobileMenu = document.getElementById("mobile-menu");
+
+            if (
+                mobileMenu &&
+                !mobileMenu.classList.contains("hidden") &&
+                !mobileMenu.contains(event.target) &&
+                !toggleButton.contains(event.target)
+            ) {
+                mobileMenu.classList.add("hidden");
+                const button = document.getElementById("mobile-menu-button");
+                const hamburgerIcon = button.querySelector(".hamburger-icon");
+                const closeIcon = button.querySelector(".close-icon");
+
+                hamburgerIcon.classList.remove("hidden");
+                closeIcon.classList.add("hidden");
+                button.setAttribute("aria-expanded", "false");
+            }
+        }
+    });
+
+    // Add ESC key support for closing sidebar
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+            const appSidebar = document.getElementById("app-sidebar");
+
+            if (
+                appSidebar &&
+                !appSidebar.classList.contains("-translate-x-full")
+            ) {
+                // Close sidebar
+                const backdrop = document.getElementById("sidebar-backdrop");
+                const toggleButton = document.querySelector(
+                    "[data-sidebar-toggle]",
+                );
+
+                appSidebar.classList.add("-translate-x-full");
+                if (backdrop) backdrop.classList.add("hidden");
+                document.body.style.overflow = "";
+                appSidebar.setAttribute("aria-hidden", "true");
+                if (toggleButton)
+                    toggleButton.setAttribute("aria-expanded", "false");
+
+                // Return focus to toggle button
+                if (toggleButton) toggleButton.focus();
+            }
         }
     });
 </script>

@@ -3,7 +3,10 @@
 <html lang="pt-br" class="{% block html_class %}{% endblock %}">
     <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"
+        />
         <meta
             name="description"
             content="{% block meta_description %}Symplifika - Automações fáceis e rápidas no seu dia-a-dia{% endblock %}"
@@ -14,28 +17,88 @@
         />
         <meta name="author" content="Symplifika" />
 
+        <!-- PWA Meta Tags -->
+        <meta name="theme-color" content="#00C853" />
+        <meta name="msapplication-TileColor" content="#00C853" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Symplifika" />
+        <meta name="mobile-web-app-capable" content="yes" />
+
+        <!-- iOS Splash Screens -->
+        <link
+            rel="apple-touch-startup-image"
+            href="{% static 'images/splash-640x1136.png' %}"
+            media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"
+        />
+        <link
+            rel="apple-touch-startup-image"
+            href="{% static 'images/splash-750x1334.png' %}"
+            media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)"
+        />
+        <link
+            rel="apple-touch-startup-image"
+            href="{% static 'images/splash-1242x2208.png' %}"
+            media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)"
+        />
+
+        <!-- Performance and Security -->
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="x-dns-prefetch-control" content="on" />
+        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+        <link
+            rel="preconnect"
+            href="https://fonts.googleapis.com"
+            crossorigin
+        />
+
         <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token }}" />
 
         <title>{% block title %}Symplifika - Seus Atalhos{% endblock %}</title>
 
-        <!-- Favicon -->
+        <!-- Favicons and Touch Icons -->
         <link
             rel="icon"
             type="image/x-icon"
             href="{% static 'images/favicon.ico' %}"
         />
+        <link
+            rel="apple-touch-icon"
+            sizes="180x180"
+            href="{% static 'images/apple-touch-icon.png' %}"
+        />
+        <link
+            rel="icon"
+            type="image/png"
+            sizes="32x32"
+            href="{% static 'images/favicon-32x32.png' %}"
+        />
+        <link
+            rel="icon"
+            type="image/png"
+            sizes="16x16"
+            href="{% static 'images/favicon-16x16.png' %}"
+        />
+        <link rel="manifest" href="{% static 'manifest.json' %}" />
 
         <!-- Tailwind CSS via CDN -->
         <script src="https://cdn.tailwindcss.com"></script>
 
-        <!-- Google Fonts: Poppins -->
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <!-- Google Fonts: Poppins (Optimized for Mobile) -->
         <link
             href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
             rel="stylesheet"
+            media="print"
+            onload="this.media='all'"
         />
+        <noscript>
+            <link
+                href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+                rel="stylesheet"
+            />
+        </noscript>
 
         <!-- Custom CSS -->
         <link rel="stylesheet" href="{% static 'css/base.css' %}" />
@@ -52,6 +115,7 @@
             rel="stylesheet"
             href="{% static 'css/components/forms-mobile.css' %}"
         />
+
         {% block extra_css %}{% endblock %}
 
         <!-- Custom Tailwind Config -->
@@ -76,7 +140,8 @@
         </script>
     </head>
     <body
-        class="{% block body_class %}bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-poppins{% endblock %}"
+        class="{% block body_class %}bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-poppins{% endblock %} safe-area-inset"
+        data-mobile-utils="enabled"
     >
         <!-- Messages Framework -->
         {% if messages %}
@@ -130,6 +195,7 @@
         <!-- JavaScript -->
         <script src="{% static 'js/symplifika-base.js' %}"></script>
         <script src="{% static 'js/base.js' %}"></script>
+        <script src="{% static 'js/mobile/mobile-utils.js' %}"></script>
         {% block extra_js %}{% endblock %}
 
         <!-- CSRF Token for AJAX -->
@@ -145,7 +211,7 @@
                 );
             }
 
-            // Setup CSRF for all AJAX requests
+            // Setup CSRF for all AJAX requests and mobile optimizations
             window.addEventListener("DOMContentLoaded", function () {
                 const csrfToken = getCSRFToken();
                 if (csrfToken) {
@@ -161,6 +227,54 @@
                         return originalFetch(url, options);
                     };
                 }
+
+                // Mobile-specific initializations
+                if (window.MobileUtils) {
+                    window.MobileUtils.setSafeAreaInsets();
+                    window.MobileUtils.optimizeImages();
+                    window.MobileUtils.improveForms();
+                }
+
+                // Register service worker for PWA functionality
+                if (
+                    "serviceWorker" in navigator &&
+                    location.protocol === "https:"
+                ) {
+                    navigator.serviceWorker
+                        .register("/sw.js")
+                        .catch(function (error) {
+                            console.log(
+                                "ServiceWorker registration failed: ",
+                                error,
+                            );
+                        });
+                }
+
+                // Handle installation prompt
+                let deferredPrompt;
+                window.addEventListener("beforeinstallprompt", (e) => {
+                    e.preventDefault();
+                    deferredPrompt = e;
+
+                    // Show install button if needed
+                    const installButton =
+                        document.getElementById("install-app-button");
+                    if (installButton) {
+                        installButton.style.display = "block";
+                        installButton.addEventListener("click", () => {
+                            deferredPrompt.prompt();
+                            deferredPrompt.userChoice.then((choiceResult) => {
+                                if (choiceResult.outcome === "accepted") {
+                                    console.log(
+                                        "User accepted the install prompt",
+                                    );
+                                }
+                                deferredPrompt = null;
+                                installButton.style.display = "none";
+                            });
+                        });
+                    }
+                });
             });
         </script>
     </body>
