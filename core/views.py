@@ -53,6 +53,12 @@ def dashboard(request):
     return render(request, 'app.html')
 
 
+@login_required
+def shortcuts(request):
+    """Shortcuts management page"""
+    return render(request, 'app.html')
+
+
 # Authentication views moved to users app - no redirects needed
 
 

@@ -7,6 +7,7 @@ urlpatterns = [
     # Main pages
     path('', views.index, name='index'),
     path('dashboard/', views.dashboard, name='dashboard'),
+    path('shortcuts/', views.shortcuts, name='shortcuts'),
 
     # API endpoints
     path('api/status/', views.api_status, name='api-status'),
