@@ -6,6 +6,9 @@ Django==5.2.5
 djangorestframework==3.16.1
 django-cors-headers==4.7.0
 
+# JWT Authentication
+rest_framework_simplejwt==5.2.2
+
 # Configuration and Environment
 python-decouple==3.8
 
@@ -58,3 +61,6 @@ psycopg[binary]==3.2.3; python_version >= "3.13"
 
 # Security and monitoring (optional)
 # sentry-sdk[django]==1.45.0
+
+# Payments
+stripe==4.10.0
