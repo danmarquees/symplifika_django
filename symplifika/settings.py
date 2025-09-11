@@ -177,8 +177,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -218,7 +218,52 @@ else:
         cast=str
     ).split(',')
 
+# Chrome Extension Origins
+CSRF_TRUSTED_ORIGINS.extend([
+    'chrome-extension://npbabdmkiegnhkmpndnnbmoeljkaeedl',
+    'chrome-extension://*',  # Allow any chrome extension
+])
+
+CORS_ALLOWED_ORIGINS.extend([
+    'chrome-extension://npbabdmkiegnhkmpndnnbmoeljkaeedl',
+    'chrome-extension://*',  # Allow any chrome extension
+])
+
+# Chrome Extension CORS Configuration
+CORS_ALLOW_ALL_ORIGINS = DEBUG  # Allow all origins in development
 CORS_ALLOW_CREDENTIALS = True
+
+# Allow chrome-extension origins specifically
+CORS_ORIGIN_REGEX_WHITELIST = [
+    r"^chrome-extension://.*$",
+]
+
+CORS_ALLOWED_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+# Chrome Extension specific settings
+CORS_PREFLIGHT_MAX_AGE = 86400
+
+# Disable CSRF for API endpoints when using token auth
+CSRF_COOKIE_SECURE = False if DEBUG else True
+CSRF_USE_SESSIONS = False
 
 # AI Configuration
 GEMINI_API_KEY = config('GEMINI_API_KEY', default='')

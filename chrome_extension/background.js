@@ -29,7 +29,7 @@ class SymphilikaAPI {
 
   async login(username, password) {
     try {
-      const response = await fetch(`${this.baseURL}/users/api/auth/login/`, {
+      const response = await fetch(`${this.baseURL}/users/auth/login/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -63,10 +63,10 @@ class SymphilikaAPI {
   async logout() {
     try {
       if (this.token) {
-        await fetch(`${this.baseURL}/users/api/auth/logout/`, {
+        await fetch(`${this.baseURL}/users/auth/logout/`, {
           method: "POST",
           headers: {
-            Authorization: `Token ${this.token}`,
+            Authorization: `Bearer ${this.token}`,
             "Content-Type": "application/json",
           },
         });
@@ -86,9 +86,9 @@ class SymphilikaAPI {
     if (!this.token) return false;
 
     try {
-      const response = await fetch(`${this.baseURL}/api/shortcuts/`, {
+      const response = await fetch(`${this.baseURL}/shortcuts/api/shortcuts/`, {
         headers: {
-          Authorization: `Token ${this.token}`,
+          Authorization: `Bearer ${this.token}`,
           "Content-Type": "application/json",
         },
       });
@@ -118,11 +118,11 @@ class SymphilikaAPI {
 
     try {
       const response = await fetch(
-        `${this.baseURL}/api/shortcuts/${shortcutId}/use/`,
+        `${this.baseURL}/shortcuts/api/shortcuts/${shortcutId}/use/`,
         {
           method: "POST",
           headers: {
-            Authorization: `Token ${this.token}`,
+            Authorization: `Bearer ${this.token}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ variables }),
@@ -145,10 +145,10 @@ class SymphilikaAPI {
     if (!this.token) return [];
 
     try {
-      const response = await fetch(`${this.baseURL}/api/shortcuts/search/`, {
+      const response = await fetch(`${this.baseURL}/shortcuts/api/shortcuts/search/`, {
         method: "POST",
         headers: {
-          Authorization: `Token ${this.token}`,
+          Authorization: `Bearer ${this.token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ query }),
@@ -170,9 +170,9 @@ class SymphilikaAPI {
     if (!this.token) return [];
 
     try {
-      const response = await fetch(`${this.baseURL}/api/categories/`, {
+      const response = await fetch(`${this.baseURL}/shortcuts/api/categories/`, {
         headers: {
-          Authorization: `Token ${this.token}`,
+          Authorization: `Bearer ${this.token}`,
           "Content-Type": "application/json",
         },
       });
@@ -193,9 +193,9 @@ class SymphilikaAPI {
     if (!this.token) return [];
 
     try {
-      const response = await fetch(`${this.baseURL}/api/shortcuts/most-used/`, {
+      const response = await fetch(`${this.baseURL}/shortcuts/api/shortcuts/most-used/`, {
         headers: {
-          Authorization: `Token ${this.token}`,
+          Authorization: `Bearer ${this.token}`,
           "Content-Type": "application/json",
         },
       });
@@ -216,9 +216,9 @@ class SymphilikaAPI {
     if (!this.token) return {};
 
     try {
-      const response = await fetch(`${this.baseURL}/api/shortcuts/stats/`, {
+      const response = await fetch(`${this.baseURL}/shortcuts/api/shortcuts/stats/`, {
         headers: {
-          Authorization: `Token ${this.token}`,
+          Authorization: `Bearer ${this.token}`,
           "Content-Type": "application/json",
         },
       });
@@ -241,7 +241,7 @@ class SymphilikaAPI {
     try {
       const response = await fetch(`${this.baseURL}/users/api/users/stats/`, {
         headers: {
-          Authorization: `Token ${this.token}`,
+          Authorization: `Bearer ${this.token}`,
           "Content-Type": "application/json",
         },
       });
@@ -264,7 +264,7 @@ class SymphilikaAPI {
     try {
       const response = await fetch(`${this.baseURL}/users/api/users/me/`, {
         headers: {
-          Authorization: `Token ${this.token}`,
+          Authorization: `Bearer ${this.token}`,
           "Content-Type": "application/json",
         },
       });

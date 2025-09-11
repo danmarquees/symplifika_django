@@ -48,23 +48,28 @@ class SymphilikaPopup {
   }
 
   setupEventListeners() {
+    // Login form
+    const loginForm = document.getElementById("loginForm");
+    if (loginForm) {
+      loginForm.addEventListener("submit", this.handleLogin.bind(this));
+    }
+
     // Search
     const searchInput = document.getElementById("searchInput");
     if (searchInput) {
       searchInput.addEventListener("input", this.handleSearch.bind(this));
     }
 
-    // Filter buttons
-    const filterBtns = document.querySelectorAll(".filter-btn");
-    filterBtns.forEach((btn) => {
-      btn.addEventListener("click", this.handleFilter.bind(this));
-    });
-
-    // Login form
-    const loginForm = document.getElementById("loginForm");
-    if (loginForm) {
-      loginForm.addEventListener("submit", this.handleLogin.bind(this));
+    const clearSearchBtn = document.getElementById("clearSearch");
+    if (clearSearchBtn) {
+      clearSearchBtn.addEventListener("click", this.clearSearch.bind(this));
     }
+
+    // Filters
+    const filterButtons = document.querySelectorAll(".filter-btn");
+    filterButtons.forEach((btn) => {
+      btn.addEventListener("click", this.handleFilterChange.bind(this));
+    });
 
     // Actions
     const syncBtn = document.getElementById("syncBtn");
@@ -204,53 +209,6 @@ class SymphilikaPopup {
     }
   }
 
-  renderShortcuts() {
-    const container = document.getElementById("shortcutsContainer");
-    if (!container) return;
-
-    if (this.filteredShortcuts.length === 0) {
-      container.innerHTML = `
-        <div class="empty-state">
-          <i class="fas fa-keyboard"></i>
-          <p>Nenhum atalho encontrado</p>
-          <button class="btn btn-primary" onclick="window.open('${this.serverUrl}/shortcuts/', '_blank')">
-            Criar Primeiro Atalho
-          </button>
-        </div>
-      `;
-      return;
-    }
-
-    container.innerHTML = this.filteredShortcuts
-      .map(
-        (shortcut) => `
-        <div class="shortcut-item" data-id="${shortcut.id}">
-          <div class="shortcut-header">
-            <span class="shortcut-trigger">${this.escapeHtml(shortcut.trigger)}</span>
-            <span class="shortcut-category">${shortcut.category?.name || "Geral"}</span>
-          </div>
-          <div class="shortcut-title">${this.escapeHtml(shortcut.title)}</div>
-          <div class="shortcut-content">${this.truncateText(this.escapeHtml(shortcut.content), 100)}</div>
-          <div class="shortcut-footer">
-            <span class="shortcut-uses">${shortcut.use_count || 0} usos</span>
-            <button class="btn btn-sm btn-primary use-shortcut-btn" data-id="${shortcut.id}">
-              <i class="fas fa-play"></i> Usar
-            </button>
-          </div>
-        </div>
-      `,
-      )
-      .join("");
-
-    // Adicionar event listeners para os botões de usar atalho
-    container.querySelectorAll(".use-shortcut-btn").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        const shortcutId = e.target.closest("button").dataset.id;
-        this.useShortcut(shortcutId);
-      });
-    });
-  }
-
   async syncShortcuts() {
     const syncBtn = document.getElementById("syncBtn");
     const syncIcon = syncBtn?.querySelector("i");
@@ -302,13 +260,11 @@ class SymphilikaPopup {
     };
 
     try {
-      const response = await fetch(`${this.serverUrl}/users/api/auth/login/`, {
+      const response = await fetch(`${this.serverUrl}/users/auth/login/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        mode: 'cors',
-        credentials: "omit",
         body: JSON.stringify(loginData),
       });
 
@@ -344,7 +300,7 @@ class SymphilikaPopup {
   async handleLogout() {
     try {
       if (this.authToken) {
-        await this.apiRequest("POST", "/users/api/auth/logout/");
+        await this.apiRequest("POST", "/users/auth/logout/");
       }
     } catch (error) {
       console.error("Erro no logout:", error);
@@ -353,10 +309,10 @@ class SymphilikaPopup {
     this.authToken = null;
     this.user = null;
     this.isAuthenticated = false;
+    this.shortcuts = [];
+    this.filteredShortcuts = [];
 
-    // Remover token do storage
-    chrome.storage.sync.remove("authToken");
-
+    await chrome.storage.sync.remove("authToken");
     this.showAuthState();
     this.showNotification("Logout realizado com sucesso!", "success");
   }
@@ -369,64 +325,66 @@ class SymphilikaPopup {
 
   showLoginError(message) {
     const errorDiv = document.getElementById("loginError");
-    const errorText = document.getElementById("loginErrorText");
-
-    if (errorDiv && errorText) {
-      errorText.textContent = message;
+    if (errorDiv) {
+      errorDiv.textContent = message;
       errorDiv.classList.remove("hidden");
     }
   }
 
   handleSearch(event) {
-    const query = event.target.value.toLowerCase().trim();
-    this.searchQuery = query;
-
-    // Debounce search
     clearTimeout(this._searchTimeout);
+    const query = event.target.value.trim();
+
     this._searchTimeout = setTimeout(() => {
+      this.searchQuery = query;
       this.filterShortcuts();
     }, 300);
   }
 
-  handleFilter(event) {
-    const filterValue = event.target.dataset.filter;
-    this.currentFilter = filterValue;
+  clearSearch() {
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) {
+      searchInput.value = "";
+      this.searchQuery = "";
+      this.filterShortcuts();
+    }
+  }
 
-    // Update active filter button
-    document.querySelectorAll(".filter-btn").forEach((btn) => {
-      btn.classList.remove("active");
-    });
+  handleFilterChange(event) {
+    const filterBtns = document.querySelectorAll(".filter-btn");
+    filterBtns.forEach((btn) => btn.classList.remove("active"));
+
     event.target.classList.add("active");
-
+    this.currentFilter = event.target.dataset.filter;
     this.filterShortcuts();
   }
 
   filterShortcuts() {
     let filtered = [...this.shortcuts];
 
-    // Apply search filter
-    if (this.searchQuery) {
-      filtered = filtered.filter(
-        (shortcut) =>
-          shortcut.title.toLowerCase().includes(this.searchQuery) ||
-          shortcut.trigger.toLowerCase().includes(this.searchQuery) ||
-          shortcut.content.toLowerCase().includes(this.searchQuery),
-      );
-    }
-
-    // Apply category filter
+    // Filtrar por categoria
     if (this.currentFilter !== "all") {
       filtered = filtered.filter((shortcut) => {
         if (this.currentFilter === "recent") {
-          // Show shortcuts used in last 7 days
-          const weekAgo = new Date();
-          weekAgo.setDate(weekAgo.getDate() - 7);
-          return shortcut.last_used && new Date(shortcut.last_used) > weekAgo;
+          return shortcut.last_used_at;
         } else if (this.currentFilter === "favorites") {
           return shortcut.is_favorite;
         } else {
-          return shortcut.category?.slug === this.currentFilter;
+          return shortcut.category?.name === this.currentFilter;
         }
+      });
+    }
+
+    // Filtrar por busca
+    if (this.searchQuery) {
+      const query = this.searchQuery.toLowerCase();
+      filtered = filtered.filter((shortcut) => {
+        return (
+          shortcut.title.toLowerCase().includes(query) ||
+          shortcut.trigger.toLowerCase().includes(query) ||
+          shortcut.content.toLowerCase().includes(query) ||
+          shortcut.description?.toLowerCase().includes(query)
+        );
       });
     }
 
@@ -434,23 +392,112 @@ class SymphilikaPopup {
     this.renderShortcuts();
   }
 
+  renderShortcuts() {
+    const container = document.getElementById("shortcutsContainer");
+    if (!container) return;
+
+    if (this.filteredShortcuts.length === 0) {
+      container.innerHTML = `
+        <div class="no-shortcuts">
+          <i class="fas fa-search"></i>
+          <p>Nenhum atalho encontrado</p>
+          <small>Tente ajustar os filtros ou criar um novo atalho</small>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = this.filteredShortcuts
+      .map((shortcut) => this.createShortcutHTML(shortcut))
+      .join("");
+
+    // Adicionar event listeners para os botões
+    container.querySelectorAll(".use-shortcut-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const shortcutId =
+          e.target.closest(".shortcut-item").dataset.shortcutId;
+        this.useShortcut(shortcutId);
+      });
+    });
+
+    container.querySelectorAll(".copy-shortcut-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const shortcutId =
+          e.target.closest(".shortcut-item").dataset.shortcutId;
+        this.copyShortcut(shortcutId);
+      });
+    });
+  }
+
+  createShortcutHTML(shortcut) {
+    const categoryColor = shortcut.category?.color || "#6366f1";
+    const usageCount = shortcut.usage_count || 0;
+
+    return `
+      <div class="shortcut-item" data-shortcut-id="${shortcut.id}">
+        <div class="shortcut-header">
+          <div class="shortcut-info">
+            <div class="shortcut-trigger" style="background-color: ${categoryColor}20; color: ${categoryColor};">
+              ${this.escapeHtml(shortcut.trigger)}
+            </div>
+            <div class="shortcut-title">${this.escapeHtml(shortcut.title)}</div>
+            ${shortcut.category ? `<div class="shortcut-category">${this.escapeHtml(shortcut.category.name)}</div>` : ""}
+          </div>
+          <div class="shortcut-actions">
+            <button class="action-btn copy-shortcut-btn" title="Copiar conteúdo">
+              <i class="fas fa-copy"></i>
+            </button>
+            <button class="action-btn use-shortcut-btn" title="Usar atalho">
+              <i class="fas fa-play"></i>
+            </button>
+          </div>
+        </div>
+        <div class="shortcut-content">
+          ${this.truncateText(shortcut.content, 100)}
+        </div>
+        <div class="shortcut-footer">
+          <div class="shortcut-meta">
+            <span class="usage-count">
+              <i class="fas fa-chart-bar"></i>
+              ${usageCount} usos
+            </span>
+            ${
+              shortcut.last_used_at
+                ? `
+              <span class="last-used">
+                <i class="fas fa-clock"></i>
+                ${new Date(shortcut.last_used_at).toLocaleDateString("pt-BR")}
+              </span>
+            `
+                : ""
+            }
+          </div>
+          ${
+            shortcut.is_ai_enhanced
+              ? `
+            <div class="ai-badge" title="Expandido com IA">
+              <i class="fas fa-robot"></i>
+              IA
+            </div>
+          `
+              : ""
+          }
+        </div>
+      </div>
+    `;
+  }
+
   async useShortcut(shortcutId) {
     try {
-      const shortcut = this.shortcuts.find((s) => s.id == shortcutId);
-      if (!shortcut) return;
-
-      // Registrar uso no backend
       const response = await this.apiRequest(
         "POST",
         `/shortcuts/api/shortcuts/${shortcutId}/use/`,
       );
-
       if (response.ok) {
-        // Copiar conteúdo para clipboard
-        await navigator.clipboard.writeText(shortcut.content);
-
+        const data = await response.json();
+        await this.copyToClipboard(data.expanded_content || data.content);
         this.showNotification(
-          `Atalho "${shortcut.title}" copiado para a área de transferência!`,
+          "Atalho copiado para área de transferência!",
           "success",
         );
 
@@ -465,32 +512,27 @@ class SymphilikaPopup {
     }
   }
 
-  async apiRequest(method, endpoint, data = null) {
-    const url = `${this.serverUrl}${endpoint}`;
-    const headers = {
-      "Content-Type": "application/json",
-    };
-
-    if (this.authToken) {
-      headers["Authorization"] = `Token ${this.authToken}`;
+  async copyShortcut(shortcutId) {
+    const shortcut = this.shortcuts.find((s) => s.id.toString() === shortcutId);
+    if (shortcut) {
+      await this.copyToClipboard(shortcut.content);
+      this.showNotification("Conteúdo copiado!", "success");
     }
+  }
 
-    const config = {
-      method,
-      headers,
-      mode: 'cors',
-      credentials: "omit", // Don't send cookies for token auth
-    };
-
-    if (data && method !== "GET") {
-      config.body = JSON.stringify(data);
+  async copyToClipboard(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (error) {
+      console.error("Erro ao copiar:", error);
+      // Fallback para navegadores mais antigos
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
     }
-
-    if (this.debugMode) {
-      console.log("API Request:", { method, url, headers, data });
-    }
-
-    return fetch(url, config);
   }
 
   updateUserAvatar() {
@@ -498,14 +540,9 @@ class SymphilikaPopup {
     if (avatar && this.user) {
       avatar.textContent = this.user.username?.charAt(0).toUpperCase() || "U";
     }
-
-    const username = document.getElementById("userName");
-    if (username && this.user) {
-      username.textContent = this.user.username || "Usuário";
-    }
   }
 
-  updateStatsDisplay() {
+  updateStats() {
     const totalShortcuts = document.getElementById("totalShortcuts");
     const totalUsage = document.getElementById("totalUsage");
     const todayUsage = document.getElementById("todayUsage");
@@ -601,7 +638,7 @@ class SymphilikaPopup {
   }
 
   openDashboard() {
-    window.open(`${this.serverUrl}/dashboard/`, "_blank");
+    window.open(`${this.serverUrl}/users/dashboard/`, "_blank");
   }
 
   startAutoSync() {

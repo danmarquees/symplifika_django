@@ -162,6 +162,12 @@ class LoginSerializer(serializers.Serializer):
                     username = user.username
                 except User.DoesNotExist:
                     raise serializers.ValidationError("Credenciais inválidas.")
+                except User.MultipleObjectsReturned:
+                    # Se há múltiplos usuários com o mesmo email, pegar o primeiro ativo
+                    user = User.objects.filter(email=username, is_active=True).first()
+                    if not user:
+                        raise serializers.ValidationError("Credenciais inválidas.")
+                    username = user.username
 
             user = authenticate(
                 request=self.context.get('request'),
