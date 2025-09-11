@@ -1,6 +1,7 @@
 # Django Framework
 Django==5.2.5
 djangorestframework==3.16.1
+djangorestframework-simplejwt==5.3.1
 django-cors-headers==4.7.0
 
 # Configuration and Environment
