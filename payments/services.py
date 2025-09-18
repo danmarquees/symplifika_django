@@ -411,6 +411,77 @@ class StripeService:
             
         except Exception as e:
             logger.error(f"Erro ao processar falha no pagamento: {e}")
+    
+    @staticmethod
+    def handle_checkout_session_completed(event_data: dict):
+        """Processa checkout session completado"""
+        try:
+            session = event_data['data']['object']
+            customer_id = session['customer']
+            subscription_id = session['subscription']
+            metadata = session.get('metadata', {})
+            
+            # Buscar usuário pelos metadados
+            user_id = metadata.get('user_id')
+            if not user_id:
+                logger.error("User ID não encontrado nos metadados da sessão")
+                return
+            
+            try:
+                user = User.objects.get(id=user_id)
+            except User.DoesNotExist:
+                logger.error(f"Usuário {user_id} não encontrado")
+                return
+            
+            # Buscar assinatura no Stripe
+            stripe_subscription = stripe.Subscription.retrieve(subscription_id)
+            
+            # Buscar preço local
+            price_id = stripe_subscription['items']['data'][0]['price']['id']
+            try:
+                local_price = StripePrice.objects.get(stripe_price_id=price_id)
+            except StripePrice.DoesNotExist:
+                logger.error(f"Preço {price_id} não encontrado localmente")
+                return
+            
+            # Criar ou atualizar assinatura local
+            subscription, created = StripeSubscription.objects.get_or_create(
+                stripe_subscription_id=subscription_id,
+                defaults={
+                    'user': user,
+                    'price': local_price,
+                    'status': stripe_subscription['status'],
+                    'current_period_start': timezone.datetime.fromtimestamp(
+                        stripe_subscription['current_period_start'], 
+                        tz=timezone.utc
+                    ),
+                    'current_period_end': timezone.datetime.fromtimestamp(
+                        stripe_subscription['current_period_end'], 
+                        tz=timezone.utc
+                    ),
+                    'cancel_at_period_end': stripe_subscription['cancel_at_period_end']
+                }
+            )
+            
+            # Atualizar plano do usuário
+            plan_name = metadata.get('plan', local_price.product.name.lower())
+            profile = user.profile
+            profile.plan = plan_name
+            
+            # Atualizar limites baseado no plano
+            if plan_name == 'premium':
+                profile.max_shortcuts = 500
+                profile.max_ai_requests = 1000
+            elif plan_name == 'enterprise':
+                profile.max_shortcuts = -1
+                profile.max_ai_requests = -1
+            
+            profile.save()
+            
+            logger.info(f"Assinatura {subscription_id} ativada para usuário {user.username}")
+            
+        except Exception as e:
+            logger.error(f"Erro ao processar checkout session completado: {e}")
 
 
 class PlanService:

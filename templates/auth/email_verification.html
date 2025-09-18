@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Verificar Email | Symplifika{% endblock %}
+
+{% block meta_description %}Verifique seu email para ativar sua conta no Symplifika{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-symplifika-primary/10 to-symplifika-secondary/10 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <div class="text-center">
+            <img class="mx-auto h-12 w-auto" src="{% static 'images/symplifika_logo.svg' %}" alt="Symplifika">
+            <div class="mt-6">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 dark:bg-yellow-900/20">
+                    <svg class="h-8 w-8 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+            </div>
+            <h2 class="mt-6 text-3xl font-bold text-gray-900 dark:text-white">
+                Verificar Email
+            </h2>
+            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                Confirme seu endereço de email para continuar
+            </p>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 shadow-xl rounded-lg p-8">
+            <div class="text-center space-y-4">
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+                    <h3 class="text-lg font-medium text-yellow-800 dark:text-yellow-200 mb-2">
+                        Email de Verificação Enviado
+                    </h3>
+                    <p class="text-sm text-yellow-700 dark:text-yellow-300">
+                        Enviamos um email de verificação para <strong>{{ user.email }}</strong>. 
+                        Clique no link do email para ativar sua conta.
+                    </p>
+                </div>
+
+                <div class="space-y-4 text-sm text-gray-600 dark:text-gray-400">
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-6 w-6 rounded-full bg-blue-100 dark:bg-blue-900/20">
+                                <span class="text-xs font-medium text-blue-600 dark:text-blue-400">1</span>
+                            </div>
+                        </div>
+                        <p>Abra seu email e procure por uma mensagem do Symplifika</p>
+                    </div>
+                    
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-6 w-6 rounded-full bg-blue-100 dark:bg-blue-900/20">
+                                <span class="text-xs font-medium text-blue-600 dark:text-blue-400">2</span>
+                            </div>
+                        </div>
+                        <p>Clique no link "Verificar Email" na mensagem</p>
+                    </div>
+                    
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-6 w-6 rounded-full bg-blue-100 dark:bg-blue-900/20">
+                                <span class="text-xs font-medium text-blue-600 dark:text-blue-400">3</span>
+                            </div>
+                        </div>
+                        <p>Sua conta será ativada automaticamente</p>
+                    </div>
+                </div>
+
+                <div class="pt-4 space-y-3">
+                    <button onclick="resendVerification()" 
+                            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-symplifika-primary hover:bg-symplifika-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-symplifika-primary transition-colors">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        Reenviar Email de Verificação
+                    </button>
+                    
+                    <a href="{% url 'auth:login' %}" 
+                       class="w-full flex justify-center py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-symplifika-primary transition-colors">
+                        Voltar ao Login
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help Section -->
+        <div class="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-2">
+                Não recebeu o email?
+            </h4>
+            <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                <li>• Verifique a pasta de spam/lixo eletrônico</li>
+                <li>• Aguarde alguns minutos para o email chegar</li>
+                <li>• Verifique se o email {{ user.email }} está correto</li>
+                <li>• Tente reenviar o email de verificação</li>
+            </ul>
+            <div class="mt-3 flex space-x-4">
+                <a href="{% url 'core:support' %}" class="text-xs text-symplifika-primary hover:text-symplifika-accent transition-colors">
+                    Contatar Suporte
+                </a>
+                <a href="{% url 'core:edit-profile' %}" class="text-xs text-symplifika-primary hover:text-symplifika-accent transition-colors">
+                    Alterar Email
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let resendCooldown = false;
+
+async function resendVerification() {
+    if (resendCooldown) return;
+    
+    const button = event.target;
+    const originalText = button.innerHTML;
+    
+    // Set cooldown
+    resendCooldown = true;
+    button.disabled = true;
+    button.innerHTML = `
+        <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Reenviando...
+    `;
+    
+    try {
+        // Make API call to resend verification email
+        const response = await window.apiConfig.makeRequest('/api/auth/resend-verification/', {
+            method: 'POST'
+        });
+        
+        if (response.ok) {
+            button.innerHTML = `
+                <svg class="w-4 h-4 mr-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Email Reenviado!
+            `;
+            
+            // Show success message
+            const successDiv = document.createElement('div');
+            successDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+            successDiv.textContent = 'Email de verificação reenviado com sucesso!';
+            document.body.appendChild(successDiv);
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 3000);
+        } else {
+            throw new Error('Falha ao reenviar email');
+        }
+    } catch (error) {
+        button.innerHTML = `
+            <svg class="w-4 h-4 mr-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+            Erro ao Reenviar
+        `;
+        
+        // Show error message
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+        errorDiv.textContent = 'Erro ao reenviar email. Tente novamente.';
+        document.body.appendChild(errorDiv);
+        
+        setTimeout(() => {
+            errorDiv.remove();
+        }, 3000);
+    } finally {
+        setTimeout(() => {
+            button.innerHTML = originalText;
+            button.disabled = false;
+            
+            // Reset cooldown after 60 seconds
+            setTimeout(() => {
+                resendCooldown = false;
+            }, 60000);
+        }, 3000);
+    }
+}
+
+// Check verification status periodically
+let checkInterval;
+function startVerificationCheck() {
+    checkInterval = setInterval(async () => {
+        try {
+            const response = await window.apiConfig.makeRequest('/api/auth/verification-status/', {
+                method: 'GET'
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.verified) {
+                    clearInterval(checkInterval);
+                    
+                    // Show success and redirect
+                    const successDiv = document.createElement('div');
+                    successDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+                    successDiv.textContent = 'Email verificado! Redirecionando...';
+                    document.body.appendChild(successDiv);
+                    
+                    setTimeout(() => {
+                        window.location.href = '/dashboard/';
+                    }, 2000);
+                }
+            }
+        } catch (error) {
+            console.log('Verification check failed:', error);
+        }
+    }, 5000); // Check every 5 seconds
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    startVerificationCheck();
+});
+
+// Clean up interval when page unloads
+window.addEventListener('beforeunload', function() {
+    if (checkInterval) {
+        clearInterval(checkInterval);
+    }
+});
+</script>
+{% endblock %}

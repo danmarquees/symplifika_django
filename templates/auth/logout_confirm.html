@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sair | Symplifika{% endblock %}
+
+{% block meta_description %}Confirme sua saída do Symplifika{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-symplifika-primary/10 to-symplifika-secondary/10 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <div class="text-center">
+            <img class="mx-auto h-12 w-auto" src="{% static 'images/symplifika_logo.svg' %}" alt="Symplifika">
+            <div class="mt-6">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 dark:bg-yellow-900/20">
+                    <svg class="h-8 w-8 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                </div>
+            </div>
+            <h2 class="mt-6 text-3xl font-bold text-gray-900 dark:text-white">
+                Confirmar Saída
+            </h2>
+            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                Tem certeza de que deseja sair da sua conta?
+            </p>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 shadow-xl rounded-lg p-8">
+            <div class="text-center space-y-6">
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+                    <h3 class="text-lg font-medium text-yellow-800 dark:text-yellow-200 mb-2">
+                        Você está prestes a sair
+                    </h3>
+                    <p class="text-sm text-yellow-700 dark:text-yellow-300">
+                        Ao sair, você precisará fazer login novamente para acessar sua conta e seus atalhos.
+                    </p>
+                </div>
+
+                <!-- User Info -->
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <div class="flex items-center space-x-3">
+                        {% if user.userprofile.avatar %}
+                            <img class="h-10 w-10 rounded-full object-cover" src="{{ user.userprofile.avatar.url }}" alt="{{ user.get_full_name|default:user.username }}">
+                        {% else %}
+                            <div class="h-10 w-10 rounded-full bg-symplifika-primary flex items-center justify-center">
+                                <span class="text-white font-medium text-sm">
+                                    {{ user.get_full_name|default:user.username|first|upper }}
+                                </span>
+                            </div>
+                        {% endif %}
+                        <div class="text-left">
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                {{ user.get_full_name|default:user.username }}
+                            </p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                {{ user.email }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-2 gap-4 text-center">
+                    <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
+                        <div class="text-lg font-semibold text-blue-600 dark:text-blue-400">
+                            {{ user.shortcuts.count|default:0 }}
+                        </div>
+                        <div class="text-xs text-blue-700 dark:text-blue-300">
+                            Atalhos Criados
+                        </div>
+                    </div>
+                    <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-3">
+                        <div class="text-lg font-semibold text-green-600 dark:text-green-400">
+                            {{ user.userprofile.get_plan_display|default:"Gratuito" }}
+                        </div>
+                        <div class="text-xs text-green-700 dark:text-green-300">
+                            Plano Atual
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <form method="post" class="w-full">
+                        {% csrf_token %}
+                        <button type="submit" 
+                                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                            </svg>
+                            Sim, Sair da Conta
+                        </button>
+                    </form>
+                    
+                    <a href="{% url 'core:dashboard' %}" 
+                       class="w-full flex justify-center py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-symplifika-primary transition-colors">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                        Cancelar e Continuar
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Tips -->
+        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <h4 class="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
+                💡 Dica de Segurança
+            </h4>
+            <p class="text-xs text-blue-700 dark:text-blue-300">
+                Sempre faça logout quando usar computadores compartilhados ou públicos para manter sua conta segura.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    form.addEventListener('submit', function() {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Saindo...
+        `;
+    });
+
+    // Auto-cancel after 30 seconds of inactivity
+    let inactivityTimer = setTimeout(() => {
+        window.location.href = "{% url 'core:dashboard' %}";
+    }, 30000);
+
+    // Reset timer on any user interaction
+    document.addEventListener('click', () => {
+        clearTimeout(inactivityTimer);
+        inactivityTimer = setTimeout(() => {
+            window.location.href = "{% url 'core:dashboard' %}";
+        }, 30000);
+    });
+});
+</script>
+{% endblock %}

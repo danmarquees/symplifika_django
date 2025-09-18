@@ -1,0 +1,189 @@
+{% extends 'emails/base.html' %}
+
+{% block title %}Assinatura Confirmada - Symplifika{% endblock %}
+{% block email_title %}Assinatura Confirmada{% endblock %}
+
+{% block content %}
+<h2 class="content-title">🎉 Bem-vindo ao Symplifika {{ plan_name }}!</h2>
+
+<p class="content-subtitle">
+    Olá, {{ user.get_full_name|default:user.username }}!
+</p>
+
+<p class="content-text">
+    Parabéns! Sua assinatura do plano <strong>{{ plan_name }}</strong> foi confirmada com sucesso. 
+    Agora você tem acesso a todos os recursos premium do Symplifika!
+</p>
+
+<div class="success-box">
+    <h4 style="margin: 0 0 10px 0; color: #065f46;">✅ Pagamento Processado</h4>
+    <p style="margin: 0; color: #047857;">
+        Valor: <strong>{{ amount }}</strong><br>
+        Plano: <strong>{{ plan_name }}</strong><br>
+        Próxima cobrança: <strong>{{ next_billing_date|date:"d/m/Y" }}</strong>
+    </p>
+</div>
+
+<h3 style="color: #1f2937; font-size: 20px; margin: 30px 0 15px 0;">
+    🚀 Recursos Desbloqueados
+</h3>
+
+{% if plan_name == "Premium" %}
+<table style="width: 100%; margin: 20px 0;">
+    <tr>
+        <td style="padding: 15px; background-color: #f0fdf4; border-radius: 8px; margin-bottom: 10px;">
+            <strong style="color: #10b981;">⚡ Atalhos Ilimitados</strong><br>
+            <span style="color: #6b7280; font-size: 14px;">Crie quantos atalhos precisar</span>
+        </td>
+    </tr>
+    <tr><td style="height: 10px;"></td></tr>
+    <tr>
+        <td style="padding: 15px; background-color: #f0fdf4; border-radius: 8px; margin-bottom: 10px;">
+            <strong style="color: #10b981;">🤖 IA Avançada</strong><br>
+            <span style="color: #6b7280; font-size: 14px;">500 solicitações de IA por mês</span>
+        </td>
+    </tr>
+    <tr><td style="height: 10px;"></td></tr>
+    <tr>
+        <td style="padding: 15px; background-color: #f0fdf4; border-radius: 8px; margin-bottom: 10px;">
+            <strong style="color: #10b981;">📊 Analytics Detalhados</strong><br>
+            <span style="color: #6b7280; font-size: 14px;">Relatórios completos de produtividade</span>
+        </td>
+    </tr>
+    <tr><td style="height: 10px;"></td></tr>
+    <tr>
+        <td style="padding: 15px; background-color: #f0fdf4; border-radius: 8px; margin-bottom: 10px;">
+            <strong style="color: #10b981;">🔄 Sincronização Multi-dispositivo</strong><br>
+            <span style="color: #6b7280; font-size: 14px;">Acesse de qualquer lugar</span>
+        </td>
+    </tr>
+</table>
+{% elif plan_name == "Enterprise" %}
+<table style="width: 100%; margin: 20px 0;">
+    <tr>
+        <td style="padding: 15px; background-color: #fef3c7; border-radius: 8px; margin-bottom: 10px;">
+            <strong style="color: #92400e;">🏢 Tudo do Premium +</strong><br>
+            <span style="color: #6b7280; font-size: 14px;">Todos os recursos Premium inclusos</span>
+        </td>
+    </tr>
+    <tr><td style="height: 10px;"></td></tr>
+    <tr>
+        <td style="padding: 15px; background-color: #fef3c7; border-radius: 8px; margin-bottom: 10px;">
+            <strong style="color: #92400e;">🤖 IA Ilimitada</strong><br>
+            <span style="color: #6b7280; font-size: 14px;">Solicitações ilimitadas de IA</span>
+        </td>
+    </tr>
+    <tr><td style="height: 10px;"></td></tr>
+    <tr>
+        <td style="padding: 15px; background-color: #fef3c7; border-radius: 8px; margin-bottom: 10px;">
+            <strong style="color: #92400e;">👥 Gerenciamento de Equipe</strong><br>
+            <span style="color: #6b7280; font-size: 14px;">Compartilhe atalhos com sua equipe</span>
+        </td>
+    </tr>
+    <tr><td style="height: 10px;"></td></tr>
+    <tr>
+        <td style="padding: 15px; background-color: #fef3c7; border-radius: 8px; margin-bottom: 10px;">
+            <strong style="color: #92400e;">🛠️ API Personalizada</strong><br>
+            <span style="color: #6b7280; font-size: 14px;">Integre com suas ferramentas</span>
+        </td>
+    </tr>
+    <tr><td style="height: 10px;"></td></tr>
+    <tr>
+        <td style="padding: 15px; background-color: #fef3c7; border-radius: 8px; margin-bottom: 10px;">
+            <strong style="color: #92400e;">🎯 Suporte Prioritário</strong><br>
+            <span style="color: #6b7280; font-size: 14px;">Atendimento dedicado 24/7</span>
+        </td>
+    </tr>
+</table>
+{% endif %}
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="https://symplifika.com/dashboard" class="btn">
+        Explorar Recursos Premium
+    </a>
+</div>
+
+<h3 style="color: #1f2937; font-size: 18px; margin: 30px 0 15px 0;">
+    📋 Próximos Passos
+</h3>
+
+<p class="content-text">Para aproveitar ao máximo sua assinatura Premium:</p>
+
+<ol style="color: #374151; margin: 0 0 20px 20px; line-height: 1.8;">
+    <li><strong>Explore a IA:</strong> Peça sugestões personalizadas de atalhos</li>
+    <li><strong>Configure Analytics:</strong> Acompanhe sua produtividade</li>
+    <li><strong>Instale a Extensão:</strong> Acesso rápido no navegador</li>
+    <li><strong>Organize por Categorias:</strong> Mantenha tudo organizado</li>
+    {% if plan_name == "Enterprise" %}
+    <li><strong>Configure sua Equipe:</strong> Convide colaboradores</li>
+    <li><strong>Explore a API:</strong> Integre com suas ferramentas</li>
+    {% endif %}
+</ol>
+
+<div class="info-box">
+    <h4 style="margin: 0 0 10px 0; color: #0369a1;">💳 Informações de Cobrança</h4>
+    <p style="margin: 0; color: #0284c7;">
+        <strong>Método de pagamento:</strong> {{ payment_method }}<br>
+        <strong>Frequência:</strong> {{ billing_cycle }}<br>
+        <strong>Próxima cobrança:</strong> {{ next_billing_date|date:"d/m/Y" }}<br>
+        <strong>Valor:</strong> {{ amount }}
+    </p>
+</div>
+
+<h3 style="color: #1f2937; font-size: 18px; margin: 30px 0 15px 0;">
+    🎁 Bônus Especial
+</h3>
+
+<div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 20px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+    <p style="margin: 0; color: #92400e;">
+        <strong>🎉 Oferta Exclusiva!</strong><br>
+        Como novo assinante Premium, você ganha acesso antecipado a todas as novidades e recursos beta. 
+        Seja o primeiro a experimentar as inovações do Symplifika!
+    </p>
+</div>
+
+<h3 style="color: #1f2937; font-size: 18px; margin: 30px 0 15px 0;">
+    🛡️ Garantia de Satisfação
+</h3>
+
+<p class="content-text">
+    Não está satisfeito? Sem problemas! Você tem <strong>30 dias</strong> para cancelar sua assinatura 
+    e receber reembolso total, sem perguntas.
+</p>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="https://symplifika.com/subscription" class="btn btn-secondary">
+        Gerenciar Assinatura
+    </a>
+</div>
+
+<div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+    <p style="margin: 0; color: #374151; font-size: 14px;">
+        <strong>Detalhes da transação:</strong><br>
+        ID da transação: {{ transaction_id }}<br>
+        Data: {{ transaction_date|date:"d/m/Y H:i" }}<br>
+        Status: Confirmado ✅
+    </p>
+</div>
+
+<p class="content-text">
+    Se você tiver alguma dúvida sobre sua assinatura ou precisar de ajuda para usar os novos recursos, 
+    nossa equipe de suporte está disponível 24/7.
+</p>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="mailto:suporte@symplifika.com" class="btn btn-secondary">
+        Contatar Suporte Premium
+    </a>
+</div>
+
+<p style="color: #6b7280; font-style: italic; margin: 30px 0 0 0;">
+    Obrigado por confiar no Symplifika!<br>
+    <strong>Equipe Symplifika</strong>
+</p>
+{% endblock %}
+
+{% block unsubscribe_link %}
+<a href="{% url 'users:email_preferences' %}">Gerenciar preferências de email</a>
+<br><small style="color: #9ca3af;">Emails de cobrança não podem ser cancelados</small>
+{% endblock %}

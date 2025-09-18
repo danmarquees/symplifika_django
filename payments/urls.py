@@ -13,6 +13,7 @@ urlpatterns = [
     
     # Pagamentos
     path('create-payment-intent/', views.CreatePaymentIntentView.as_view(), name='create-payment-intent'),
+    path('create-checkout-session/', views.CreateCheckoutSessionView.as_view(), name='create-checkout-session'),
     
     # Portal do cliente
     path('customer-portal/', views.CustomerPortalView.as_view(), name='customer-portal'),

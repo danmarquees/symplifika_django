@@ -1,0 +1,275 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manutenção | Symplifika</title>
+    <meta name="description" content="O Symplifika está temporariamente em manutenção. Voltaremos em breve!">
+    <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'symplifika-primary': '#10B981',
+                        'symplifika-secondary': '#059669',
+                        'symplifika-accent': '#047857'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .animate-pulse-slow {
+            animation: pulse-slow 3s ease-in-out infinite;
+        }
+        @keyframes bounce-slow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-bounce-slow {
+            animation: bounce-slow 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="h-full bg-gradient-to-br from-symplifika-primary/10 to-symplifika-secondary/10">
+    <div class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8 text-center">
+            <!-- Logo -->
+            <div class="animate-bounce-slow">
+                <img class="mx-auto h-16 w-auto" src="{% static 'images/symplifika_logo.svg' %}" alt="Symplifika">
+            </div>
+            
+            <!-- Maintenance Icon -->
+            <div class="mx-auto flex items-center justify-center h-24 w-24 rounded-full bg-yellow-100 animate-pulse-slow">
+                <svg class="h-12 w-12 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+            </div>
+            
+            <div class="space-y-4">
+                <h1 class="text-4xl font-bold text-gray-900">🔧 Em Manutenção</h1>
+                <h2 class="text-xl font-semibold text-gray-700">
+                    Estamos Melhorando o Symplifika
+                </h2>
+                <p class="text-gray-600 max-w-sm mx-auto">
+                    Nosso sistema está temporariamente indisponível para manutenção programada. 
+                    Estamos trabalhando para trazer melhorias incríveis!
+                </p>
+            </div>
+
+            <!-- Status Card -->
+            <div class="bg-white shadow-xl rounded-lg p-6 space-y-4">
+                <!-- Progress Bar -->
+                <div class="space-y-2">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Progresso da Manutenção</span>
+                        <span class="text-symplifika-primary font-medium" id="progress-text">75%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-gradient-to-r from-symplifika-primary to-symplifika-secondary h-2 rounded-full transition-all duration-1000" 
+                             style="width: 75%" id="progress-bar"></div>
+                    </div>
+                </div>
+
+                <!-- Estimated Time -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="text-sm font-medium text-blue-800 mb-1">⏰ Tempo Estimado</h3>
+                    <p class="text-blue-700 text-sm">
+                        Previsão de retorno: <span class="font-semibold" id="estimated-time">2 horas</span>
+                    </p>
+                </div>
+
+                <!-- What's Being Updated -->
+                <div class="text-left">
+                    <h4 class="font-medium text-gray-900 mb-3">🚀 O que estamos melhorando:</h4>
+                    <ul class="text-sm text-gray-600 space-y-2">
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Performance e velocidade
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Novos recursos de IA
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 text-yellow-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                            </svg>
+                            Segurança e estabilidade
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 text-gray-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                            </svg>
+                            Interface do usuário
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="space-y-3 pt-4 border-t border-gray-200">
+                    <button onclick="checkStatus()" 
+                            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-symplifika-primary hover:bg-symplifika-secondary transition-colors">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        Verificar Status
+                    </button>
+                    
+                    <button onclick="subscribeUpdates()" 
+                            class="w-full flex justify-center py-2 px-4 border border-symplifika-primary rounded-lg shadow-sm text-sm font-medium text-symplifika-primary bg-white hover:bg-symplifika-primary/5 transition-colors">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM4.828 7l2.829 2.829A4 4 0 019.071 9H15a4 4 0 014 4v1a4 4 0 01-4 4H9.071a4 4 0 01-2.414-.586L4.828 15.828A2 2 0 014 14.414V8.586A2 2 0 014.828 7z"/>
+                        </svg>
+                        Receber Notificações
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <h4 class="text-sm font-medium text-gray-800 mb-2">
+                    💬 Precisa de Suporte Urgente?
+                </h4>
+                <p class="text-xs text-gray-600 mb-3">
+                    Nossa equipe está disponível para emergências
+                </p>
+                <div class="flex space-x-4 text-xs">
+                    <a href="mailto:suporte@symplifika.com" 
+                       class="text-symplifika-primary hover:text-symplifika-secondary font-medium">
+                        📧 Email
+                    </a>
+                    <a href="https://status.symplifika.com" 
+                       class="text-symplifika-primary hover:text-symplifika-secondary font-medium">
+                        📊 Status Page
+                    </a>
+                </div>
+            </div>
+
+            <!-- Social Links -->
+            <div class="flex justify-center space-x-6">
+                <a href="#" class="text-gray-400 hover:text-symplifika-primary transition-colors">
+                    <span class="sr-only">Twitter</span>
+                    <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"/>
+                    </svg>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-symplifika-primary transition-colors">
+                    <span class="sr-only">LinkedIn</span>
+                    <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                </a>
+            </div>
+
+            <!-- Last Updated -->
+            <p class="text-xs text-gray-500">
+                Última atualização: <span id="last-updated">agora mesmo</span>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Auto-refresh every 30 seconds
+        let refreshInterval;
+        let progressValue = 75;
+
+        function startAutoRefresh() {
+            refreshInterval = setInterval(() => {
+                // Simulate progress
+                if (progressValue < 95) {
+                    progressValue += Math.random() * 5;
+                    updateProgress(Math.min(progressValue, 95));
+                }
+                
+                // Update last updated time
+                document.getElementById('last-updated').textContent = 
+                    new Date().toLocaleTimeString('pt-BR');
+            }, 30000);
+        }
+
+        function updateProgress(value) {
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            
+            progressBar.style.width = value + '%';
+            progressText.textContent = Math.round(value) + '%';
+            
+            // Update estimated time based on progress
+            const remainingTime = Math.max(0, (100 - value) * 0.05); // 5 minutes per 1%
+            const hours = Math.floor(remainingTime);
+            const minutes = Math.round((remainingTime - hours) * 60);
+            
+            let timeText = '';
+            if (hours > 0) {
+                timeText = `${hours}h ${minutes}min`;
+            } else if (minutes > 0) {
+                timeText = `${minutes} minutos`;
+            } else {
+                timeText = 'Quase pronto!';
+            }
+            
+            document.getElementById('estimated-time').textContent = timeText;
+        }
+
+        function checkStatus() {
+            const button = event.target;
+            const originalText = button.innerHTML;
+            
+            button.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Verificando...
+            `;
+            
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                
+                // Simulate status check
+                if (Math.random() > 0.8) {
+                    alert('🎉 Boa notícia! A manutenção está quase concluída. Tente novamente em alguns minutos.');
+                } else {
+                    alert('⏳ Ainda em manutenção. Obrigado pela paciência!');
+                }
+            }, 2000);
+        }
+
+        function subscribeUpdates() {
+            const email = prompt('Digite seu email para receber notificações quando voltarmos:');
+            if (email && email.includes('@')) {
+                alert('✅ Obrigado! Você receberá um email assim que voltarmos ao ar.');
+            } else if (email) {
+                alert('❌ Por favor, digite um email válido.');
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            startAutoRefresh();
+            updateProgress(progressValue);
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
+    </script>
+</body>
+</html>

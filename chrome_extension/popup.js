@@ -159,7 +159,10 @@ class SymphilikaPopup {
 
   async loadShortcuts() {
     try {
-      const response = await this.apiRequest("GET", "/shortcuts/api/shortcuts/");
+      const response = await this.apiRequest(
+        "GET",
+        "/shortcuts/api/shortcuts/",
+      );
       if (response.ok) {
         const data = await response.json();
         this.shortcuts = data.results || data;
@@ -284,6 +287,19 @@ class SymphilikaPopup {
 
     const submitBtn = document.getElementById("submitLogin");
     const errorDiv = document.getElementById("loginError");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+
+    if (errorDiv) {
+      errorDiv.classList.add("hidden");
+      errorDiv.textContent = "";
+    }
+
+    // Validação de campos
+    if (!emailInput.value.trim() || !passwordInput.value.trim()) {
+      this.showLoginError("Preencha todos os campos.");
+      return;
+    }
 
     if (submitBtn) {
       submitBtn.disabled = true;
@@ -291,14 +307,9 @@ class SymphilikaPopup {
       submitBtn.querySelector(".btn-spinner").classList.remove("hidden");
     }
 
-    if (errorDiv) {
-      errorDiv.classList.add("hidden");
-    }
-
-    const formData = new FormData(event.target);
     const loginData = {
-      username: formData.get("email"), // Backend espera 'username'
-      password: formData.get("password"),
+      username: emailInput.value.trim(), // Backend espera 'username'
+      password: passwordInput.value,
     };
 
     try {
@@ -307,7 +318,7 @@ class SymphilikaPopup {
         headers: {
           "Content-Type": "application/json",
         },
-        mode: 'cors',
+        mode: "cors",
         credentials: "omit",
         body: JSON.stringify(loginData),
       });
@@ -369,10 +380,8 @@ class SymphilikaPopup {
 
   showLoginError(message) {
     const errorDiv = document.getElementById("loginError");
-    const errorText = document.getElementById("loginErrorText");
-
-    if (errorDiv && errorText) {
-      errorText.textContent = message;
+    if (errorDiv) {
+      errorDiv.textContent = message;
       errorDiv.classList.remove("hidden");
     }
   }
@@ -478,7 +487,7 @@ class SymphilikaPopup {
     const config = {
       method,
       headers,
-      mode: 'cors',
+      mode: "cors",
       credentials: "omit", // Don't send cookies for token auth
     };
 

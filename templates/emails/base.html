@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{% block title %}Symplifika{% endblock %}</title>
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+    <style>
+        /* Reset styles */
+        body, table, td, p, a, li, blockquote {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        table, td {
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+        img {
+            -ms-interpolation-mode: bicubic;
+            border: 0;
+            height: auto;
+            line-height: 100%;
+            outline: none;
+            text-decoration: none;
+        }
+
+        /* Base styles */
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background-color: #f8fafc;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #374151;
+        }
+
+        /* Container */
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+
+        /* Header */
+        .email-header {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .logo {
+            max-width: 150px;
+            height: auto;
+        }
+
+        .header-title {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 600;
+            margin: 20px 0 0 0;
+        }
+
+        /* Content */
+        .email-content {
+            padding: 40px 30px;
+        }
+
+        .content-title {
+            color: #1f2937;
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0 0 20px 0;
+            line-height: 1.2;
+        }
+
+        .content-subtitle {
+            color: #6b7280;
+            font-size: 18px;
+            margin: 0 0 30px 0;
+        }
+
+        .content-text {
+            color: #374151;
+            font-size: 16px;
+            line-height: 1.6;
+            margin: 0 0 20px 0;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 16px 32px;
+            background-color: #10B981;
+            color: #ffffff !important;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            text-align: center;
+            margin: 20px 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #059669;
+        }
+
+        .btn-secondary {
+            background-color: #6b7280;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+
+        /* Info boxes */
+        .info-box {
+            background-color: #f0f9ff;
+            border-left: 4px solid #0ea5e9;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning-box {
+            background-color: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .success-box {
+            background-color: #f0fdf4;
+            border-left: 4px solid #10b981;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Footer */
+        .email-footer {
+            background-color: #f9fafb;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .footer-text {
+            color: #6b7280;
+            font-size: 14px;
+            margin: 0 0 15px 0;
+        }
+
+        .footer-links {
+            margin: 20px 0;
+        }
+
+        .footer-links a {
+            color: #10B981;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 14px;
+        }
+
+        .social-links {
+            margin: 20px 0;
+        }
+
+        .social-links a {
+            display: inline-block;
+            margin: 0 10px;
+            text-decoration: none;
+        }
+
+        .unsubscribe {
+            color: #9ca3af;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+
+        .unsubscribe a {
+            color: #9ca3af;
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                width: 100% !important;
+            }
+            
+            .email-header,
+            .email-content,
+            .email-footer {
+                padding: 20px !important;
+            }
+            
+            .content-title {
+                font-size: 24px !important;
+            }
+            
+            .btn {
+                display: block !important;
+                width: 100% !important;
+                box-sizing: border-box;
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            .email-container {
+                background-color: #1f2937 !important;
+            }
+            
+            .email-content {
+                background-color: #1f2937 !important;
+            }
+            
+            .content-title {
+                color: #f9fafb !important;
+            }
+            
+            .content-text {
+                color: #d1d5db !important;
+            }
+            
+            .email-footer {
+                background-color: #111827 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="email-header">
+            <img src="https://symplifika.com/static/images/symplifika_logo.svg" alt="Symplifika" class="logo">
+            {% block header_title %}
+            <h1 class="header-title">{% block email_title %}Symplifika{% endblock %}</h1>
+            {% endblock %}
+        </div>
+
+        <!-- Content -->
+        <div class="email-content">
+            {% block content %}
+            <h2 class="content-title">{% block title %}Título do Email{% endblock %}</h2>
+            <p class="content-text">{% block message %}Conteúdo do email aqui.{% endblock %}</p>
+            {% endblock %}
+        </div>
+
+        <!-- Footer -->
+        <div class="email-footer">
+            <p class="footer-text">
+                <strong>Symplifika</strong><br>
+                Simplifique sua vida digital com atalhos inteligentes
+            </p>
+            
+            <div class="footer-links">
+                <a href="https://symplifika.com">Site</a>
+                <a href="https://symplifika.com/suporte">Suporte</a>
+                <a href="https://symplifika.com/privacidade">Privacidade</a>
+                <a href="https://symplifika.com/termos">Termos</a>
+            </div>
+            
+            <div class="social-links">
+                <a href="https://twitter.com/symplifika">
+                    <img src="https://symplifika.com/static/images/social/twitter.png" alt="Twitter" width="24" height="24">
+                </a>
+                <a href="https://linkedin.com/company/symplifika">
+                    <img src="https://symplifika.com/static/images/social/linkedin.png" alt="LinkedIn" width="24" height="24">
+                </a>
+            </div>
+            
+            <p class="footer-text">
+                © {{ current_year|default:"2024" }} Symplifika. Todos os direitos reservados.
+            </p>
+            
+            <div class="unsubscribe">
+                <p>
+                    Você está recebendo este email porque possui uma conta no Symplifika.<br>
+                    {% block unsubscribe_link %}
+                    <a href="{% url 'users:unsubscribe' %}">Cancelar inscrição</a> | 
+                    <a href="{% url 'users:email_preferences' %}">Gerenciar preferências</a>
+                    {% endblock %}
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

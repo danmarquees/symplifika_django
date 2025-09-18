@@ -15,6 +15,10 @@ from pathlib import Path
 from decouple import config
 import dj_database_url
 
+# --- Sentry, Slack, Email Integrations ---
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,6 +31,38 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-08hhywmq^&43h_lqxa4pc
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
+
+# Sentry configuration (replace with your DSN)
+SENTRY_DSN = os.environ.get("SENTRY_DSN", "")
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[DjangoIntegration()],
+        traces_sample_rate=1.0,
+        send_default_pii=True,
+        environment="production" if not DEBUG else "development",
+    )
+
+# Slack notifications (replace with your webhook)
+SLACK_WEBHOOK_URL = os.environ.get("SLACK_WEBHOOK_URL", "")
+
+def notify_slack(message):
+    import requests
+    if SLACK_WEBHOOK_URL:
+        payload = {"text": message}
+        try:
+            requests.post(SLACK_WEBHOOK_URL, json=payload, timeout=5)
+        except Exception as e:
+            print(f"Erro ao enviar notificação Slack: {e}")
+
+# Email notifications
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.seuservidor.com")
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 587))
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "seu@email.com")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "senha")
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "Symplifika <no-reply@symplifika.com>")
 
 # Render.com deployment configuration
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
@@ -54,6 +90,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
+    'compressor',  # Minificação de static files
 
     # Local apps
     'core',
@@ -87,6 +124,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'core.context_processors.api_context',
             ],
         },
     },
@@ -163,6 +201,24 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
+# Configuração do django-compressor para minificação offline
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
+]
+COMPRESS_ENABLED = not DEBUG
+COMPRESS_OFFLINE = True
+
+# Configuração do django-compressor para minificação offline
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
+]
+COMPRESS_ENABLED = not DEBUG
+COMPRESS_OFFLINE = True
+
 # Use WhiteNoise for static files in production
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
@@ -186,13 +242,25 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 20,
+    'PAGE_SIZE': config('API_PAGE_SIZE', default=20, cast=int),
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
     ],
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
-    ]
+        'rest_framework.parsers.MultiPartParser',
+        'rest_framework.parsers.FormParser',
+    ],
+    'EXCEPTION_HANDLER': 'core.exceptions.custom_exception_handler',
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': config('API_THROTTLE_ANON', default='100/hour'),
+        'user': config('API_THROTTLE_USER', default='1000/hour'),
+        'login': config('API_THROTTLE_LOGIN', default='5/min'),
+    }
 }
 
 # CORS Settings
@@ -270,6 +338,11 @@ CSRF_USE_SESSIONS = False
 # AI Configuration
 GEMINI_API_KEY = config('GEMINI_API_KEY', default='')
 
+# Application Configuration
+APP_NAME = config('APP_NAME', default='Symplifika')
+DEFAULT_MAX_SHORTCUTS = config('DEFAULT_MAX_SHORTCUTS', default=50, cast=int)
+DEFAULT_MAX_AI_REQUESTS = config('DEFAULT_MAX_AI_REQUESTS', default=100, cast=int)
+
 # Stripe Configuration
 STRIPE_PUBLISHABLE_KEY = config('STRIPE_PUBLISHABLE_KEY', default='')
 STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY', default='')
@@ -278,6 +351,81 @@ STRIPE_RETURN_URL = config('STRIPE_RETURN_URL', default='http://localhost:3000/a
 
 # Custom User Model (if needed)
 # AUTH_USER_MODEL = 'users.User'
+
+# =============================================================================
+# API ENDPOINTS CONFIGURATION
+# =============================================================================
+
+# Base API URL configuration
+API_BASE_URL = config('API_BASE_URL', default='http://localhost:8000')
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:3000')
+
+# API Endpoints mapping
+API_ENDPOINTS = {
+    'base': API_BASE_URL,
+    'auth': {
+        'login': f'{API_BASE_URL}/users/api/auth/login/',
+        'register': f'{API_BASE_URL}/users/api/auth/register/',
+        'logout': f'{API_BASE_URL}/users/api/auth/logout/',
+        'token': f'{API_BASE_URL}/api/token/',
+        'token_refresh': f'{API_BASE_URL}/api/token/refresh/',
+        'password_reset': f'{API_BASE_URL}/users/auth/password-reset/',
+        'password_reset_confirm': f'{API_BASE_URL}/users/auth/password-reset-confirm/',
+    },
+    'users': {
+        'profile': f'{API_BASE_URL}/users/api/users/me/',
+        'update_profile': f'{API_BASE_URL}/users/api/users/update-profile/',
+        'change_password': f'{API_BASE_URL}/users/api/users/change-password/',
+        'stats': f'{API_BASE_URL}/users/api/users/stats/',
+        'delete_account': f'{API_BASE_URL}/users/api/users/delete-account/',
+        'dashboard': f'{API_BASE_URL}/users/dashboard/',
+    },
+    'shortcuts': {
+        'list': f'{API_BASE_URL}/shortcuts/api/shortcuts/',
+        'create': f'{API_BASE_URL}/shortcuts/api/shortcuts/',
+        'detail': f'{API_BASE_URL}/shortcuts/api/shortcuts/{{id}}/',
+        'categories': f'{API_BASE_URL}/shortcuts/api/categories/',
+        'execute': f'{API_BASE_URL}/shortcuts/api/shortcuts/{{id}}/execute/',
+        'ai_generate': f'{API_BASE_URL}/shortcuts/api/ai/generate/',
+        'ai_improve': f'{API_BASE_URL}/shortcuts/api/ai/improve/',
+        'export': f'{API_BASE_URL}/shortcuts/api/export/',
+        'import': f'{API_BASE_URL}/shortcuts/api/import/',
+    },
+    'payments': {
+        'plans': f'{API_BASE_URL}/payments/plans/',
+        'user_plan': f'{API_BASE_URL}/payments/user-plan/',
+        'create_checkout_session': f'{API_BASE_URL}/payments/create-checkout-session/',
+        'customer_portal': f'{API_BASE_URL}/payments/customer-portal/',
+        'subscription_status': f'{API_BASE_URL}/payments/subscription-status/',
+        'payment_history': f'{API_BASE_URL}/payments/payment-history/',
+        'webhook': f'{API_BASE_URL}/payments/webhook/',
+    },
+    'admin': {
+        'panel': f'{API_BASE_URL}/admin/',
+    }
+}
+
+# Frontend URLs
+FRONTEND_URLS = {
+    'base': FRONTEND_URL,
+    'login': f'{FRONTEND_URL}/auth/login',
+    'register': f'{FRONTEND_URL}/auth/register',
+    'dashboard': f'{FRONTEND_URL}/dashboard',
+    'shortcuts': f'{FRONTEND_URL}/shortcuts',
+    'profile': f'{FRONTEND_URL}/profile',
+    'pricing': f'{FRONTEND_URL}/pricing',
+    'subscription_success': f'{FRONTEND_URL}/subscription/success',
+}
+
+# Chrome Extension Configuration
+CHROME_EXTENSION = {
+    'id': config('CHROME_EXTENSION_ID', default='npbabdmkiegnhkmpndnnbmoeljkaeedl'),
+    'api_endpoints': {
+        'shortcuts': f'{API_BASE_URL}/shortcuts/api/shortcuts/',
+        'auth': f'{API_BASE_URL}/users/api/auth/login/',
+        'execute': f'{API_BASE_URL}/shortcuts/api/shortcuts/{{id}}/execute/',
+    }
+}
 
 # Security settings for production
 if not DEBUG:

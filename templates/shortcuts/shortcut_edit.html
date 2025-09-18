@@ -1,0 +1,351 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar Atalho | Symplifika{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <!-- Header -->
+    <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Editar Atalho</h1>
+                    <p class="text-gray-600 dark:text-gray-400 mt-1">Modifique as informações do seu atalho</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{% url 'shortcuts:detail' shortcut.id %}" 
+                       class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                        Visualizar
+                    </a>
+                    <a href="{% url 'shortcuts:list' %}" 
+                       class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                        Voltar aos Atalhos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+            <form id="editShortcutForm" class="p-6 space-y-6">
+                {% csrf_token %}
+                <input type="hidden" id="shortcut-id" value="{{ shortcut.id }}">
+                
+                <!-- Basic Information -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Informações Básicas</h3>
+                    
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Nome do Atalho *
+                        </label>
+                        <input type="text" id="name" name="name" required
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                               value="{{ shortcut.name }}">
+                    </div>
+                    
+                    <div>
+                        <label for="url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            URL *
+                        </label>
+                        <input type="url" id="url" name="url" required
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                               value="{{ shortcut.url }}">
+                    </div>
+                    
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Descrição
+                        </label>
+                        <textarea id="description" name="description" rows="3"
+                                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">{{ shortcut.description }}</textarea>
+                    </div>
+                </div>
+
+                <!-- Organization -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Organização</h3>
+                    
+                    <div>
+                        <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Categoria
+                        </label>
+                        <select id="category" name="category"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                            <option value="">Selecione uma categoria</option>
+                            <option value="work" {% if shortcut.category == 'work' %}selected{% endif %}>Trabalho</option>
+                            <option value="personal" {% if shortcut.category == 'personal' %}selected{% endif %}>Pessoal</option>
+                            <option value="productivity" {% if shortcut.category == 'productivity' %}selected{% endif %}>Produtividade</option>
+                            <option value="entertainment" {% if shortcut.category == 'entertainment' %}selected{% endif %}>Entretenimento</option>
+                            <option value="social" {% if shortcut.category == 'social' %}selected{% endif %}>Redes Sociais</option>
+                            <option value="education" {% if shortcut.category == 'education' %}selected{% endif %}>Educação</option>
+                            <option value="shopping" {% if shortcut.category == 'shopping' %}selected{% endif %}>Compras</option>
+                            <option value="news" {% if shortcut.category == 'news' %}selected{% endif %}>Notícias</option>
+                            <option value="tools" {% if shortcut.category == 'tools' %}selected{% endif %}>Ferramentas</option>
+                            <option value="other" {% if shortcut.category == 'other' %}selected{% endif %}>Outros</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="tags" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Tags
+                        </label>
+                        <input type="text" id="tags" name="tags"
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                               value="{{ shortcut.tags }}"
+                               placeholder="trabalho, urgente, favorito">
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Separe as tags com vírgulas</p>
+                    </div>
+                </div>
+
+                <!-- Advanced Options -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Opções Avançadas</h3>
+                    
+                    <div class="flex items-center">
+                        <input type="checkbox" id="is_favorite" name="is_favorite"
+                               {% if shortcut.is_favorite %}checked{% endif %}
+                               class="h-4 w-4 text-symplifika-primary focus:ring-symplifika-primary border-gray-300 rounded">
+                        <label for="is_favorite" class="ml-2 block text-sm text-gray-900 dark:text-white">
+                            Marcar como favorito
+                        </label>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <input type="checkbox" id="open_in_new_tab" name="open_in_new_tab"
+                               {% if shortcut.open_in_new_tab %}checked{% endif %}
+                               class="h-4 w-4 text-symplifika-primary focus:ring-symplifika-primary border-gray-300 rounded">
+                        <label for="open_in_new_tab" class="ml-2 block text-sm text-gray-900 dark:text-white">
+                            Abrir em nova aba
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Statistics -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Estatísticas</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <div class="text-2xl font-semibold text-symplifika-primary">{{ shortcut.usage_count|default:0 }}</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">Vezes usado</div>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <div class="text-2xl font-semibold text-symplifika-primary">{{ shortcut.created_at|date:"d/m/Y" }}</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">Data de criação</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <button type="submit" 
+                            class="flex-1 bg-symplifika-primary text-white px-6 py-3 rounded-lg hover:bg-symplifika-accent transition-colors font-medium">
+                        Salvar Alterações
+                    </button>
+                    <button type="button" onclick="testShortcut()"
+                            class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                        Testar
+                    </button>
+                    <button type="button" onclick="confirmDelete()"
+                            class="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors font-medium">
+                        Excluir
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-4 w-full">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Confirmar Exclusão</h3>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">
+            Tem certeza de que deseja excluir o atalho "<span id="delete-shortcut-name"></span>"? 
+            Esta ação não pode ser desfeita.
+        </p>
+        <div class="flex gap-3">
+            <button id="confirmDeleteBtn" 
+                    class="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                Excluir Permanentemente
+            </button>
+            <button onclick="closeDeleteModal()" 
+                    class="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                Cancelar
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('editShortcutForm');
+    form.addEventListener('submit', handleSubmit);
+    
+    // Load shortcut data if not server-rendered
+    if (!document.getElementById('name').value) {
+        loadShortcutData();
+    }
+});
+
+async function loadShortcutData() {
+    const shortcutId = document.getElementById('shortcut-id').value;
+    
+    try {
+        const response = await window.apiConfig.makeRequest(`/api/shortcuts/${shortcutId}/`, {
+            method: 'GET'
+        });
+        
+        if (response.ok) {
+            const shortcut = await response.json();
+            populateForm(shortcut);
+        } else {
+            throw new Error('Failed to load shortcut data');
+        }
+    } catch (error) {
+        console.error('Error loading shortcut:', error);
+        window.apiConfig.handleError(error, 'Carregar atalho');
+    }
+}
+
+function populateForm(shortcut) {
+    document.getElementById('name').value = shortcut.name || '';
+    document.getElementById('url').value = shortcut.url || '';
+    document.getElementById('description').value = shortcut.description || '';
+    document.getElementById('category').value = shortcut.category || '';
+    document.getElementById('tags').value = shortcut.tags || '';
+    document.getElementById('is_favorite').checked = shortcut.is_favorite || false;
+    document.getElementById('open_in_new_tab').checked = shortcut.open_in_new_tab !== false;
+}
+
+async function handleSubmit(e) {
+    e.preventDefault();
+    
+    const shortcutId = document.getElementById('shortcut-id').value;
+    const formData = new FormData(e.target);
+    const shortcutData = {
+        name: formData.get('name'),
+        url: formData.get('url'),
+        description: formData.get('description'),
+        category: formData.get('category'),
+        tags: formData.get('tags'),
+        is_favorite: formData.has('is_favorite'),
+        open_in_new_tab: formData.has('open_in_new_tab')
+    };
+    
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    
+    try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Salvando...
+        `;
+        
+        const response = await window.apiConfig.makeRequest(`/api/shortcuts/${shortcutId}/`, {
+            method: 'PUT',
+            body: JSON.stringify(shortcutData)
+        });
+        
+        if (response.ok) {
+            window.apiConfig.showNotification('Atalho atualizado com sucesso!', 'success');
+            setTimeout(() => {
+                window.location.href = `{% url 'shortcuts:detail' 0 %}`.replace('0', shortcutId);
+            }, 1000);
+        } else {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Erro ao atualizar atalho');
+        }
+    } catch (error) {
+        console.error('Error updating shortcut:', error);
+        window.apiConfig.handleError(error, 'Atualizar atalho');
+        
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+    }
+}
+
+function testShortcut() {
+    const url = document.getElementById('url').value;
+    const openInNewTab = document.getElementById('open_in_new_tab').checked;
+    
+    if (url) {
+        if (openInNewTab) {
+            window.open(url, '_blank');
+        } else {
+            window.location.href = url;
+        }
+    } else {
+        window.apiConfig.showNotification('Por favor, insira uma URL válida', 'error');
+    }
+}
+
+function confirmDelete() {
+    const shortcutName = document.getElementById('name').value;
+    document.getElementById('delete-shortcut-name').textContent = shortcutName;
+    document.getElementById('deleteModal').classList.remove('hidden');
+    
+    document.getElementById('confirmDeleteBtn').onclick = deleteShortcut;
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.add('hidden');
+}
+
+async function deleteShortcut() {
+    const shortcutId = document.getElementById('shortcut-id').value;
+    
+    try {
+        const response = await window.apiConfig.makeRequest(`/api/shortcuts/${shortcutId}/`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            window.apiConfig.showNotification('Atalho excluído com sucesso!', 'success');
+            setTimeout(() => {
+                window.location.href = "{% url 'shortcuts:list' %}";
+            }, 1000);
+        } else {
+            throw new Error('Failed to delete shortcut');
+        }
+    } catch (error) {
+        console.error('Error deleting shortcut:', error);
+        window.apiConfig.handleError(error, 'Excluir atalho');
+    }
+}
+
+// Close modal when clicking outside
+document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeDeleteModal();
+    }
+});
+
+// Validate URL format
+document.getElementById('url').addEventListener('input', function() {
+    const url = this.value;
+    const isValid = url === '' || /^https?:\/\/.+/.test(url);
+    
+    if (!isValid && url.length > 0) {
+        this.setCustomValidity('URL deve começar com http:// ou https://');
+    } else {
+        this.setCustomValidity('');
+    }
+});
+</script>
+{% endblock %}

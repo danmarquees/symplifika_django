@@ -198,7 +198,13 @@
             ></div>
         </div>
 
+        <!-- API Configuration -->
+        <script>
+            window.apiConfig = JSON.parse('{{ api_config|escapejs }}');
+        </script>
+        
         <!-- JavaScript -->
+        <script src="{% static 'js/api-config.js' %}"></script>
         <script src="{% static 'js/symplifika-base.js' %}"></script>
         <script src="{% static 'js/base.js' %}"></script>
         <script src="{% static 'js/mobile/mobile-utils.js' %}"></script>

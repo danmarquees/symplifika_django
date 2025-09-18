@@ -1,0 +1,140 @@
+{% extends 'emails/base.html' %}
+
+{% block title %}Bem-vindo ao Symplifika!{% endblock %}
+{% block email_title %}Bem-vindo ao Symplifika!{% endblock %}
+
+{% block content %}
+<h2 class="content-title">Olá, {{ user.get_full_name|default:user.username }}! 👋</h2>
+
+<p class="content-subtitle">
+    Bem-vindo à plataforma que vai revolucionar sua produtividade digital!
+</p>
+
+<p class="content-text">
+    Estamos muito felizes em tê-lo conosco! O Symplifika foi criado para simplificar sua vida digital através de atalhos inteligentes e automações personalizadas.
+</p>
+
+<div class="success-box">
+    <p style="margin: 0; color: #065f46; font-weight: 600;">
+        🎉 Sua conta foi criada com sucesso!
+    </p>
+    <p style="margin: 10px 0 0 0; color: #047857;">
+        Você já pode começar a criar seus primeiros atalhos e explorar todos os recursos disponíveis.
+    </p>
+</div>
+
+<h3 style="color: #1f2937; font-size: 20px; margin: 30px 0 15px 0;">
+    🚀 Primeiros Passos
+</h3>
+
+<p class="content-text">Para aproveitar ao máximo o Symplifika, recomendamos:</p>
+
+<table style="width: 100%; margin: 20px 0;">
+    <tr>
+        <td style="padding: 15px; background-color: #f8fafc; border-radius: 8px; margin-bottom: 10px;">
+            <strong style="color: #10b981;">1. Complete seu perfil</strong><br>
+            <span style="color: #6b7280; font-size: 14px;">Adicione uma foto e personalize suas preferências</span>
+        </td>
+    </tr>
+    <tr><td style="height: 10px;"></td></tr>
+    <tr>
+        <td style="padding: 15px; background-color: #f8fafc; border-radius: 8px; margin-bottom: 10px;">
+            <strong style="color: #10b981;">2. Crie seu primeiro atalho</strong><br>
+            <span style="color: #6b7280; font-size: 14px;">Comece com sites que você acessa frequentemente</span>
+        </td>
+    </tr>
+    <tr><td style="height: 10px;"></td></tr>
+    <tr>
+        <td style="padding: 15px; background-color: #f8fafc; border-radius: 8px; margin-bottom: 10px;">
+            <strong style="color: #10b981;">3. Instale nossa extensão</strong><br>
+            <span style="color: #6b7280; font-size: 14px;">Acesse seus atalhos diretamente do navegador</span>
+        </td>
+    </tr>
+</table>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="https://symplifika.com/dashboard" class="btn">
+        Acessar Meu Dashboard
+    </a>
+</div>
+
+<div class="info-box">
+    <h4 style="margin: 0 0 10px 0; color: #0369a1;">💡 Dica Pro</h4>
+    <p style="margin: 0; color: #0284c7;">
+        Use nossa IA para gerar atalhos personalizados baseados em suas necessidades específicas. 
+        É como ter um assistente pessoal para organizar sua vida digital!
+    </p>
+</div>
+
+<h3 style="color: #1f2937; font-size: 20px; margin: 30px 0 15px 0;">
+    🎯 O que você pode fazer
+</h3>
+
+<table style="width: 100%;">
+    <tr>
+        <td style="width: 50%; padding-right: 15px; vertical-align: top;">
+            <h4 style="color: #10b981; margin: 0 0 10px 0;">⚡ Atalhos Inteligentes</h4>
+            <p style="color: #6b7280; font-size: 14px; margin: 0;">
+                Crie atalhos para sites, aplicativos e tarefas que você usa diariamente
+            </p>
+        </td>
+        <td style="width: 50%; padding-left: 15px; vertical-align: top;">
+            <h4 style="color: #10b981; margin: 0 0 10px 0;">🤖 IA Personalizada</h4>
+            <p style="color: #6b7280; font-size: 14px; margin: 0;">
+                Nossa IA aprende seus hábitos e sugere automações úteis
+            </p>
+        </td>
+    </tr>
+    <tr><td colspan="2" style="height: 20px;"></td></tr>
+    <tr>
+        <td style="width: 50%; padding-right: 15px; vertical-align: top;">
+            <h4 style="color: #10b981; margin: 0 0 10px 0;">📊 Analytics</h4>
+            <p style="color: #6b7280; font-size: 14px; margin: 0;">
+                Veja quanto tempo você economiza com seus atalhos
+            </p>
+        </td>
+        <td style="width: 50%; padding-left: 15px; vertical-align: top;">
+            <h4 style="color: #10b981; margin: 0 0 10px 0;">🔄 Sincronização</h4>
+            <p style="color: #6b7280; font-size: 14px; margin: 0;">
+                Acesse seus atalhos em qualquer dispositivo
+            </p>
+        </td>
+    </tr>
+</table>
+
+<div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 20px; margin: 30px 0; border-radius: 0 8px 8px 0;">
+    <h4 style="margin: 0 0 10px 0; color: #92400e;">🎁 Oferta Especial</h4>
+    <p style="margin: 0; color: #b45309;">
+        Como novo usuário, você tem <strong>30 dias grátis</strong> para testar todos os recursos Premium. 
+        Aproveite para explorar o poder completo do Symplifika!
+    </p>
+</div>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="https://symplifika.com/premium" class="btn btn-secondary" style="margin-right: 10px;">
+        Ver Recursos Premium
+    </a>
+    <a href="https://symplifika.com/guia" class="btn">
+        Guia de Início Rápido
+    </a>
+</div>
+
+<p class="content-text">
+    Se você tiver alguma dúvida ou precisar de ajuda, nossa equipe de suporte está sempre disponível. 
+    Basta responder este email ou visitar nossa central de ajuda.
+</p>
+
+<p class="content-text">
+    Mais uma vez, bem-vindo ao Symplifika! Estamos ansiosos para ver como você vai transformar sua produtividade.
+</p>
+
+<p style="color: #6b7280; font-style: italic; margin: 30px 0 0 0;">
+    Com carinho,<br>
+    <strong>Equipe Symplifika</strong>
+</p>
+{% endblock %}
+
+{% block unsubscribe_link %}
+<a href="{% url 'users:unsubscribe' user.id %}">Cancelar emails promocionais</a> | 
+<a href="{% url 'users:email_preferences' %}">Gerenciar preferências</a>
+{% endblock %}

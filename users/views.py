@@ -25,6 +25,9 @@ from .forms import (
     CustomPasswordChangeForm, PlanUpgradeForm, AccountDeleteForm
 )
 from .models import PlanUpgradeRequest
+import logging
+from django.core.cache import cache
+from django.conf import settings
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -383,7 +386,23 @@ def register(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login_view(request):
-    """Faz login do usuário"""
+    """Faz login do usuário com rate limiting e proteção contra brute force"""
+    logger = logging.getLogger('security')
+    ip = request.META.get('REMOTE_ADDR', 'unknown')
+    username = request.data.get('username') or request.data.get('email')
+
+    # Proteção contra brute force: bloqueia após 5 tentativas falhas por IP/username por 10 minutos
+    brute_force_key = f"login_fail_{ip}_{username}"
+    fail_count = cache.get(brute_force_key, 0)
+    if fail_count >= 5:
+        logger.warning(f"Bloqueio temporário de login para {username} do IP {ip}")
+        if hasattr(settings, 'notify_slack'):
+            settings.notify_slack(f"Bloqueio temporário de login para {username} do IP {ip}")
+        return Response({
+            "error": "Muitas tentativas de login. Tente novamente em alguns minutos.",
+            "code": "too_many_attempts"
+        }, status=status.HTTP_429_TOO_MANY_REQUESTS)
+
     serializer = LoginSerializer(
         data=request.data,
         context={'request': request}
@@ -401,13 +420,29 @@ def login_view(request):
         user.profile.last_login = timezone.now()
         user.profile.save(update_fields=['last_login'])
 
+        # Resetar contador de falhas após sucesso
+        cache.delete(brute_force_key)
+
+        logger.info(f"Login realizado para {username} do IP {ip}")
+        if hasattr(settings, 'notify_slack') and created:
+            settings.notify_slack(f"Novo login realizado para {username} do IP {ip}")
+
         return Response({
             'user': UserSerializer(user).data,
             'token': token.key,
             'message': 'Login realizado com sucesso'
         })
 
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # Falha de login: incrementa contador e monitora atividade suspeita
+    cache.set(brute_force_key, fail_count + 1, timeout=600)
+    logger.warning(f"Tentativa de login falha para {username} do IP {ip} (falha {fail_count + 1})")
+    if hasattr(settings, 'notify_slack') and fail_count + 1 >= 3:
+        settings.notify_slack(f"Tentativas suspeitas de login para {username} do IP {ip} (falha {fail_count + 1})")
+
+    return Response({
+        "error": "Usuário ou senha inválidos",
+        "code": "invalid_credentials"
+    }, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -759,3 +794,21 @@ def settings_view(request):
     }
 
     return render(request, 'users/settings.html', context)
+
+
+@login_required
+def subscription_success_view(request):
+    """View para sucesso da assinatura"""
+    session_id = request.GET.get('session_id')
+    
+    if session_id:
+        # Aqui você pode verificar o status da sessão no Stripe se necessário
+        # Por enquanto, apenas mostramos uma mensagem de sucesso
+        messages.success(request, 'Pagamento realizado com sucesso! Sua assinatura foi ativada.')
+    
+    context = {
+        'session_id': session_id,
+        'user': request.user
+    }
+    
+    return render(request, 'users/subscription_success.html', context)

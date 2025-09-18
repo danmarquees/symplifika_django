@@ -1,0 +1,390 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ shortcut.name }} | Symplifika{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <!-- Header -->
+    <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-symplifika-primary rounded-lg flex items-center justify-center">
+                        <span class="text-white font-medium text-lg">{{ shortcut.name|first|upper }}</span>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ shortcut.name }}</h1>
+                        <p class="text-gray-600 dark:text-gray-400">{{ shortcut.category|default:"Sem categoria" }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button onclick="useShortcut()" 
+                            class="bg-symplifika-primary text-white px-4 py-2 rounded-lg hover:bg-symplifika-accent transition-colors flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                        </svg>
+                        Usar Atalho
+                    </button>
+                    <a href="{% url 'shortcuts:edit' shortcut.id %}" 
+                       class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                        Editar
+                    </a>
+                    <a href="{% url 'shortcuts:list' %}" 
+                       class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                        Voltar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Content -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Shortcut Info -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Informações do Atalho</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">URL</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="text" readonly 
+                                       class="flex-1 px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white"
+                                       value="{{ shortcut.url }}">
+                                <button onclick="copyToClipboard('{{ shortcut.url }}')" 
+                                        class="p-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        {% if shortcut.description %}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descrição</label>
+                            <p class="text-gray-900 dark:text-white">{{ shortcut.description }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if shortcut.tags %}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tags</label>
+                            <div class="flex flex-wrap gap-2">
+                                {% for tag in shortcut.tags_list %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-symplifika-primary/20 text-symplifika-primary">
+                                    {{ tag }}
+                                </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Usage Statistics -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Estatísticas de Uso</h2>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-symplifika-primary">{{ shortcut.usage_count|default:0 }}</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">Total de Usos</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-blue-600">{{ shortcut.monthly_usage|default:0 }}</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">Este Mês</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-green-600">{{ shortcut.weekly_usage|default:0 }}</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">Esta Semana</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-purple-600">{{ shortcut.last_used|timesince|default:"Nunca" }}</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">Último Uso</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Atividade Recente</h2>
+                    <div id="recent-activity" class="space-y-3">
+                        <!-- Activity items will be loaded here -->
+                        <div class="text-center py-4">
+                            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-symplifika-primary mx-auto"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Quick Actions -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Ações Rápidas</h3>
+                    <div class="space-y-3">
+                        <button onclick="useShortcut()" 
+                                class="w-full flex items-center px-4 py-3 bg-symplifika-primary text-white rounded-lg hover:bg-symplifika-accent transition-colors">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                            </svg>
+                            Usar Atalho
+                        </button>
+                        
+                        <button onclick="toggleFavorite()" 
+                                class="w-full flex items-center px-4 py-3 bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 rounded-lg hover:bg-yellow-200 dark:hover:bg-yellow-900/40 transition-colors">
+                            <svg id="favorite-icon" class="w-5 h-5 mr-3" fill="{% if shortcut.is_favorite %}currentColor{% else %}none{% endif %}" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                            </svg>
+                            <span id="favorite-text">{% if shortcut.is_favorite %}Remover dos Favoritos{% else %}Adicionar aos Favoritos{% endif %}</span>
+                        </button>
+                        
+                        <button onclick="shareShortcut()" 
+                                class="w-full flex items-center px-4 py-3 bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/40 transition-colors">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"/>
+                            </svg>
+                            Compartilhar
+                        </button>
+                        
+                        <button onclick="duplicateShortcut()" 
+                                class="w-full flex items-center px-4 py-3 bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200 rounded-lg hover:bg-green-200 dark:hover:bg-green-900/40 transition-colors">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                            Duplicar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Shortcut Details -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Detalhes</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600 dark:text-gray-400">Categoria:</span>
+                            <span class="text-gray-900 dark:text-white">{{ shortcut.get_category_display|default:"Sem categoria" }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600 dark:text-gray-400">Criado em:</span>
+                            <span class="text-gray-900 dark:text-white">{{ shortcut.created_at|date:"d/m/Y H:i" }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600 dark:text-gray-400">Atualizado em:</span>
+                            <span class="text-gray-900 dark:text-white">{{ shortcut.updated_at|date:"d/m/Y H:i" }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600 dark:text-gray-400">Favorito:</span>
+                            <span class="text-gray-900 dark:text-white">
+                                {% if shortcut.is_favorite %}
+                                    <svg class="w-4 h-4 text-yellow-500 inline" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                {% else %}
+                                    Não
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600 dark:text-gray-400">Nova aba:</span>
+                            <span class="text-gray-900 dark:text-white">{{ shortcut.open_in_new_tab|yesno:"Sim,Não" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const shortcutId = '{{ shortcut.id }}';
+const shortcutUrl = '{{ shortcut.url }}';
+const shortcutName = '{{ shortcut.name }}';
+let isFavorite = {{ shortcut.is_favorite|yesno:"true,false" }};
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadRecentActivity();
+});
+
+async function useShortcut() {
+    try {
+        const response = await window.apiConfig.makeRequest(`/api/shortcuts/${shortcutId}/use/`, {
+            method: 'POST'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            const openInNewTab = {{ shortcut.open_in_new_tab|yesno:"true,false" }};
+            
+            if (openInNewTab) {
+                window.open(data.url, '_blank');
+            } else {
+                window.location.href = data.url;
+            }
+            
+            // Reload activity after use
+            setTimeout(loadRecentActivity, 1000);
+        }
+    } catch (error) {
+        console.error('Error using shortcut:', error);
+        window.apiConfig.handleError(error, 'Usar atalho');
+    }
+}
+
+async function toggleFavorite() {
+    try {
+        const response = await window.apiConfig.makeRequest(`/api/shortcuts/${shortcutId}/favorite/`, {
+            method: 'POST'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            isFavorite = data.is_favorite;
+            
+            const icon = document.getElementById('favorite-icon');
+            const text = document.getElementById('favorite-text');
+            
+            if (isFavorite) {
+                icon.setAttribute('fill', 'currentColor');
+                text.textContent = 'Remover dos Favoritos';
+            } else {
+                icon.setAttribute('fill', 'none');
+                text.textContent = 'Adicionar aos Favoritos';
+            }
+            
+            window.apiConfig.showNotification(
+                isFavorite ? 'Adicionado aos favoritos!' : 'Removido dos favoritos!', 
+                'success'
+            );
+        }
+    } catch (error) {
+        console.error('Error toggling favorite:', error);
+        window.apiConfig.handleError(error, 'Atualizar favorito');
+    }
+}
+
+function shareShortcut() {
+    if (navigator.share) {
+        navigator.share({
+            title: shortcutName,
+            text: `Confira este atalho: ${shortcutName}`,
+            url: shortcutUrl
+        });
+    } else {
+        copyToClipboard(shortcutUrl);
+        window.apiConfig.showNotification('Link copiado para a área de transferência!', 'success');
+    }
+}
+
+async function duplicateShortcut() {
+    try {
+        const response = await window.apiConfig.makeRequest(`/api/shortcuts/${shortcutId}/duplicate/`, {
+            method: 'POST'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            window.apiConfig.showNotification('Atalho duplicado com sucesso!', 'success');
+            setTimeout(() => {
+                window.location.href = `{% url 'shortcuts:detail' 0 %}`.replace('0', data.id);
+            }, 1000);
+        }
+    } catch (error) {
+        console.error('Error duplicating shortcut:', error);
+        window.apiConfig.handleError(error, 'Duplicar atalho');
+    }
+}
+
+async function loadRecentActivity() {
+    try {
+        const response = await window.apiConfig.makeRequest(`/api/shortcuts/${shortcutId}/activity/`, {
+            method: 'GET'
+        });
+        
+        if (response.ok) {
+            const activities = await response.json();
+            displayRecentActivity(activities);
+        }
+    } catch (error) {
+        console.error('Error loading activity:', error);
+        document.getElementById('recent-activity').innerHTML = `
+            <div class="text-center py-4 text-gray-500 dark:text-gray-400">
+                Não foi possível carregar a atividade recente
+            </div>
+        `;
+    }
+}
+
+function displayRecentActivity(activities) {
+    const container = document.getElementById('recent-activity');
+    
+    if (activities.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-4 text-gray-500 dark:text-gray-400">
+                Nenhuma atividade recente
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = activities.slice(0, 5).map(activity => `
+        <div class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div class="w-8 h-8 bg-symplifika-primary rounded-full flex items-center justify-center">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                </svg>
+            </div>
+            <div class="flex-1">
+                <p class="text-sm text-gray-900 dark:text-white">${activity.action}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">${formatDate(activity.timestamp)}</p>
+            </div>
+        </div>
+    `).join('');
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        window.apiConfig.showNotification('Copiado para a área de transferência!', 'success');
+    }).catch(() => {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        window.apiConfig.showNotification('Copiado para a área de transferência!', 'success');
+    });
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now - date;
+    
+    if (diff < 60000) { // Less than 1 minute
+        return 'Agora mesmo';
+    } else if (diff < 3600000) { // Less than 1 hour
+        const minutes = Math.floor(diff / 60000);
+        return `${minutes} minuto${minutes > 1 ? 's' : ''} atrás`;
+    } else if (diff < 86400000) { // Less than 1 day
+        const hours = Math.floor(diff / 3600000);
+        return `${hours} hora${hours > 1 ? 's' : ''} atrás`;
+    } else {
+        return date.toLocaleDateString('pt-BR');
+    }
+}
+</script>
+{% endblock %}

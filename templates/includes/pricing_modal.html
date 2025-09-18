@@ -322,6 +322,12 @@
     </div>
 </div>
 
+{{ user.is_authenticated|json_script:"user-authenticated" }}
+<script id="upgrade-url" type="application/json">"{% url 'users:plan_upgrade' %}"</script>
+<script id="register-url" type="application/json">"{% url 'users:register' %}"</script>
+<script id="subscription-url" type="application/json">"{% url 'users:subscription_management' %}"</script>
+{% csrf_token %}
+
 <script>
 function showPricingModal() {
     document.getElementById('pricingModal').classList.remove('hidden');
@@ -358,20 +364,65 @@ function toggleBilling(type) {
     }
 }
 
-function upgradePlan(plan) {
-    {% if user.is_authenticated %}
-        window.location.href = "{% url 'users:plan_upgrade' %}?plan=" + plan;
-    {% else %}
-        window.location.href = "{% url 'users:register' %}";
-    {% endif %}
+// Get Django data from JSON scripts
+const isAuthenticated = JSON.parse(document.getElementById('user-authenticated').textContent);
+const upgradeUrl = JSON.parse(document.getElementById('upgrade-url').textContent);
+const registerUrl = JSON.parse(document.getElementById('register-url').textContent);
+const subscriptionUrl = JSON.parse(document.getElementById('subscription-url').textContent);
+
+async function upgradePlan(plan) {
+    if (!isAuthenticated) {
+        window.location.href = registerUrl;
+        return;
+    }
+
+    // Get current billing cycle
+    const billingCycle = document.querySelector('.billing-toggle.active').id === 'monthlyBtn' ? 'monthly' : 'yearly';
+    
+    try {
+        // Show loading state
+        const button = event.target;
+        const originalText = button.textContent;
+        button.textContent = 'Processando...';
+        button.disabled = true;
+
+        // Create checkout session
+        const response = await fetch('/payments/create-checkout-session/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                plan: plan,
+                billing_cycle: billingCycle
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            // Redirect to Stripe checkout
+            window.location.href = data.checkout_url;
+        } else {
+            alert('Erro ao processar pagamento: ' + data.error);
+            button.textContent = originalText;
+            button.disabled = false;
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao processar pagamento. Tente novamente.');
+        button.textContent = originalText;
+        button.disabled = false;
+    }
 }
 
 function downgradePlan() {
-    {% if user.is_authenticated %}
+    if (isAuthenticated) {
         if (confirm('Tem certeza que deseja cancelar sua assinatura? Você manterá o acesso até o final do período pago.')) {
-            window.location.href = "{% url 'users:subscription_management' %}";
+            window.location.href = subscriptionUrl;
         }
-    {% endif %}
+    }
 }
 
 // Close modal when clicking outside

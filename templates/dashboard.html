@@ -1,0 +1,395 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard | Symplifika{% endblock %}
+
+{% block meta_description %}Gerencie seus atalhos e automações no dashboard do Symplifika{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <!-- Header Section -->
+    <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                        Olá, {{ user.get_full_name|default:user.username }}! 👋
+                    </h1>
+                    <p class="text-gray-600 dark:text-gray-400 mt-1">
+                        Bem-vindo ao seu painel de controle
+                    </p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <!-- Plan Status -->
+                    <div class="hidden sm:block">
+                        {% include 'includes/plan_status_widget.html' %}
+                    </div>
+                    <!-- Quick Actions -->
+                    <button onclick="openCreateShortcutModal()" 
+                            class="bg-symplifika-primary text-white px-4 py-2 rounded-lg hover:bg-symplifika-accent transition-colors flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Novo Atalho
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900/20">
+                        <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total de Atalhos</p>
+                        <p class="text-2xl font-semibold text-gray-900 dark:text-white" id="total-shortcuts">{{ shortcuts_count|default:0 }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-green-100 dark:bg-green-900/20">
+                        <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Usados Este Mês</p>
+                        <p class="text-2xl font-semibold text-gray-900 dark:text-white" id="monthly-usage">{{ monthly_usage|default:0 }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-purple-100 dark:bg-purple-900/20">
+                        <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Categorias</p>
+                        <p class="text-2xl font-semibold text-gray-900 dark:text-white" id="categories-count">{{ categories_count|default:0 }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-yellow-100 dark:bg-yellow-900/20">
+                        <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Tempo Economizado</p>
+                        <p class="text-2xl font-semibold text-gray-900 dark:text-white" id="time-saved">{{ time_saved|default:"0h" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Recent Shortcuts -->
+            <div class="lg:col-span-2">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Atalhos Recentes</h2>
+                            <a href="{% url 'shortcuts:list' %}" class="text-symplifika-primary hover:text-symplifika-accent text-sm font-medium">
+                                Ver Todos →
+                            </a>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div id="recent-shortcuts" class="space-y-4">
+                            <!-- Shortcuts will be loaded here -->
+                            <div class="flex items-center justify-center py-8">
+                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-symplifika-primary"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions & Info -->
+            <div class="space-y-6">
+                <!-- Quick Actions -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Ações Rápidas</h3>
+                    <div class="space-y-3">
+                        <button onclick="openCreateShortcutModal()" 
+                                class="w-full flex items-center px-4 py-3 bg-symplifika-primary text-white rounded-lg hover:bg-symplifika-accent transition-colors">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            Criar Atalho
+                        </button>
+                        
+                        <a href="{% url 'shortcuts:categories' %}" 
+                           class="w-full flex items-center px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                            </svg>
+                            Gerenciar Categorias
+                        </a>
+                        
+                        <a href="{% url 'core:settings' %}" 
+                           class="w-full flex items-center px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            Configurações
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Plan Overview -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Seu Plano</h3>
+                    {% include 'includes/plan_overview_card.html' %}
+                </div>
+
+                <!-- Tips -->
+                <div class="bg-gradient-to-r from-symplifika-primary/10 to-symplifika-secondary/10 rounded-lg p-6 border border-symplifika-primary/20">
+                    <h3 class="text-lg font-semibold text-symplifika-primary mb-3">💡 Dica do Dia</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400" id="daily-tip">
+                        Use nossa IA para gerar atalhos personalizados baseados em suas necessidades específicas!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Shortcut Modal -->
+<div id="createShortcutModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-4 w-full">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Criar Novo Atalho</h3>
+        <form id="createShortcutForm" class="space-y-4">
+            <div>
+                <label for="shortcut-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Nome do Atalho
+                </label>
+                <input type="text" id="shortcut-name" name="name" 
+                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                       placeholder="Ex: Abrir Gmail" required>
+            </div>
+            
+            <div>
+                <label for="shortcut-url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    URL
+                </label>
+                <input type="url" id="shortcut-url" name="url" 
+                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                       placeholder="https://gmail.com" required>
+            </div>
+            
+            <div>
+                <label for="shortcut-category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Categoria
+                </label>
+                <select id="shortcut-category" name="category" 
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                    <option value="work">Trabalho</option>
+                    <option value="personal">Pessoal</option>
+                    <option value="productivity">Produtividade</option>
+                    <option value="entertainment">Entretenimento</option>
+                </select>
+            </div>
+            
+            <div class="flex gap-3 pt-4">
+                <button type="submit" 
+                        class="flex-1 bg-symplifika-primary text-white px-4 py-2 rounded-lg hover:bg-symplifika-accent transition-colors">
+                    Criar Atalho
+                </button>
+                <button type="button" onclick="closeCreateShortcutModal()" 
+                        class="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                    Cancelar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Dashboard functionality
+document.addEventListener('DOMContentLoaded', function() {
+    loadRecentShortcuts();
+    loadDashboardStats();
+    loadDailyTip();
+});
+
+async function loadRecentShortcuts() {
+    try {
+        const response = await window.apiConfig.makeRequest('/api/shortcuts/', {
+            method: 'GET'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            displayRecentShortcuts(data.results.slice(0, 5)); // Show only 5 recent
+        } else {
+            throw new Error('Failed to load shortcuts');
+        }
+    } catch (error) {
+        console.error('Error loading shortcuts:', error);
+        document.getElementById('recent-shortcuts').innerHTML = `
+            <div class="text-center py-8">
+                <p class="text-gray-500 dark:text-gray-400">Nenhum atalho encontrado</p>
+                <button onclick="openCreateShortcutModal()" class="mt-2 text-symplifika-primary hover:text-symplifika-accent">
+                    Criar seu primeiro atalho →
+                </button>
+            </div>
+        `;
+    }
+}
+
+function displayRecentShortcuts(shortcuts) {
+    const container = document.getElementById('recent-shortcuts');
+    
+    if (shortcuts.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-8">
+                <p class="text-gray-500 dark:text-gray-400">Nenhum atalho criado ainda</p>
+                <button onclick="openCreateShortcutModal()" class="mt-2 text-symplifika-primary hover:text-symplifika-accent">
+                    Criar seu primeiro atalho →
+                </button>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = shortcuts.map(shortcut => `
+        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-symplifika-primary rounded-lg flex items-center justify-center">
+                    <span class="text-white font-medium text-sm">${shortcut.name.charAt(0).toUpperCase()}</span>
+                </div>
+                <div>
+                    <h4 class="font-medium text-gray-900 dark:text-white">${shortcut.name}</h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">${shortcut.category || 'Sem categoria'}</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="useShortcut('${shortcut.id}')" 
+                        class="text-symplifika-primary hover:text-symplifika-accent p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function loadDashboardStats() {
+    try {
+        const response = await window.apiConfig.makeRequest('/api/dashboard/stats/', {
+            method: 'GET'
+        });
+        
+        if (response.ok) {
+            const stats = await response.json();
+            document.getElementById('total-shortcuts').textContent = stats.total_shortcuts || 0;
+            document.getElementById('monthly-usage').textContent = stats.monthly_usage || 0;
+            document.getElementById('categories-count').textContent = stats.categories_count || 0;
+            document.getElementById('time-saved').textContent = stats.time_saved || '0h';
+        }
+    } catch (error) {
+        console.error('Error loading dashboard stats:', error);
+    }
+}
+
+function loadDailyTip() {
+    const tips = [
+        "Use nossa IA para gerar atalhos personalizados baseados em suas necessidades específicas!",
+        "Organize seus atalhos em categorias para encontrá-los mais facilmente.",
+        "Atalhos com nomes descritivos são mais fáceis de lembrar e usar.",
+        "Experimente usar atalhos de teclado para acessar seus links favoritos rapidamente.",
+        "Revise regularmente seus atalhos e remova os que não usa mais."
+    ];
+    
+    const randomTip = tips[Math.floor(Math.random() * tips.length)];
+    document.getElementById('daily-tip').textContent = randomTip;
+}
+
+function openCreateShortcutModal() {
+    document.getElementById('createShortcutModal').classList.remove('hidden');
+}
+
+function closeCreateShortcutModal() {
+    document.getElementById('createShortcutModal').classList.add('hidden');
+    document.getElementById('createShortcutForm').reset();
+}
+
+async function useShortcut(shortcutId) {
+    try {
+        const response = await window.apiConfig.makeRequest(`/api/shortcuts/${shortcutId}/use/`, {
+            method: 'POST'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            window.open(data.url, '_blank');
+            
+            // Update usage stats
+            loadDashboardStats();
+        }
+    } catch (error) {
+        console.error('Error using shortcut:', error);
+        window.apiConfig.handleError(error, 'Usar atalho');
+    }
+}
+
+// Create shortcut form submission
+document.getElementById('createShortcutForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const shortcutData = {
+        name: formData.get('name'),
+        url: formData.get('url'),
+        category: formData.get('category')
+    };
+    
+    try {
+        const response = await window.apiConfig.makeRequest('/api/shortcuts/', {
+            method: 'POST',
+            body: JSON.stringify(shortcutData)
+        });
+        
+        if (response.ok) {
+            closeCreateShortcutModal();
+            loadRecentShortcuts();
+            loadDashboardStats();
+            
+            window.apiConfig.showNotification('Atalho criado com sucesso!', 'success');
+        } else {
+            throw new Error('Failed to create shortcut');
+        }
+    } catch (error) {
+        console.error('Error creating shortcut:', error);
+        window.apiConfig.handleError(error, 'Criar atalho');
+    }
+});
+
+// Close modal when clicking outside
+document.getElementById('createShortcutModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeCreateShortcutModal();
+    }
+});
+</script>
+{% endblock %}

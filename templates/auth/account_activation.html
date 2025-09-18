@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Ativar Conta | Symplifika{% endblock %}
+
+{% block meta_description %}Ative sua conta no Symplifika{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-symplifika-primary/10 to-symplifika-secondary/10 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <div class="text-center">
+            <img class="mx-auto h-12 w-auto" src="{% static 'images/symplifika_logo.svg' %}" alt="Symplifika">
+            <div class="mt-6">
+                {% if activation_success %}
+                    <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/20">
+                        <svg class="h-8 w-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                {% else %}
+                    <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/20">
+                        <svg class="h-8 w-8 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                        </svg>
+                    </div>
+                {% endif %}
+            </div>
+            
+            {% if activation_success %}
+                <h2 class="mt-6 text-3xl font-bold text-gray-900 dark:text-white">
+                    Conta Ativada!
+                </h2>
+                <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                    Bem-vindo ao Symplifika! Sua conta foi ativada com sucesso.
+                </p>
+            {% else %}
+                <h2 class="mt-6 text-3xl font-bold text-gray-900 dark:text-white">
+                    Link Inválido
+                </h2>
+                <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                    Este link de ativação é inválido ou já foi usado.
+                </p>
+            {% endif %}
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 shadow-xl rounded-lg p-8">
+            {% if activation_success %}
+                <div class="text-center space-y-6">
+                    <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+                        <h3 class="text-lg font-medium text-green-800 dark:text-green-200 mb-2">
+                            🎉 Conta Ativada com Sucesso!
+                        </h3>
+                        <p class="text-sm text-green-700 dark:text-green-300">
+                            Sua conta foi verificada e ativada. Agora você pode acessar todos os recursos do Symplifika.
+                        </p>
+                    </div>
+
+                    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                        <h4 class="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
+                            Próximos Passos:
+                        </h4>
+                        <ul class="text-xs text-blue-700 dark:text-blue-300 space-y-1 text-left">
+                            <li>• Complete seu perfil</li>
+                            <li>• Explore os recursos disponíveis</li>
+                            <li>• Crie seus primeiros atalhos</li>
+                            <li>• Configure suas preferências</li>
+                        </ul>
+                    </div>
+
+                    <div class="space-y-3">
+                        <a href="{% url 'core:dashboard' %}" 
+                           class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-symplifika-primary hover:bg-symplifika-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-symplifika-primary transition-colors">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2zm9-3h4m-4 2h4m-4-6h4m-7 0h1v3H7V7z"/>
+                            </svg>
+                            Acessar Dashboard
+                        </a>
+                        
+                        <a href="{% url 'core:edit-profile' %}" 
+                           class="w-full flex justify-center py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-symplifika-primary transition-colors">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            Completar Perfil
+                        </a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center space-y-6">
+                    <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                        <h3 class="text-lg font-medium text-red-800 dark:text-red-200 mb-2">
+                            Link de Ativação Inválido
+                        </h3>
+                        <p class="text-sm text-red-700 dark:text-red-300">
+                            Este link pode ter expirado, já ter sido usado, ou estar incorreto.
+                        </p>
+                    </div>
+
+                    <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+                        <h4 class="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-2">
+                            O que fazer agora:
+                        </h4>
+                        <ul class="text-xs text-yellow-700 dark:text-yellow-300 space-y-1 text-left">
+                            <li>• Verifique se o link está completo</li>
+                            <li>• Tente fazer login - sua conta pode já estar ativa</li>
+                            <li>• Solicite um novo email de ativação</li>
+                            <li>• Entre em contato com o suporte se necessário</li>
+                        </ul>
+                    </div>
+
+                    <div class="space-y-3">
+                        <a href="{% url 'auth:login' %}" 
+                           class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-symplifika-primary hover:bg-symplifika-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-symplifika-primary transition-colors">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                            </svg>
+                            Tentar Login
+                        </a>
+                        
+                        <a href="{% url 'auth:email_verification' %}" 
+                           class="w-full flex justify-center py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-symplifika-primary transition-colors">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                            Novo Email de Ativação
+                        </a>
+                        
+                        <a href="{% url 'core:support' %}" 
+                           class="text-sm text-symplifika-primary hover:text-symplifika-accent transition-colors">
+                            Precisa de ajuda? Contate o suporte →
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if activation_success %}
+            <!-- Welcome Tips -->
+            <div class="bg-gradient-to-r from-symplifika-primary/10 to-symplifika-secondary/10 border border-symplifika-primary/20 rounded-lg p-4">
+                <h4 class="text-sm font-medium text-symplifika-primary mb-2">
+                    💡 Dica de Boas-vindas
+                </h4>
+                <p class="text-xs text-gray-600 dark:text-gray-400">
+                    Comece criando seu primeiro atalho! Use nossa IA para gerar atalhos personalizados 
+                    baseados em suas necessidades e aumente sua produtividade.
+                </p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if activation_success %}
+<script>
+// Show celebration animation
+document.addEventListener('DOMContentLoaded', function() {
+    // Add some celebration effects
+    const celebrationDiv = document.createElement('div');
+    celebrationDiv.className = 'fixed inset-0 pointer-events-none z-50';
+    celebrationDiv.innerHTML = `
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <div class="animate-bounce text-6xl">🎉</div>
+        </div>
+    `;
+    document.body.appendChild(celebrationDiv);
+    
+    setTimeout(() => {
+        celebrationDiv.remove();
+    }, 3000);
+    
+    // Auto-redirect to dashboard after 5 seconds
+    setTimeout(() => {
+        const redirectDiv = document.createElement('div');
+        redirectDiv.className = 'fixed bottom-4 right-4 bg-symplifika-primary text-white px-4 py-2 rounded-lg shadow-lg z-50';
+        redirectDiv.textContent = 'Redirecionando para o dashboard...';
+        document.body.appendChild(redirectDiv);
+        
+        setTimeout(() => {
+            window.location.href = "{% url 'core:dashboard' %}";
+        }, 2000);
+    }, 5000);
+});
+</script>
+{% endif %}
+{% endblock %}

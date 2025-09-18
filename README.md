@@ -1,433 +1,242 @@
-# Symplifika - Sistema de Atalhos de Texto Inteligente
+# Symplifika
 
-![Python](https://img.shields.io/badge/python-3.11+-blue.svg)
-![Django](https://img.shields.io/badge/django-5.2.5-green.svg)
-![Frontend](https://img.shields.io/badge/frontend-integrated-success.svg)
-![Status](https://img.shields.io/badge/status-complete-brightgreen.svg)
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
+Automatize atalhos de texto e produtividade com Django + Extensão Chrome.
 
-## 🎉 INTEGRAÇÃO DJANGO-FRONTEND CONCLUÍDA!
+## Visão Geral
 
-✅ **Status do Projeto:** COMPLETO E FUNCIONAL  
-🌐 **Interface Web:** Totalmente integrada  
-📱 **Design:** Responsivo com tema claro/escuro  
-🔗 **API:** RESTful completamente funcional  
-🚀 **Deploy:** Pronto para produção
-
-## 📋 Sobre o Projeto
-
-A **Symplifika** é uma aplicação web moderna e completa, projetada para aumentar a produtividade através da gestão inteligente de atalhos de texto. O objetivo principal é eliminar a necessidade de digitar repetidamente frases, parágrafos ou blocos de código, permitindo que o usuário crie "gatilhos" (ex: `//email-boasvindas`) que se expandem automaticamente para um texto completo com ajuda de IA.
-
-## ✨ Funcionalidades Principais
-
-### 🚀 Core Features
-- **Atalhos Personalizados**: Crie gatilhos únicos que se expandem para textos completos
-- **Expansão com IA**: Use Google Gemini para expandir e melhorar automaticamente seus textos
-- **Variáveis Dinâmicas**: Suporte a placeholders que podem ser substituídos dinamicamente
-- **Categorização**: Organize seus atalhos em categorias personalizadas
-- **Busca Avançada**: Encontre rapidamente qualquer atalho usando filtros inteligentes
-
-### 📊 Analytics & Gestão
-- **Estatísticas de Uso**: Acompanhe quais atalhos são mais utilizados
-- **Histórico Completo**: Veja quando e onde cada atalho foi usado
-- **Dashboard Intuitivo**: Visualize sua produtividade em tempo real
-- **Tempo Economizado**: Calcule quantas horas você economizou
-
-### 🔐 Planos e Limites
-- **Plano Gratuito**: 50 atalhos, 100 expansões de IA por mês
-- **Plano Premium**: 500 atalhos, 1000 expansões de IA por mês
-- **Plano Enterprise**: Atalhos ilimitados, 10000 expansões de IA por mês
-
-## 🛠️ Tecnologias Utilizadas
-
-### Backend
-- **Django 5.2.5**: Framework web principal
-- **Django REST Framework**: API RESTful
-- **PostgreSQL/SQLite**: Banco de dados (PostgreSQL em produção, SQLite em desenvolvimento)
-- **Google Gemini API**: Integração com inteligência artificial
-
-### Bibliotecas Principais
-- **python-decouple**: Gerenciamento de configurações
-- **django-cors-headers**: Suporte a CORS para frontend
-- **pydantic**: Validação de dados
-- **psycopg2-binary**: Driver PostgreSQL
-- **dj-database-url**: Configuração de database via URL
-
-## 🌐 Interface Web Integrada
-
-### 🎨 Frontend Moderno
-- **Interface responsiva** com Tailwind CSS
-- **Tema claro/escuro** automático
-- **Componentes interativos** (modais, toasts, formulários)
-- **Navegação fluida** entre páginas
-- **Animações suaves** e feedback visual
-
-### 📱 Páginas Disponíveis
-- **🔐 Login/Registro** - Autenticação segura
-- **📝 Dashboard** - Gestão de atalhos
-- **📂 Categorias** - Organização com cores
-- **⚙️ Configurações** - Personalização e dados
-- **🔧 Admin** - Painel administrativo Django
-
-### 🔗 URLs do Sistema
-- **Interface Web:** http://localhost:8000
-- **Admin Django:** http://localhost:8000/admin
-- **API REST:** http://localhost:8000/api
-
-## 📦 Instalação e Configuração
-
-### Pré-requisitos
-- Python 3.11 ou superior
-- pip (gerenciador de pacotes Python)
-- Git
-
-### 1. Clone o Repositório
-```bash
-git clone <url-do-repositorio>
-cd symplifika_dango
-```
-
-### 2. Crie o Ambiente Virtual
-```bash
-python -m venv venv
-
-# Linux/Mac
-source venv/bin/activate
-
-# Windows
-venv\Scripts\activate
-```
-
-### 3. Instale as Dependências
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Configure as Variáveis de Ambiente
-Crie o arquivo `.env` com suas configurações:
-
-```env
-# Django Settings
-SECRET_KEY=sua-chave-secreta-aqui
-DEBUG=True
-ALLOWED_HOSTS=localhost,127.0.0.1
-
-# Database - PostgreSQL (opcional para desenvolvimento local)
-# DATABASE_URL=postgresql://symplifika_user:senha@localhost:5432/symplifika_db
-
-# CORS Settings
-CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
-
-# Google Gemini API (obrigatório para funcionalidades de IA)
-GEMINI_API_KEY=sua-chave-gemini-aqui
-
-# Security
-CSRF_TRUSTED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
-```
-
-**Nota:** Por padrão, o projeto usa SQLite em desenvolvimento. Para usar PostgreSQL localmente, descomente e configure a linha `DATABASE_URL`.
-
-### 5. Configure o Banco de Dados
-
-#### Opção A: SQLite (Padrão - Mais Simples)
-```bash
-# Executar migrações
-python manage.py migrate
-```
-
-#### Opção B: PostgreSQL Local (Recomendado para Produção)
-```bash
-# Usar o script automático
-python setup_postgresql.py
-
-# OU configurar manualmente (veja POSTGRESQL_SETUP.md)
-```
-
-### 6. Setup Inicial do Projeto
-```bash
-# Criar superusuário e dados de demonstração
-python manage.py setup_project --create-superuser --create-demo-data
-
-# Ou apenas o superusuário
-python manage.py setup_project --create-superuser --admin-username admin --admin-email admin@symplifika.com
-```
-
-### 7. Execute o Servidor
-```bash
-python manage.py runserver
-```
-
-Acesse: `http://localhost:8000`
-
-## 🎯 Uso da Aplicação
-
-### Autenticação
-- **Registro**: `POST /users/auth/register/`
-- **Login**: `POST /users/auth/login/`
-- **Logout**: `POST /users/auth/logout/`
-
-### Gerenciamento de Atalhos
-- **Listar**: `GET /shortcuts/api/shortcuts/`
-- **Criar**: `POST /shortcuts/api/shortcuts/`
-- **Usar Atalho**: `POST /shortcuts/api/shortcuts/{id}/use/`
-- **Buscar**: `POST /shortcuts/api/shortcuts/search/`
-
-### Exemplos de Uso
-
-#### Criar um Atalho Simples
-```json
-{
-  "trigger": "//assinatura",
-  "title": "Minha Assinatura",
-  "content": "Atenciosamente,\nJoão Silva\nDesenvolvedor",
-  "expansion_type": "static"
-}
-```
-
-#### Criar um Atalho com Variáveis
-```json
-{
-  "trigger": "//email-cliente",
-  "title": "Email para Cliente",
-  "content": "Olá {nome},\n\nObrigado por escolher a {empresa}!",
-  "expansion_type": "dynamic",
-  "variables": {
-    "nome": "Cliente",
-    "empresa": "Minha Empresa"
-  }
-}
-```
-
-#### Criar um Atalho com IA
-```json
-{
-  "trigger": "//proposta",
-  "title": "Proposta Comercial",
-  "content": "Proposta para desenvolvimento de sistema.",
-  "expansion_type": "ai_enhanced",
-  "ai_prompt": "Expanda em uma proposta comercial completa e profissional"
-}
-```
-
-## 📚 Estrutura da API
-
-### Endpoints Principais
-
-#### Autenticação
-- `POST /users/auth/register/` - Registrar usuário
-- `POST /users/auth/login/` - Fazer login
-- `POST /users/auth/logout/` - Fazer logout
-
-#### Usuários
-- `GET /users/api/users/me/` - Dados do usuário logado
-- `PUT /users/api/users/update-profile/` - Atualizar perfil
-- `GET /users/api/users/stats/` - Estatísticas do usuário
-- `GET /users/dashboard/` - Dados do dashboard
-
-#### Atalhos
-- `GET /shortcuts/api/shortcuts/` - Listar atalhos
-- `POST /shortcuts/api/shortcuts/` - Criar atalho
-- `PUT /shortcuts/api/shortcuts/{id}/` - Atualizar atalho
-- `DELETE /shortcuts/api/shortcuts/{id}/` - Deletar atalho
-- `POST /shortcuts/api/shortcuts/{id}/use/` - Usar atalho
-- `POST /shortcuts/api/shortcuts/search/` - Buscar atalhos
-- `GET /shortcuts/api/shortcuts/stats/` - Estatísticas dos atalhos
-
-#### Categorias
-- `GET /shortcuts/api/categories/` - Listar categorias
-- `POST /shortcuts/api/categories/` - Criar categoria
-- `GET /shortcuts/api/categories/{id}/shortcuts/` - Atalhos da categoria
-
-## 🔧 Administração
-
-### Painel Admin
-Acesse: `http://localhost:8000/admin/`
-
-### Comandos de Gerenciamento
-
-#### Setup do Projeto
-```bash
-# Setup completo
-python manage.py setup_project --create-superuser --create-demo-data
-
-# Apenas superusuário
-python manage.py setup_project --create-superuser
-```
-
-#### Gerenciamento de Usuários
-```bash
-# Criar superusuário manualmente
-python manage.py createsuperuser
-
-# Resetar contadores mensais de IA
-python manage.py shell -c "
-from users.models import UserProfile
-for profile in UserProfile.objects.all():
-    profile.reset_monthly_counters()
-"
-```
-
-## 🎨 Modelos de Dados
-
-### Principais Entidades
-
-#### Shortcut (Atalho)
-- `trigger`: Gatilho único (ex: //email-boasvindas)
-- `title`: Título descritivo
-- `content`: Conteúdo original
-- `expanded_content`: Conteúdo expandido pela IA
-- `expansion_type`: Tipo de expansão (static, dynamic, ai_enhanced)
-- `variables`: Variáveis dinâmicas (JSON)
-- `use_count`: Contador de uso
-- `category`: Categoria do atalho
-
-#### UserProfile (Perfil do Usuário)
-- `plan`: Plano do usuário (free, premium, enterprise)
-- `max_shortcuts`: Limite de atalhos
-- `ai_requests_used`: Requisições de IA usadas no mês
-- `max_ai_requests`: Limite de requisições de IA
-- `theme`: Tema da interface
-
-#### Category (Categoria)
-- `name`: Nome da categoria
-- `description`: Descrição
-- `color`: Cor da categoria
-- `user`: Usuário proprietário
-
-## 🔒 Segurança
-
-### Autenticação
-- Token-based authentication
-- Session authentication para admin
-- Proteção CSRF
-
-### Permissões
-- Usuários só acessam seus próprios dados
-- Validação de ownership em todas as operações
-- Rate limiting implícito via planos
-
-### Boas Práticas
-- Senhas hasheadas
-- Validação de entrada em todos os endpoints
-- Logs de segurança
-- Variáveis de ambiente para credenciais
-
-## 📈 Monitoramento e Logs
-
-### Logs do Sistema
-Os logs são salvos em `logs/django.log` e incluem:
-- Requisições à API
-- Erros de sistema
-- Uso de IA
-- Ações administrativas
-
-### Métricas Disponíveis
-- Uso de atalhos por usuário
-- Performance das expansões de IA
-- Estatísticas de crescimento
-- Tempo economizado pelos usuários
-
-## 🧪 Testes
-
-### Testes Básicos
-```bash
-# Executar todos os testes
-python manage.py test
-
-# Testes de uma app específica
-python manage.py test shortcuts
-
-# Testes com coverage
-pip install coverage
-coverage run manage.py test
-coverage report
-```
-
-### Teste de PostgreSQL
-```bash
-# Testar configuração PostgreSQL
-python test_postgresql.py
-
-# Verificar ambiente
-python check_environment.py
-```
-
-## 🚀 Deploy
-
-### Deploy no Render.com com PostgreSQL
-
-Para deploy em produção com maior persistência de dados:
-
-1. **Configure PostgreSQL no Render:**
-   ```bash
-   # Veja o guia completo em POSTGRESQL_SETUP.md
-   # Principais passos:
-   # - Criar database PostgreSQL no Render
-   # - Configurar DATABASE_URL no web service
-   # - Usar symplifika.production_settings
-   ```
-
-2. **Variáveis de ambiente de produção:**
-   ```env
-   DATABASE_URL=postgresql://user:pass@hostname:port/database
-   DJANGO_SETTINGS_MODULE=symplifika.production_settings
-   DEBUG=False
-   SECRET_KEY=your-secret-key
-   GEMINI_API_KEY=your-api-key
-   ```
-
-### Preparação para Produção Local
-
-1. **Configure as variáveis de ambiente de produção**
-2. **Use PostgreSQL ao invés de SQLite**
-3. **Configure um servidor web (Nginx + Gunicorn)**
-4. **Setup de SSL/HTTPS**
-5. **Configure backup automático do banco**
-
-### Exemplo com Gunicorn
-```bash
-pip install gunicorn
-gunicorn symplifika.wsgi:application --bind 0.0.0.0:8000
-```
-
-## 🤝 Contribuição
-
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
-
-## 📄 Licença
-
-Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
-
-## 📞 Suporte
-
-- **Email**: suporte@symplifika.com
-- **Issues**: Use as issues do GitHub para reportar bugs
-- **Documentação**: Wiki do projeto no GitHub
-- **PostgreSQL**: Veja `POSTGRESQL_SETUP.md` para configuração detalhada
-
-## 🎯 Roadmap
-
-### Próximas Versões
-
-#### v1.1
-- [ ] Sistema de templates compartilhados
-- [ ] Export/Import de atalhos
-- [ ] API webhooks para integrações
-
-#### v1.2
-- [ ] Aplicativo mobile (React Native)
-- [ ] Plugin para navegadores
-- [ ] Integração com Slack/Discord
-
-#### v1.3
-- [ ] IA própria treinada
-- [ ] Suporte a múltiplos idiomas
-- [ ] Analytics avançados
+Symplifika é uma plataforma para criação, gerenciamento e uso de atalhos de texto inteligentes, integrando web, API RESTful e extensão Chrome. Suporta autenticação JWT, integração com IA (Google Gemini), painel responsivo e CI/CD moderno.
 
 ---
 
-**Desenvolvido com ❤️ pela equipe Symplifika**
+## Funcionalidades
+
+- Gerenciamento de atalhos personalizados
+- API RESTful protegida por JWT
+- Integração com extensão Chrome
+- Painel web responsivo (Tailwind CSS)
+- Suporte a IA (Google Gemini)
+- CI/CD com GitHub Actions
+- Documentação interativa da API (Swagger/OpenAPI)
+- Segurança e boas práticas de desenvolvimento
+
+---
+
+## Como rodar localmente
+
+```bash
+git clone https://github.com/seuusuario/symplifika.git
+cd symplifika_django
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
+```
+
+---
+
+## Testes
+
+```bash
+python manage.py test
+```
+
+---
+
+## Variáveis de ambiente
+
+Crie um arquivo `.env` na raiz do projeto. Veja `.env.example` para referência.
+
+Principais variáveis:
+- `SECRET_KEY`
+- `DEBUG`
+- `DATABASE_URL`
+- `GEMINI_API_KEY`
+- `STRIPE_PUBLISHABLE_KEY`
+- `STRIPE_SECRET_KEY`
+
+---
+
+## API REST
+
+Principais endpoints:
+
+- **Autenticação:**  
+  `POST /api/token/`  
+  `POST /api/token/refresh/`
+
+- **Atalhos:**  
+  `GET /shortcuts/api/shortcuts/`  
+  `POST /shortcuts/api/shortcuts/`
+
+- **Usuário:**  
+  `GET /users/api/profile/`
+
+Veja [docs/api.md](docs/api.md) para exemplos detalhados de requisições.
+
+---
+
+## Extensão Chrome
+
+- Instale a extensão via modo desenvolvedor no Chrome.
+- Faça login usando sua conta Symplifika.
+- Sincronize, crie e use atalhos diretamente no navegador.
+
+Veja [chrome_extension/README.md](chrome_extension/README.md) para integração e instruções.
+
+---
+
+## CI/CD
+## Build, minificação e integridade de static files
+
+---
+
+## Monitoramento, Rate Limiting e Segurança
+
+### Sentry (monitoramento de erros)
+
+- Adicione sua chave DSN Sentry ao ambiente:
+  ```
+  SENTRY_DSN=seu_dsn_aqui
+  ```
+- O projeto já está configurado para enviar erros automaticamente para o Sentry.
+
+### Slack (notificações)
+
+- Adicione seu webhook Slack ao ambiente:
+  ```
+  SLACK_WEBHOOK_URL=https://hooks.slack.com/services/SEU/WEBHOOK/URL
+  ```
+- Use a função `notify_slack("mensagem")` para enviar alertas críticos.
+
+### Email (alertas administrativos)
+
+- Configure as variáveis de email no ambiente:
+  ```
+  EMAIL_HOST=smtp.seuservidor.com
+  EMAIL_PORT=587
+  EMAIL_HOST_USER=seu@email.com
+  EMAIL_HOST_PASSWORD=senha
+  DEFAULT_FROM_EMAIL=Symplifika <no-reply@symplifika.com>
+  ```
+- Use `send_mail` do Django para enviar notificações administrativas.
+
+### Rate Limiting e Proteção contra Brute Force
+
+- O projeto utiliza **django-ratelimit** para limitar requisições ao endpoint de login.
+- Por padrão, cada IP pode tentar login até 10 vezes por minuto.
+- Após 5 tentativas falhas consecutivas, o login é bloqueado por 10 minutos para aquele IP/usuário.
+- Atividades suspeitas (múltiplas falhas) são logadas e notificadas via Slack (se configurado).
+- Para customizar limites, ajuste o decorator `@ratelimit` e a lógica de bloqueio no `login_view`.
+
+**Exemplo de configuração:**
+```python
+@ratelimit(key='ip', rate='10/m', method='POST', block=True)
+def login_view(request):
+    # ... proteção contra brute force e monitoramento já implementados
+```
+
+---
+
+- Workflow completo em `.github/workflows/django.yml`
+- Lint, testes, cobertura, build de static files e análise de segurança automatizados.
+- Pronto para deploy em Render, Heroku, AWS, etc.
+
+### Minificação automática
+
+O projeto utiliza **django-compressor** para minificar CSS/JS nos templates.  
+No template, use:
+
+```django
+{% load compress %}
+{% compress css %}
+<link rel="stylesheet" href="{% static 'css/base.css' %}">
+{% endcompress %}
+```
+
+Para minificar offline, rode:
+
+```bash
+python manage.py compress
+```
+
+### Verificação de integridade dos arquivos estáticos
+
+Após rodar `collectstatic`, você pode verificar a integridade dos arquivos com:
+
+```bash
+find staticfiles/ -type f -exec sha256sum {} \; > staticfiles_hashes.txt
+```
+
+Compare o arquivo gerado entre builds para garantir que não há arquivos corrompidos ou ausentes.
+
+### Otimização de imagens
+
+Para otimizar PNGs:
+
+```bash
+find staticfiles/ -name "*.png" -exec pngquant --force --ext .png {} \;
+```
+
+Para minificar CSS gerado pelo Tailwind:
+
+```bash
+npx tailwindcss -i ./static/css/base.css -o ./static/css/base.min.css --minify
+```
+
+---
+
+---
+
+## Documentação Swagger/OpenAPI
+
+A API do Symplifika possui documentação interativa disponível via Swagger/OpenAPI.
+
+- **Acesse:**  
+  `http://localhost:8000/api/docs/` (ambiente local)  
+  ou  
+  `https://seusite.com/api/docs/` (produção)
+
+Nessa página você pode:
+- Visualizar todos os endpoints disponíveis
+- Testar requisições diretamente pelo navegador
+- Ver exemplos de payloads e respostas
+- Gerar código de integração para diversas linguagens
+
+**Recomendação:**  
+Consulte a documentação Swagger antes de integrar a extensão ou qualquer sistema externo à API do Symplifika.
+
+---
+
+## Integração com Gemini (IA)
+
+- Configure sua chave Gemini em `.env`
+- Use endpoints de IA para expandir atalhos e textos inteligentes.
+
+Veja [docs/gemini.md](docs/gemini.md) para exemplos de uso.
+
+---
+
+## Exemplos de Uso da API
+
+Veja [docs/api.md](docs/api.md) para exemplos práticos de integração (curl, JS, Python).
+
+---
+
+## Contribuição
+
+Pull requests são bem-vindos!  
+Sugestões, melhorias e correções podem ser enviadas via issues ou PR.
+
+---
+
+## Licença
+
+MIT
+
+---
+
+## Contato
+
+Dúvidas, sugestões ou suporte:  
+[seuemail@dominio.com](mailto:seuemail@dominio.com)
+
+---

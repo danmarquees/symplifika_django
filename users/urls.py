@@ -19,6 +19,7 @@ urlpatterns = [
     path('plan/upgrade/', views.plan_upgrade_view, name='plan_upgrade'),
     path('plan/upgrade/payment/<int:upgrade_id>/', views.plan_upgrade_payment_view, name='plan_upgrade_payment'),
     path('subscription/', views.subscription_management_view, name='subscription_management'),
+    path('subscription-success/', views.subscription_success_view, name='subscription_success'),
 
     # Autenticação (API)
     path('api/auth/register/', views.register, name='api-register'),

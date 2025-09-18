@@ -1,0 +1,126 @@
+{% extends 'emails/base.html' %}
+
+{% block title %}Verificar Email - Symplifika{% endblock %}
+{% block email_title %}Verificar Email{% endblock %}
+
+{% block content %}
+<h2 class="content-title">📧 Confirme seu Email</h2>
+
+<p class="content-subtitle">
+    Olá, {{ user.get_full_name|default:user.username }}!
+</p>
+
+<p class="content-text">
+    Obrigado por se cadastrar no Symplifika! Para garantir a segurança da sua conta e começar a usar todos os nossos recursos, precisamos verificar seu endereço de email.
+</p>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="{{ verification_url }}" class="btn">
+        Verificar Meu Email
+    </a>
+</div>
+
+<div class="info-box">
+    <h4 style="margin: 0 0 10px 0; color: #0369a1;">✅ Por que verificar?</h4>
+    <ul style="margin: 0; padding-left: 20px; color: #0284c7;">
+        <li>Garante que você receberá notificações importantes</li>
+        <li>Permite recuperar sua conta se esquecer a senha</li>
+        <li>Desbloqueia recursos premium e funcionalidades avançadas</li>
+        <li>Mantém sua conta segura contra acesso não autorizado</li>
+    </ul>
+</div>
+
+<h3 style="color: #1f2937; font-size: 18px; margin: 30px 0 15px 0;">
+    Link não funciona?
+</h3>
+
+<p class="content-text">
+    Se o botão acima não funcionar, copie e cole o link abaixo no seu navegador:
+</p>
+
+<div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0; word-break: break-all;">
+    <code style="color: #374151; font-size: 14px;">{{ verification_url }}</code>
+</div>
+
+<div class="warning-box">
+    <p style="margin: 0; color: #92400e; font-weight: 600;">
+        ⏰ Atenção
+    </p>
+    <p style="margin: 10px 0 0 0; color: #b45309;">
+        Este link de verificação expira em <strong>7 dias</strong>. 
+        Se expirar, você pode solicitar um novo link na página de login.
+    </p>
+</div>
+
+<h3 style="color: #1f2937; font-size: 18px; margin: 30px 0 15px 0;">
+    Próximos Passos
+</h3>
+
+<p class="content-text">Após verificar seu email, você poderá:</p>
+
+<table style="width: 100%; margin: 20px 0;">
+    <tr>
+        <td style="padding: 15px; background-color: #f0fdf4; border-radius: 8px; border-left: 4px solid #10b981;">
+            <strong style="color: #065f46;">🚀 Criar seus primeiros atalhos</strong><br>
+            <span style="color: #047857; font-size: 14px;">Comece organizando seus sites favoritos</span>
+        </td>
+    </tr>
+    <tr><td style="height: 10px;"></td></tr>
+    <tr>
+        <td style="padding: 15px; background-color: #f0f9ff; border-radius: 8px; border-left: 4px solid #0ea5e9;">
+            <strong style="color: #0c4a6e;">🤖 Experimentar nossa IA</strong><br>
+            <span style="color: #0284c7; font-size: 14px;">Deixe nossa IA sugerir atalhos personalizados</span>
+        </td>
+    </tr>
+    <tr><td style="height: 10px;"></td></tr>
+    <tr>
+        <td style="padding: 15px; background-color: #fef3c7; border-radius: 8px; border-left: 4px solid #f59e0b;">
+            <strong style="color: #92400e;">📱 Instalar extensão do navegador</strong><br>
+            <span style="color: #b45309; font-size: 14px;">Acesse seus atalhos diretamente do navegador</span>
+        </td>
+    </tr>
+</table>
+
+<div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 30px 0;">
+    <h4 style="margin: 0 0 15px 0; color: #1f2937;">🎁 Bônus de Boas-Vindas</h4>
+    <p style="margin: 0; color: #374151;">
+        Após verificar seu email, você ganhará <strong>30 dias grátis</strong> de acesso Premium para testar todos os recursos avançados!
+    </p>
+</div>
+
+<h3 style="color: #1f2937; font-size: 18px; margin: 30px 0 15px 0;">
+    Precisa de Ajuda?
+</h3>
+
+<p class="content-text">
+    Se você encontrar algum problema durante a verificação ou tiver dúvidas sobre como usar o Symplifika, nossa equipe está aqui para ajudar:
+</p>
+
+<div style="text-align: center; margin: 20px 0;">
+    <a href="mailto:suporte@symplifika.com" class="btn btn-secondary" style="margin-right: 10px;">
+        Contatar Suporte
+    </a>
+    <a href="https://symplifika.com/ajuda" class="btn btn-secondary">
+        Central de Ajuda
+    </a>
+</div>
+
+<div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+    <p style="margin: 0; color: #374151; font-size: 14px;">
+        <strong>Detalhes da conta:</strong><br>
+        Email: {{ user.email }}<br>
+        Data de cadastro: {{ user.date_joined|date:"d/m/Y H:i" }}<br>
+        Código de verificação: {{ verification_code|default:"Não disponível" }}
+    </p>
+</div>
+
+<p style="color: #6b7280; font-style: italic; margin: 30px 0 0 0;">
+    Obrigado por escolher o Symplifika!<br>
+    <strong>Equipe Symplifika</strong>
+</p>
+{% endblock %}
+
+{% block unsubscribe_link %}
+<a href="{% url 'users:email_preferences' %}">Gerenciar preferências de email</a>
+<br><small style="color: #9ca3af;">Emails de verificação não podem ser cancelados</small>
+{% endblock %}

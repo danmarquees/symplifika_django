@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Meus Atalhos | Symplifika{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <!-- Header -->
+    <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Meus Atalhos</h1>
+                    <p class="text-gray-600 dark:text-gray-400 mt-1">Gerencie todos os seus atalhos</p>
+                </div>
+                <a href="{% url 'shortcuts:create' %}" 
+                   class="bg-symplifika-primary text-white px-4 py-2 rounded-lg hover:bg-symplifika-accent transition-colors flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Novo Atalho
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Filters -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+            <div class="flex flex-wrap gap-4">
+                <input type="text" id="search" placeholder="Buscar atalhos..." 
+                       class="flex-1 min-w-64 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary">
+                <select id="category-filter" 
+                        class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary bg-white dark:bg-gray-700">
+                    <option value="">Todas as categorias</option>
+                    <option value="work">Trabalho</option>
+                    <option value="personal">Pessoal</option>
+                    <option value="productivity">Produtividade</option>
+                </select>
+                <select id="sort-by" 
+                        class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary bg-white dark:bg-gray-700">
+                    <option value="name">Nome</option>
+                    <option value="created">Data de criação</option>
+                    <option value="usage">Mais usado</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Shortcuts Grid -->
+        <div id="shortcuts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Loading state -->
+            <div class="col-span-full flex justify-center py-8">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-symplifika-primary"></div>
+            </div>
+        </div>
+
+        <!-- Empty state -->
+        <div id="empty-state" class="hidden text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">Nenhum atalho encontrado</h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Comece criando seu primeiro atalho.</p>
+            <div class="mt-6">
+                <a href="{% url 'shortcuts:create' %}" 
+                   class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-symplifika-primary hover:bg-symplifika-accent">
+                    <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Novo Atalho
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-4 w-full">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Confirmar Exclusão</h3>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">Tem certeza de que deseja excluir este atalho? Esta ação não pode ser desfeita.</p>
+        <div class="flex gap-3">
+            <button id="confirmDelete" 
+                    class="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                Excluir
+            </button>
+            <button onclick="closeDeleteModal()" 
+                    class="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                Cancelar
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let shortcuts = [];
+let filteredShortcuts = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadShortcuts();
+    setupEventListeners();
+});
+
+function setupEventListeners() {
+    document.getElementById('search').addEventListener('input', filterShortcuts);
+    document.getElementById('category-filter').addEventListener('change', filterShortcuts);
+    document.getElementById('sort-by').addEventListener('change', filterShortcuts);
+}
+
+async function loadShortcuts() {
+    try {
+        const response = await window.apiConfig.makeRequest('/api/shortcuts/', {
+            method: 'GET'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            shortcuts = data.results || data;
+            filteredShortcuts = [...shortcuts];
+            displayShortcuts();
+        } else {
+            throw new Error('Failed to load shortcuts');
+        }
+    } catch (error) {
+        console.error('Error loading shortcuts:', error);
+        showEmptyState();
+    }
+}
+
+function filterShortcuts() {
+    const search = document.getElementById('search').value.toLowerCase();
+    const category = document.getElementById('category-filter').value;
+    const sortBy = document.getElementById('sort-by').value;
+    
+    filteredShortcuts = shortcuts.filter(shortcut => {
+        const matchesSearch = shortcut.name.toLowerCase().includes(search) || 
+                            shortcut.url.toLowerCase().includes(search);
+        const matchesCategory = !category || shortcut.category === category;
+        return matchesSearch && matchesCategory;
+    });
+    
+    // Sort shortcuts
+    filteredShortcuts.sort((a, b) => {
+        switch (sortBy) {
+            case 'name':
+                return a.name.localeCompare(b.name);
+            case 'created':
+                return new Date(b.created_at) - new Date(a.created_at);
+            case 'usage':
+                return (b.usage_count || 0) - (a.usage_count || 0);
+            default:
+                return 0;
+        }
+    });
+    
+    displayShortcuts();
+}
+
+function displayShortcuts() {
+    const container = document.getElementById('shortcuts-container');
+    const emptyState = document.getElementById('empty-state');
+    
+    if (filteredShortcuts.length === 0) {
+        container.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+    }
+    
+    emptyState.classList.add('hidden');
+    container.innerHTML = filteredShortcuts.map(shortcut => `
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+            <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-symplifika-primary rounded-lg flex items-center justify-center">
+                        <span class="text-white font-medium text-sm">${shortcut.name.charAt(0).toUpperCase()}</span>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-900 dark:text-white">${shortcut.name}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">${shortcut.category || 'Sem categoria'}</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="useShortcut('${shortcut.id}')" 
+                            class="p-2 text-symplifika-primary hover:bg-symplifika-primary/10 rounded-lg transition-colors" 
+                            title="Usar atalho">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                        </svg>
+                    </button>
+                    <a href="{% url 'shortcuts:edit' 0 %}".replace('0', shortcut.id) 
+                       class="p-2 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded-lg transition-colors" 
+                       title="Editar">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                    </a>
+                    <button onclick="confirmDelete('${shortcut.id}', '${shortcut.name}')" 
+                            class="p-2 text-red-600 hover:bg-red-100 dark:hover:bg-red-900/20 rounded-lg transition-colors" 
+                            title="Excluir">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <p class="text-sm text-gray-600 dark:text-gray-400 truncate" title="${shortcut.url}">${shortcut.url}</p>
+            </div>
+            
+            <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                <span>Usado ${shortcut.usage_count || 0} vezes</span>
+                <span>${formatDate(shortcut.created_at)}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+function showEmptyState() {
+    document.getElementById('shortcuts-container').innerHTML = '';
+    document.getElementById('empty-state').classList.remove('hidden');
+}
+
+async function useShortcut(shortcutId) {
+    try {
+        const response = await window.apiConfig.makeRequest(`/api/shortcuts/${shortcutId}/use/`, {
+            method: 'POST'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            window.open(data.url, '_blank');
+            
+            // Update usage count in local data
+            const shortcut = shortcuts.find(s => s.id === shortcutId);
+            if (shortcut) {
+                shortcut.usage_count = (shortcut.usage_count || 0) + 1;
+                displayShortcuts();
+            }
+        }
+    } catch (error) {
+        console.error('Error using shortcut:', error);
+        window.apiConfig.handleError(error, 'Usar atalho');
+    }
+}
+
+function confirmDelete(shortcutId, shortcutName) {
+    document.getElementById('deleteModal').classList.remove('hidden');
+    document.getElementById('confirmDelete').onclick = () => deleteShortcut(shortcutId);
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.add('hidden');
+}
+
+async function deleteShortcut(shortcutId) {
+    try {
+        const response = await window.apiConfig.makeRequest(`/api/shortcuts/${shortcutId}/`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            shortcuts = shortcuts.filter(s => s.id !== shortcutId);
+            filterShortcuts();
+            closeDeleteModal();
+            window.apiConfig.showNotification('Atalho excluído com sucesso!', 'success');
+        } else {
+            throw new Error('Failed to delete shortcut');
+        }
+    } catch (error) {
+        console.error('Error deleting shortcut:', error);
+        window.apiConfig.handleError(error, 'Excluir atalho');
+    }
+}
+
+function formatDate(dateString) {
+    return new Date(dateString).toLocaleDateString('pt-BR');
+}
+
+// Close modal when clicking outside
+document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeDeleteModal();
+    }
+});
+</script>
+{% endblock %}

@@ -106,6 +106,28 @@ Extensão oficial do Symplifika para expansão automática de atalhos de texto i
 //ia-resumo → [Texto gerado por IA]
 ```
 
+---
+
+## 📚 Documentação da API (Swagger/OpenAPI)
+
+A API do Symplifika possui documentação interativa disponível via Swagger/OpenAPI.
+
+- **Acesse:**  
+  `http://localhost:8000/api/docs/` (ambiente local)  
+  ou  
+  `https://seusite.com/api/docs/` (produção)
+
+Nessa página você pode:
+- Visualizar todos os endpoints disponíveis
+- Testar requisições diretamente pelo navegador
+- Ver exemplos de payloads e respostas
+- Gerar código de integração para diversas linguagens
+
+**Recomendação:**  
+Consulte a documentação Swagger antes de integrar a extensão ou qualquer sistema externo à API do Symplifika.
+
+---
+
 ## 🎨 Estrutura dos Arquivos
 
 ```

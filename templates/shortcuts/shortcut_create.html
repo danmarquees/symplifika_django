@@ -1,0 +1,292 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Criar Atalho | Symplifika{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <!-- Header -->
+    <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Criar Novo Atalho</h1>
+                    <p class="text-gray-600 dark:text-gray-400 mt-1">Adicione um novo atalho à sua coleção</p>
+                </div>
+                <a href="{% url 'shortcuts:list' %}" 
+                   class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Voltar aos Atalhos
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+            <form id="shortcutForm" class="p-6 space-y-6">
+                {% csrf_token %}
+                
+                <!-- Basic Information -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Informações Básicas</h3>
+                    
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Nome do Atalho *
+                        </label>
+                        <input type="text" id="name" name="name" required
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                               placeholder="Ex: Gmail, YouTube, Trello">
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Escolha um nome descritivo e fácil de lembrar</p>
+                    </div>
+                    
+                    <div>
+                        <label for="url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            URL *
+                        </label>
+                        <input type="url" id="url" name="url" required
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                               placeholder="https://exemplo.com">
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">URL completa incluindo https://</p>
+                    </div>
+                    
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Descrição
+                        </label>
+                        <textarea id="description" name="description" rows="3"
+                                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                  placeholder="Descreva brevemente para que serve este atalho"></textarea>
+                    </div>
+                </div>
+
+                <!-- Organization -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Organização</h3>
+                    
+                    <div>
+                        <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Categoria
+                        </label>
+                        <select id="category" name="category"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                            <option value="">Selecione uma categoria</option>
+                            <option value="work">Trabalho</option>
+                            <option value="personal">Pessoal</option>
+                            <option value="productivity">Produtividade</option>
+                            <option value="entertainment">Entretenimento</option>
+                            <option value="social">Redes Sociais</option>
+                            <option value="education">Educação</option>
+                            <option value="shopping">Compras</option>
+                            <option value="news">Notícias</option>
+                            <option value="tools">Ferramentas</option>
+                            <option value="other">Outros</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="tags" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Tags
+                        </label>
+                        <input type="text" id="tags" name="tags"
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-symplifika-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                               placeholder="trabalho, urgente, favorito">
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Separe as tags com vírgulas</p>
+                    </div>
+                </div>
+
+                <!-- Advanced Options -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Opções Avançadas</h3>
+                    
+                    <div class="flex items-center">
+                        <input type="checkbox" id="is_favorite" name="is_favorite"
+                               class="h-4 w-4 text-symplifika-primary focus:ring-symplifika-primary border-gray-300 rounded">
+                        <label for="is_favorite" class="ml-2 block text-sm text-gray-900 dark:text-white">
+                            Marcar como favorito
+                        </label>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <input type="checkbox" id="open_in_new_tab" name="open_in_new_tab" checked
+                               class="h-4 w-4 text-symplifika-primary focus:ring-symplifika-primary border-gray-300 rounded">
+                        <label for="open_in_new_tab" class="ml-2 block text-sm text-gray-900 dark:text-white">
+                            Abrir em nova aba
+                        </label>
+                    </div>
+                </div>
+
+                <!-- URL Preview -->
+                <div id="url-preview" class="hidden space-y-4">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Pré-visualização</h3>
+                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
+                        <div id="preview-content" class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-symplifika-primary rounded-lg flex items-center justify-center">
+                                <span id="preview-icon" class="text-white font-medium text-sm"></span>
+                            </div>
+                            <div>
+                                <h4 id="preview-name" class="font-medium text-gray-900 dark:text-white"></h4>
+                                <p id="preview-url" class="text-sm text-gray-500 dark:text-gray-400"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <button type="submit" 
+                            class="flex-1 bg-symplifika-primary text-white px-6 py-3 rounded-lg hover:bg-symplifika-accent transition-colors font-medium">
+                        Criar Atalho
+                    </button>
+                    <a href="{% url 'shortcuts:list' %}" 
+                       class="flex-1 text-center bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium">
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- AI Suggestion Panel -->
+        <div class="mt-8 bg-gradient-to-r from-symplifika-primary/10 to-symplifika-secondary/10 rounded-lg p-6 border border-symplifika-primary/20">
+            <div class="flex items-start space-x-3">
+                <div class="flex-shrink-0">
+                    <svg class="w-6 h-6 text-symplifika-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium text-symplifika-primary mb-2">💡 Dica da IA</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                        Nossa IA pode sugerir atalhos personalizados baseados no seu uso. Experimente descrever o que você precisa!
+                    </p>
+                    <button onclick="openAISuggestions()" 
+                            class="text-symplifika-primary hover:text-symplifika-accent text-sm font-medium">
+                        Obter Sugestões da IA →
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('shortcutForm');
+    const nameInput = document.getElementById('name');
+    const urlInput = document.getElementById('url');
+    const previewSection = document.getElementById('url-preview');
+    
+    // Update preview when name or URL changes
+    nameInput.addEventListener('input', updatePreview);
+    urlInput.addEventListener('input', updatePreview);
+    
+    // Form submission
+    form.addEventListener('submit', handleSubmit);
+});
+
+function updatePreview() {
+    const name = document.getElementById('name').value;
+    const url = document.getElementById('url').value;
+    const previewSection = document.getElementById('url-preview');
+    
+    if (name && url) {
+        document.getElementById('preview-name').textContent = name;
+        document.getElementById('preview-url').textContent = url;
+        document.getElementById('preview-icon').textContent = name.charAt(0).toUpperCase();
+        previewSection.classList.remove('hidden');
+    } else {
+        previewSection.classList.add('hidden');
+    }
+}
+
+async function handleSubmit(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const shortcutData = {
+        name: formData.get('name'),
+        url: formData.get('url'),
+        description: formData.get('description'),
+        category: formData.get('category'),
+        tags: formData.get('tags'),
+        is_favorite: formData.has('is_favorite'),
+        open_in_new_tab: formData.has('open_in_new_tab')
+    };
+    
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    
+    try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Criando...
+        `;
+        
+        const response = await window.apiConfig.makeRequest('/api/shortcuts/', {
+            method: 'POST',
+            body: JSON.stringify(shortcutData)
+        });
+        
+        if (response.ok) {
+            window.apiConfig.showNotification('Atalho criado com sucesso!', 'success');
+            setTimeout(() => {
+                window.location.href = "{% url 'shortcuts:list' %}";
+            }, 1000);
+        } else {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Erro ao criar atalho');
+        }
+    } catch (error) {
+        console.error('Error creating shortcut:', error);
+        window.apiConfig.handleError(error, 'Criar atalho');
+        
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+    }
+}
+
+function openAISuggestions() {
+    // This would open an AI suggestions modal or redirect to AI page
+    window.apiConfig.showNotification('Funcionalidade de IA em desenvolvimento!', 'info');
+}
+
+// Auto-fill name from URL
+document.getElementById('url').addEventListener('blur', function() {
+    const url = this.value;
+    const nameInput = document.getElementById('name');
+    
+    if (url && !nameInput.value) {
+        try {
+            const urlObj = new URL(url);
+            const domain = urlObj.hostname.replace('www.', '');
+            const siteName = domain.split('.')[0];
+            nameInput.value = siteName.charAt(0).toUpperCase() + siteName.slice(1);
+            updatePreview();
+        } catch (e) {
+            // Invalid URL, ignore
+        }
+    }
+});
+
+// Validate URL format
+document.getElementById('url').addEventListener('input', function() {
+    const url = this.value;
+    const isValid = url === '' || /^https?:\/\/.+/.test(url);
+    
+    if (!isValid && url.length > 0) {
+        this.setCustomValidity('URL deve começar com http:// ou https://');
+    } else {
+        this.setCustomValidity('');
+    }
+});
+</script>
+{% endblock %}

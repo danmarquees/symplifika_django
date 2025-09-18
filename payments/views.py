@@ -26,6 +26,7 @@ from .serializers import (
 )
 from .services import StripeService, PlanService
 from .models import StripeWebhookEvent
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -272,6 +273,82 @@ class PlanUpgradeView(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
 
 
+class CreateCheckoutSessionView(APIView):
+    """View para criar sessão de checkout do Stripe"""
+    
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        """Cria uma sessão de checkout do Stripe"""
+        try:
+            plan = request.data.get('plan')
+            billing_cycle = request.data.get('billing_cycle', 'monthly')
+            
+            if not plan:
+                return Response({
+                    'success': False,
+                    'error': 'Plano é obrigatório'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Buscar preço do plano no Stripe
+            from .models import StripePrice
+            price = StripePrice.objects.filter(
+                product__name__iexact=plan,
+                interval=billing_cycle,
+                is_active=True
+            ).first()
+            
+            if not price:
+                return Response({
+                    'success': False,
+                    'error': 'Preço não encontrado para o plano solicitado'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Obter ou criar cliente Stripe
+            customer = StripeService.get_or_create_customer(request.user)
+            
+            # URLs de sucesso e cancelamento
+            success_url = request.build_absolute_uri('/users/subscription-success/')
+            cancel_url = request.build_absolute_uri('/users/plan-upgrade/')
+            
+            # Criar sessão de checkout
+            checkout_session = stripe.checkout.Session.create(
+                customer=customer.stripe_customer_id,
+                payment_method_types=['card'],
+                line_items=[{
+                    'price': price.stripe_price_id,
+                    'quantity': 1,
+                }],
+                mode='subscription',
+                success_url=success_url + '?session_id={CHECKOUT_SESSION_ID}',
+                cancel_url=cancel_url,
+                allow_promotion_codes=True,
+                billing_address_collection='required',
+                customer_update={
+                    'address': 'auto',
+                    'name': 'auto'
+                },
+                metadata={
+                    'user_id': request.user.id,
+                    'plan': plan,
+                    'billing_cycle': billing_cycle
+                }
+            )
+            
+            return Response({
+                'success': True,
+                'checkout_url': checkout_session.url,
+                'session_id': checkout_session.id
+            })
+            
+        except Exception as e:
+            logger.error(f"Erro ao criar sessão de checkout: {e}")
+            return Response({
+                'success': False,
+                'error': str(e)
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+
 class CustomerPortalView(APIView):
     """View para portal do cliente Stripe"""
     
@@ -329,13 +406,30 @@ class WebhookView(View):
                 logger.error(f"Assinatura inválida: {e}")
                 return JsonResponse({'error': 'Assinatura inválida'}, status=400)
             
-            # Processar evento
-            success = StripeService.process_webhook(event)
+            # Processar evento baseado no tipo
+            event_type = event['type']
             
-            if success:
-                return JsonResponse({'status': 'success'})
-            else:
-                return JsonResponse({'status': 'error'}, status=500)
+            if event_type == 'checkout.session.completed':
+                StripeService.handle_checkout_session_completed(event)
+            elif event_type == 'customer.subscription.updated':
+                StripeService.handle_subscription_updated(event)
+            elif event_type == 'customer.subscription.deleted':
+                StripeService.handle_subscription_deleted(event)
+            elif event_type == 'invoice.payment_succeeded':
+                StripeService.handle_payment_succeeded(event)
+            elif event_type == 'invoice.payment_failed':
+                StripeService.handle_payment_failed(event)
+            
+            # Salvar evento no banco
+            StripeWebhookEvent.objects.create(
+                stripe_event_id=event['id'],
+                event_type=event_type,
+                data=event,
+                processed=True,
+                processed_at=timezone.now()
+            )
+            
+            return JsonResponse({'status': 'success'})
                 
         except Exception as e:
             logger.error(f"Erro ao processar webhook: {e}")
