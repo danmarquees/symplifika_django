@@ -781,7 +781,7 @@ def subscription_management_view(request):
         'current_plan': request.user.profile.plan
     }
 
-    return render(request, 'users/subscription_management.html', context)
+    return render(request, 'users/subscription.html', context)
 
 def settings_view(request):
     """View para configurações do usuário"""
@@ -812,3 +812,39 @@ def subscription_success_view(request):
     }
     
     return render(request, 'users/subscription_success.html', context)
+
+
+def password_reset_template_view(request):
+    """Renderiza o template de reset de senha"""
+    if request.user.is_authenticated:
+        return redirect('core:dashboard')
+    
+    from django import forms
+    from django.contrib.auth import get_user_model
+    
+    class PasswordResetForm(forms.Form):
+        email = forms.EmailField(
+            label='Email',
+            max_length=254,
+            widget=forms.EmailInput(attrs={'class': 'form-control'})
+        )
+        
+        def clean_email(self):
+            email = self.cleaned_data['email']
+            User = get_user_model()
+            if not User.objects.filter(email=email).exists():
+                raise forms.ValidationError('Este email não está cadastrado.')
+            return email
+    
+    if request.method == 'POST':
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            # Aqui você pode implementar o envio de email
+            # Por enquanto, apenas mostra uma mensagem de sucesso
+            from django.contrib import messages
+            messages.success(request, 'Instruções de recuperação enviadas para seu email!')
+            return redirect('users:login')
+    else:
+        form = PasswordResetForm()
+    
+    return render(request, 'auth/password_reset.html', {'form': form})

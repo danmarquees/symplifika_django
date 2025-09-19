@@ -13,11 +13,22 @@ urlpatterns = [
     path('api/status/', views.api_status, name='api-status'),
     path('api/health/', views.health_check, name='health-check'),
     path('api/statistics/', views.statistics_view, name='api-statistics'),
+    path('api/users/<int:user_id>/activity/', views.user_activity_api, name='user-activity-api'),
+    path('api/users/<int:user_id>/categories/', views.user_categories_api, name='user-categories-api'),
+    path('api/users/usage-stats/', views.usage_stats_api, name='usage-stats-api'),
+    path('api/payments/billing-history/', views.billing_history_api, name='billing-history-api'),
+    
+    # Settings API endpoints
+    path('api/profile/', views.api_profile_update, name='api-profile-update'),
+    path('api/account/', views.api_account_update, name='api-account-update'),
+    path('api/change-password/', views.api_change_password, name='api-change-password'),
+    path('api/notifications-preferences/', views.api_notifications_preferences, name='api-notifications-preferences'),
 
     # Authentication handled by users app
 
     # Profile management
     path('profile/', views.profile, name='profile'),
+    path('profile/<int:user_id>/', views.profile, name='profile-user'),
     path('profile/edit/', views.edit_profile, name='edit-profile'),
     path('profile/edit/password/', views.change_password, name='change-password'),
     path('profile/edit/avatar/', views.change_avatar, name='change-avatar'),
@@ -32,7 +43,7 @@ urlpatterns = [
     path('settings/', views.settings, name='settings'),
     path('about/', views.about, name='about'),
     path('contact/', views.contact, name='contact'),
-    path('privacy/', views.privacy, name='privacy'),
+    path('privacy/', views.privacy_policy_view, name='privacy'),
     path('terms/', views.terms, name='terms'),
     path('faq/', views.faq, name='faq'),
     path('help/', views.help, name='help'),

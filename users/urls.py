@@ -18,7 +18,8 @@ urlpatterns = [
     # Plan Management (HTML Templates)
     path('plan/upgrade/', views.plan_upgrade_view, name='plan_upgrade'),
     path('plan/upgrade/payment/<int:upgrade_id>/', views.plan_upgrade_payment_view, name='plan_upgrade_payment'),
-    path('subscription/', views.subscription_management_view, name='subscription_management'),
+    path('subscription/', views.subscription_management_view, name='subscription'),
+    path('subscription/management/', views.subscription_management_view, name='subscription_management'),
     path('subscription-success/', views.subscription_success_view, name='subscription_success'),
 
     # Autenticação (API)
@@ -26,9 +27,13 @@ urlpatterns = [
     path('api/auth/login/', views.login_view, name='api-login'),
     path('api/auth/logout/', views.logout_view, name='api-logout'),
 
-    # Reset de senha
-    path('auth/password-reset/', views.password_reset_request, name='password-reset'),
+    # Reset de senha (HTML Template)
+    path('auth/password-reset/', views.password_reset_template_view, name='password-reset'),
     path('auth/password-reset-confirm/', views.password_reset_confirm, name='password-reset-confirm'),
+    
+    # Reset de senha (API)
+    path('api/auth/password-reset/', views.password_reset_request, name='api-password-reset'),
+    path('api/auth/password-reset-confirm/', views.password_reset_confirm, name='api-password-reset-confirm'),
 
     # Dashboard
     path('dashboard/', views.dashboard_data, name='dashboard'),

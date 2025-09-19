@@ -1,0 +1,144 @@
+<!-- Cookie Consent Popup -->
+<div id="cookieConsent" class="cookie-consent-popup hidden fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 shadow-2xl border-t border-gray-200 dark:border-gray-700">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <!-- Cookie Icon and Text -->
+            <div class="flex items-start gap-3 flex-1">
+                <div class="flex-shrink-0 mt-1">
+                    <svg class="w-6 h-6 text-symplifika-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+                        🍪 Consentimento de Cookies
+                    </h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                        Utilizamos cookies para melhorar sua experiência, personalizar conteúdo e analisar nosso tráfego. 
+                        Ao continuar navegando, você concorda com nossa 
+                        <a href="{% url 'core:privacy' %}" class="text-symplifika-primary hover:text-symplifika-accent underline font-medium">Política de Privacidade</a>.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                <button 
+                    id="cookieSettings" 
+                    class="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors min-w-[120px]"
+                >
+                    Configurar
+                </button>
+                <button 
+                    id="cookieReject" 
+                    class="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors min-w-[120px]"
+                >
+                    Rejeitar
+                </button>
+                <button 
+                    id="cookieAccept" 
+                    class="px-4 py-2 text-sm font-medium text-white bg-symplifika-primary hover:bg-symplifika-accent rounded-lg transition-colors min-w-[120px]"
+                >
+                    Aceitar Todos
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cookie Settings Modal -->
+<div id="cookieSettingsModal" class="cookie-settings-modal hidden fixed inset-0 z-50 overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Background overlay -->
+        <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75" aria-hidden="true"></div>
+
+        <!-- Modal panel -->
+        <div class="inline-block w-full max-w-2xl p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-800 shadow-xl rounded-2xl">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                    Configurações de Cookies
+                </h3>
+                <button id="closeSettingsModal" class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Essential Cookies -->
+                <div class="flex items-start justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div class="flex-1">
+                        <h4 class="font-medium text-gray-900 dark:text-white mb-1">
+                            Cookies Essenciais
+                        </h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                            Necessários para o funcionamento básico do site. Não podem ser desabilitados.
+                        </p>
+                    </div>
+                    <div class="ml-4">
+                        <input type="checkbox" id="essentialCookies" checked disabled class="w-4 h-4 text-symplifika-primary bg-gray-100 border-gray-300 rounded focus:ring-symplifika-primary dark:focus:ring-symplifika-primary dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    </div>
+                </div>
+
+                <!-- Analytics Cookies -->
+                <div class="flex items-start justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div class="flex-1">
+                        <h4 class="font-medium text-gray-900 dark:text-white mb-1">
+                            Cookies de Análise
+                        </h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                            Nos ajudam a entender como você usa o site para melhorar a experiência.
+                        </p>
+                    </div>
+                    <div class="ml-4">
+                        <input type="checkbox" id="analyticsCookies" class="w-4 h-4 text-symplifika-primary bg-gray-100 border-gray-300 rounded focus:ring-symplifika-primary dark:focus:ring-symplifika-primary dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    </div>
+                </div>
+
+                <!-- Marketing Cookies -->
+                <div class="flex items-start justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div class="flex-1">
+                        <h4 class="font-medium text-gray-900 dark:text-white mb-1">
+                            Cookies de Marketing
+                        </h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                            Usados para personalizar anúncios e medir a eficácia das campanhas.
+                        </p>
+                    </div>
+                    <div class="ml-4">
+                        <input type="checkbox" id="marketingCookies" class="w-4 h-4 text-symplifika-primary bg-gray-100 border-gray-300 rounded focus:ring-symplifika-primary dark:focus:ring-symplifika-primary dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    </div>
+                </div>
+
+                <!-- Functional Cookies -->
+                <div class="flex items-start justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div class="flex-1">
+                        <h4 class="font-medium text-gray-900 dark:text-white mb-1">
+                            Cookies Funcionais
+                        </h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                            Permitem funcionalidades avançadas como lembrança de preferências.
+                        </p>
+                    </div>
+                    <div class="ml-4">
+                        <input type="checkbox" id="functionalCookies" class="w-4 h-4 text-symplifika-primary bg-gray-100 border-gray-300 rounded focus:ring-symplifika-primary dark:focus:ring-symplifika-primary dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Actions -->
+            <div class="flex flex-col sm:flex-row gap-3 mt-8">
+                <button id="saveSettings" class="flex-1 px-4 py-2 text-sm font-medium text-white bg-symplifika-primary hover:bg-symplifika-accent rounded-lg transition-colors">
+                    Salvar Preferências
+                </button>
+                <button id="acceptAllSettings" class="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors">
+                    Aceitar Todos
+                </button>
+                <button id="rejectAllSettings" class="flex-1 px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    Rejeitar Todos
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

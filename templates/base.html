@@ -121,6 +121,10 @@
             rel="stylesheet"
             href="{% static 'css/components/forms-mobile.css' %}"
         />
+        <link
+            rel="stylesheet"
+            href="{% static 'css/components/cookie-consent.css' %}"
+        />
 
         {% block extra_css %}{% endblock %}
 
@@ -188,6 +192,9 @@
         <!-- Footer -->
         {% block footer %} {% include 'includes/footer.html' %} {% endblock %}
 
+        <!-- Cookie Consent Popup -->
+        {% include 'components/cookie_consent.html' %}
+
         <!-- Loading Spinner -->
         <div
             id="loadingSpinner"
@@ -208,6 +215,7 @@
         <script src="{% static 'js/symplifika-base.js' %}"></script>
         <script src="{% static 'js/base.js' %}"></script>
         <script src="{% static 'js/mobile/mobile-utils.js' %}"></script>
+        <script src="{% static 'js/components/cookie-consent.js' %}"></script>
         {% block extra_js %}{% endblock %}
 
         <!-- CSRF Token for AJAX -->

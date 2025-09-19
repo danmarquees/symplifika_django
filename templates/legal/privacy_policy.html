@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Política de Privacidade - Symplifika{% endblock %}
+
+{% block meta_description %}Política de Privacidade do Symplifika - Como coletamos, usamos e protegemos seus dados pessoais{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                Política de Privacidade
+            </h1>
+            <p class="text-lg text-gray-600 dark:text-gray-300">
+                Última atualização: {{ last_updated|default:"Janeiro 2025" }}
+            </p>
+        </div>
+
+        <!-- Content -->
+        <div class="bg-white dark:bg-gray-800 shadow-xl rounded-lg p-8 space-y-8">
+            
+            <!-- Introdução -->
+            <section>
+                <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                    1. Introdução
+                </h2>
+                <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                    O Symplifika ("nós", "nosso" ou "empresa") está comprometido em proteger sua privacidade. 
+                    Esta Política de Privacidade explica como coletamos, usamos, divulgamos e protegemos suas 
+                    informações quando você usa nosso serviço de automações e atalhos.
+                </p>
+            </section>
+
+            <!-- Informações Coletadas -->
+            <section>
+                <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                    2. Informações que Coletamos
+                </h2>
+                
+                <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-3">
+                    2.1 Informações Pessoais
+                </h3>
+                <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                    <li>Nome e informações de contato (email)</li>
+                    <li>Informações de conta (username, senha criptografada)</li>
+                    <li>Preferências de uso e configurações</li>
+                    <li>Dados de automações criadas por você</li>
+                </ul>
+
+                <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-3">
+                    2.2 Informações Técnicas
+                </h3>
+                <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2">
+                    <li>Endereço IP e informações do dispositivo</li>
+                    <li>Tipo de navegador e sistema operacional</li>
+                    <li>Páginas visitadas e tempo de uso</li>
+                    <li>Cookies e tecnologias similares</li>
+                </ul>
+            </section>
+
+            <!-- Como Usamos -->
+            <section>
+                <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                    3. Como Usamos suas Informações
+                </h2>
+                <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2">
+                    <li>Fornecer e manter nossos serviços</li>
+                    <li>Personalizar sua experiência de uso</li>
+                    <li>Comunicar-se com você sobre atualizações e suporte</li>
+                    <li>Melhorar nossos serviços através de análises</li>
+                    <li>Detectar e prevenir fraudes ou uso indevido</li>
+                    <li>Cumprir obrigações legais</li>
+                </ul>
+            </section>
+
+            <!-- Cookies -->
+            <section>
+                <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                    4. Cookies e Tecnologias Similares
+                </h2>
+                
+                <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-3">
+                    4.1 Tipos de Cookies
+                </h3>
+                <div class="space-y-4">
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <h4 class="font-medium text-gray-900 dark:text-white mb-2">Cookies Essenciais</h4>
+                        <p class="text-gray-700 dark:text-gray-300 text-sm">
+                            Necessários para o funcionamento básico do site, como autenticação e segurança.
+                        </p>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <h4 class="font-medium text-gray-900 dark:text-white mb-2">Cookies de Análise</h4>
+                        <p class="text-gray-700 dark:text-gray-300 text-sm">
+                            Nos ajudam a entender como você usa o site para melhorar a experiência.
+                        </p>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <h4 class="font-medium text-gray-900 dark:text-white mb-2">Cookies Funcionais</h4>
+                        <p class="text-gray-700 dark:text-gray-300 text-sm">
+                            Permitem funcionalidades avançadas como lembrança de preferências.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Compartilhamento -->
+            <section>
+                <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                    5. Compartilhamento de Informações
+                </h2>
+                <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                    Não vendemos, alugamos ou compartilhamos suas informações pessoais com terceiros, 
+                    exceto nas seguintes situações:
+                </p>
+                <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2">
+                    <li>Com seu consentimento explícito</li>
+                    <li>Para cumprir obrigações legais</li>
+                    <li>Para proteger nossos direitos e segurança</li>
+                    <li>Com provedores de serviços que nos auxiliam (sob acordos de confidencialidade)</li>
+                </ul>
+            </section>
+
+            <!-- Segurança -->
+            <section>
+                <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                    6. Segurança dos Dados
+                </h2>
+                <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                    Implementamos medidas técnicas e organizacionais apropriadas para proteger suas 
+                    informações contra acesso não autorizado, alteração, divulgação ou destruição. 
+                    Isso inclui criptografia de dados, controles de acesso e monitoramento de segurança.
+                </p>
+            </section>
+
+            <!-- Seus Direitos -->
+            <section>
+                <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                    7. Seus Direitos
+                </h2>
+                <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                    Você tem os seguintes direitos em relação aos seus dados pessoais:
+                </p>
+                <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2">
+                    <li>Acessar suas informações pessoais</li>
+                    <li>Corrigir informações incorretas</li>
+                    <li>Excluir suas informações (direito ao esquecimento)</li>
+                    <li>Portabilidade dos dados</li>
+                    <li>Retirar consentimento a qualquer momento</li>
+                    <li>Opor-se ao processamento de seus dados</li>
+                </ul>
+            </section>
+
+            <!-- Retenção -->
+            <section>
+                <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                    8. Retenção de Dados
+                </h2>
+                <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                    Mantemos suas informações pessoais apenas pelo tempo necessário para cumprir 
+                    os propósitos descritos nesta política, a menos que um período de retenção 
+                    mais longo seja exigido ou permitido por lei.
+                </p>
+            </section>
+
+            <!-- Alterações -->
+            <section>
+                <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                    9. Alterações nesta Política
+                </h2>
+                <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                    Podemos atualizar esta Política de Privacidade periodicamente. Notificaremos 
+                    sobre mudanças significativas através do nosso site ou por email. 
+                    Recomendamos que revise esta política regularmente.
+                </p>
+            </section>
+
+            <!-- Contato -->
+            <section>
+                <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                    10. Contato
+                </h2>
+                <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                    Se você tiver dúvidas sobre esta Política de Privacidade ou quiser exercer 
+                    seus direitos, entre em contato conosco:
+                </p>
+                <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                    <p class="text-gray-700 dark:text-gray-300">
+                        <strong>Email:</strong> privacidade@symplifika.com<br>
+                        <strong>Endereço:</strong> [Seu endereço comercial]
+                    </p>
+                </div>
+            </section>
+        </div>
+
+        <!-- Back Button -->
+        <div class="text-center mt-8">
+            <a href="{% url 'core:index' %}" 
+               class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-symplifika-primary hover:bg-symplifika-accent transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Voltar ao Início
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

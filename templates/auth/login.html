@@ -195,7 +195,7 @@ min-h-screen px-4{% endblock %} {% block content %}
                 </div>
 
                 <a
-                    href="#"
+                    href="{% url 'users:password-reset' %}"
                     class="auth-link text-sm transition-colors text-center sm:text-right min-h-[44px] flex items-center justify-center sm:justify-end px-2"
                 >
                     Esqueceu a senha?
@@ -238,22 +238,6 @@ min-h-screen px-4{% endblock %} {% block content %}
             >
                 Criar Nova Conta
             </a>
-        </div>
-    </div>
-
-    <!-- Demo Credentials -->
-    <div class="demo-credentials mt-6">
-        <p class="text-white/80 text-xs sm:text-sm mb-2 text-center">
-            Credenciais de demonstração:
-        </p>
-        <div class="flex justify-center">
-            <button
-                onclick="fillDemoCredentials()"
-                class="demo-btn text-sm sm:text-base px-4 py-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
-                aria-label="Preencher com credenciais demo: demo / demo123"
-            >
-                demo / demo123
-            </button>
         </div>
     </div>
 </div>
