@@ -87,10 +87,19 @@ jobs:
       - name: Run pip-audit
         run: pip-audit
 
-  # Exemplo de deploy (ajuste para seu provedor)
-  # deploy:
-  #   runs-on: ubuntu-latest
-  #   needs: [test, staticfiles, security]
-  #   steps:
-  #     - name: Deploy to Render/Heroku/AWS
-  #       run: echo "Deploy step here"
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [test, staticfiles, security]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Render CLI
+        run: |
+          curl -fsSL https://cdn.render.com/cli/install.sh | bash
+          export PATH="$HOME/.render:$PATH"
+      - name: Deploy to Render
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        run: |
+          export PATH="$HOME/.render:$PATH"
+          render deploy --service ${{ secrets.RENDER_SERVICE_ID }} --api-key $RENDER_API_KEY

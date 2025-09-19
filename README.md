@@ -85,6 +85,11 @@ Veja [chrome_extension/README.md](chrome_extension/README.md) para integração 
 ---
 
 ## CI/CD
+
+O projeto possui integração contínua (CI) e deploy contínuo (CD) via GitHub Actions, incluindo lint, testes, análise de segurança, build de arquivos estáticos e **deploy automático no Render**.
+
+Veja o guia completo de deploy em [`docs/deploy.md`](docs/deploy.md).
+
 ## Build, minificação e integridade de static files
 
 ---
