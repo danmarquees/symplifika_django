@@ -48,6 +48,11 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('payments/', include('payments.urls')),  # Payments API endpoints
 
+    # Notifications app URLs
+    path('notifications/', include(('notifications.urls', 'notifications'), namespace='notifications')),
+    # Notifications API URLs
+    path('api/notifications/', include(('notifications.api_urls', 'notifications-api'))),
+
     # JWT Auth endpoints
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

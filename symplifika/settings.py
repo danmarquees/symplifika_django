@@ -97,6 +97,7 @@ INSTALLED_APPS = [
     'shortcuts',
     'users',
     'payments',
+    'notifications',
 ]
 
 MIDDLEWARE = [

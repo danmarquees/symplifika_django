@@ -92,6 +92,8 @@
         <!-- Tailwind CSS via CDN -->
         <script src="https://cdn.tailwindcss.com"></script>
 
+        <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
         <!-- Google Fonts: Poppins (Optimized for Mobile) -->
         <link
             href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
@@ -207,9 +209,9 @@
 
         <!-- API Configuration -->
         <script>
-            window.apiConfig = JSON.parse('{{ api_config|escapejs }}');
+            window.apiConfig = JSON.parse("{{ api_config|escapejs }}");
         </script>
-        
+
         <!-- JavaScript -->
         <script src="{% static 'js/api-config.js' %}"></script>
         <script src="{% static 'js/symplifika-base.js' %}"></script>

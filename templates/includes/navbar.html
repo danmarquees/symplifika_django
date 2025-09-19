@@ -1,5 +1,8 @@
 {% load static %} {% load custom_filters %}
 
+<!-- Phosphor Icons CDN para o ícone do sininho -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
 <nav
     class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 no-print sticky top-0 z-40 backdrop-blur-sm bg-white/95 dark:bg-gray-800/95"
 >
@@ -93,9 +96,21 @@
             {% if user.is_authenticated %}
             <div class="hidden md:flex flex-1 max-w-lg mx-8">
                 <div class="relative w-full">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    <div
+                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                    >
+                        <svg
+                            class="h-5 w-5 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                            />
                         </svg>
                     </div>
                     <input
@@ -106,7 +121,10 @@
                         autocomplete="off"
                     />
                     <!-- Search Results Dropdown -->
-                    <div id="search-results" class="hidden absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 max-h-96 overflow-y-auto z-50">
+                    <div
+                        id="search-results"
+                        class="hidden absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 max-h-96 overflow-y-auto z-50"
+                    >
                         <!-- Results will be populated by JavaScript -->
                     </div>
                 </div>
@@ -123,9 +141,24 @@
                     class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}nav-link-active{% else %}nav-link-inactive{% endif %} px-3 py-2 rounded-md text-sm font-medium transition-colors relative"
                     data-nav="dashboard"
                 >
-                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v6H8V5z"/>
+                    <svg
+                        class="w-4 h-4 inline mr-2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"
+                        />
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M8 5a2 2 0 012-2h4a2 2 0 012 2v6H8V5z"
+                        />
                     </svg>
                     Dashboard
                 </a>
@@ -134,8 +167,18 @@
                     class="nav-link {% if request.resolver_match.url_name == 'shortcuts' %}nav-link-active{% else %}nav-link-inactive{% endif %} px-3 py-2 rounded-md text-sm font-medium transition-colors relative"
                     data-nav="shortcuts"
                 >
-                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    <svg
+                        class="w-4 h-4 inline mr-2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M13 10V3L4 14h7v7l9-11h-7z"
+                        />
                     </svg>
                     Atalhos
                 </a>
@@ -144,8 +187,18 @@
                     class="nav-link {% if request.resolver_match.url_name == 'profile' %}nav-link-active{% else %}nav-link-inactive{% endif %} px-3 py-2 rounded-md text-sm font-medium transition-colors relative"
                     data-nav="profile"
                 >
-                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    <svg
+                        class="w-4 h-4 inline mr-2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                        />
                     </svg>
                     Perfil
                 </a>
@@ -174,7 +227,7 @@
             <!-- Right side buttons -->
             <div class="flex items-center space-x-2 md:space-x-4">
                 {% if user.is_authenticated %}
-                
+
                 <!-- Notifications -->
                 <div class="relative">
                     <button
@@ -184,31 +237,59 @@
                         onclick="toggleNotifications()"
                         title="Notificações"
                     >
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM11 17H7l4 4v-4zM13 3a9 9 0 00-9 9v4l-2 2h22l-2-2V12a9 9 0 00-9-9z"/>
-                        </svg>
                         <!-- Notification Badge -->
-                        <span id="notification-badge" class="hidden absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                        <span
+                            id="notification-badge"
+                            class="hidden absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"
+                        >
                             3
                         </span>
+                        <!-- Ícone Phosphor Bell Simple -->
+                        <i
+                            class="ph ph-bell-simple-z text-xl"
+                            style="font-size: 1.5rem"
+                        ></i>
                     </button>
-                    
+
                     <!-- Notifications Dropdown -->
-                    <div id="notifications-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
-                        <div class="p-4 border-b border-gray-200 dark:border-gray-700">
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Notificações</h3>
+                    <div
+                        id="notifications-dropdown"
+                        class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50"
+                    >
+                        <div
+                            class="p-4 border-b border-gray-200 dark:border-gray-700"
+                        >
+                            <h3
+                                class="text-lg font-semibold text-gray-900 dark:text-white"
+                            >
+                                Notificações
+                            </h3>
                         </div>
                         <div class="max-h-96 overflow-y-auto">
                             <!-- Notification items will be populated by JavaScript -->
-                            <div class="p-4 text-center text-gray-500 dark:text-gray-400">
-                                <svg class="mx-auto h-12 w-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m13-8V4a1 1 0 00-1-1H7a1 1 0 00-1 1v1m8 0V4.5"/>
-                                </svg>
+                            <div
+                                class="p-4 text-center text-gray-500 dark:text-gray-400"
+                            >
+                                <!-- Phosphor Bell Simple Icon via CDN -->
+                                <i
+                                    class="ph ph-bell-simple-z"
+                                    style="font-size: 24px"
+                                ></i>
+                                <!-- Para funcionar, adicione no <head> do seu HTML:
+                                <script src="https://unpkg.com/@phosphor-icons/web"></script>
+                                -->
+
                                 <p>Nenhuma notificação</p>
                             </div>
                         </div>
-                        <div class="p-3 border-t border-gray-200 dark:border-gray-700">
-                            <a href="#" class="text-sm text-symplifika-primary hover:text-symplifika-accent">Ver todas as notificações</a>
+                        <div
+                            class="p-3 border-t border-gray-200 dark:border-gray-700"
+                        >
+                            <a
+                                href="{% url 'notifications:list' %}"
+                                class="text-sm text-symplifika-primary hover:text-symplifika-accent"
+                                >Ver todas as notificações</a
+                            >
                         </div>
                     </div>
                 </div>
@@ -683,33 +764,40 @@
 
     // Toggle Notifications
     function toggleNotifications() {
-        const dropdown = document.getElementById('notifications-dropdown');
-        dropdown.classList.toggle('hidden');
+        const dropdown = document.getElementById("notifications-dropdown");
+        dropdown.classList.toggle("hidden");
     }
 
     // Close notifications when clicking outside
-    document.addEventListener('click', function(e) {
-        const notificationsButton = document.getElementById('notifications-button');
-        const notificationsDropdown = document.getElementById('notifications-dropdown');
-        
-        if (notificationsDropdown && !notificationsDropdown.contains(e.target) && 
-            !notificationsButton.contains(e.target)) {
-            notificationsDropdown.classList.add('hidden');
+    document.addEventListener("click", function (e) {
+        const notificationsButton = document.getElementById(
+            "notifications-button",
+        );
+        const notificationsDropdown = document.getElementById(
+            "notifications-dropdown",
+        );
+
+        if (
+            notificationsDropdown &&
+            !notificationsDropdown.contains(e.target) &&
+            !notificationsButton.contains(e.target)
+        ) {
+            notificationsDropdown.classList.add("hidden");
         }
     });
 
     // Global Search functionality
-    const globalSearch = document.getElementById('global-search');
+    const globalSearch = document.getElementById("global-search");
     if (globalSearch) {
-        globalSearch.addEventListener('input', function(e) {
+        globalSearch.addEventListener("input", function (e) {
             const query = e.target.value.trim();
-            const results = document.getElementById('search-results');
-            
+            const results = document.getElementById("search-results");
+
             if (query.length >= 2) {
-                results.classList.remove('hidden');
+                results.classList.remove("hidden");
                 // Add search logic here
             } else {
-                results.classList.add('hidden');
+                results.classList.add("hidden");
             }
         });
     }

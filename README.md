@@ -2,9 +2,22 @@
 
 Automatize atalhos de texto e produtividade com Django + Extensão Chrome.
 
+---
+
 ## Visão Geral
 
 Symplifika é uma plataforma para criação, gerenciamento e uso de atalhos de texto inteligentes, integrando web, API RESTful e extensão Chrome. Suporta autenticação JWT, integração com IA (Google Gemini), painel responsivo e CI/CD moderno.
+
+---
+
+## Documentação Completa
+
+- Veja uma explicação geral sobre o que é o Symplifika, o que ele faz e como funciona em [`docs/como-funciona.md`](docs/como-funciona.md)
+
+## Documentação Técnica
+
+- Exemplos práticos de integração: veja [`docs/examples.md`](docs/examples.md)
+- Diagrama de arquitetura do sistema: veja [`docs/architecture.md`](docs/architecture.md)
 
 ---
 
@@ -91,6 +104,57 @@ O projeto possui integração contínua (CI) e deploy contínuo (CD) via GitHub 
 Veja o guia completo de deploy em [`docs/deploy.md`](docs/deploy.md).
 
 ## Build, minificação e integridade de static files
+
+---
+
+## Onboarding para Novos Desenvolvedores
+
+Se você deseja contribuir ou rodar o projeto localmente, siga estes passos:
+
+1. **Clone o repositório:**
+   ```bash
+   git clone https://github.com/seuusuario/symplifika.git
+   cd symplifika_django
+   ```
+
+2. **Crie e ative um ambiente virtual:**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate
+   ```
+
+3. **Instale as dependências:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Configure as variáveis de ambiente:**
+   - Copie o arquivo de exemplo:  
+     `cp env_example.txt .env`
+   - Edite `.env` conforme necessário.
+
+5. **Execute as migrações e rode o servidor:**
+   ```bash
+   python manage.py migrate
+   python manage.py runserver
+   ```
+
+6. **Rodando os testes:**
+   ```bash
+   python manage.py test
+   ```
+
+### Estrutura dos principais diretórios/apps
+
+- `core/` — Lógica principal, views, templates centrais
+- `users/` — Autenticação, perfis, assinaturas
+- `payments/` — Integração com Stripe
+- `chrome_extension/` — Código da extensão Chrome
+- `templates/` — Templates HTML
+- `static/` — Arquivos estáticos (CSS, JS, imagens)
+- `docs/` — Documentação técnica, exemplos, diagramas
+
+Para mais detalhes sobre integração, exemplos de código e arquitetura, consulte a seção "Documentação Técnica" acima.
 
 ---
 
