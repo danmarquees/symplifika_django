@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Exportar Dados - Symplifika{% endblock %}
+
+{% block meta_description %}Exporte todos os seus dados do Symplifika - atalhos, configurações e histórico de uso.{% endblock %}
+
+{% block body_class %}bg-gray-50 dark:bg-gray-900 min-h-screen{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Exportar Dados</h1>
+                <p class="mt-2 text-gray-600 dark:text-gray-300">
+                    Baixe uma cópia completa dos seus dados do Symplifika
+                </p>
+            </div>
+            <div class="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.031 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+                <span>Dados protegidos e criptografados</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Options -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Quick Export -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                    </svg>
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white">Exportação Rápida</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Baixe todos os seus dados principais</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">Todos os atalhos</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ shortcuts_count|default:0 }} atalhos</p>
+                        </div>
+                        <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">Categorias</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ categories_count|default:0 }} categorias</p>
+                        </div>
+                        <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">Configurações</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Preferências e configurações</p>
+                        </div>
+                        <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <button 
+                        id="quickExport"
+                        class="w-full flex items-center justify-center px-4 py-2 bg-symplifika-primary text-white rounded-lg hover:bg-symplifika-accent transition-colors font-medium"
+                    >
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                        </svg>
+                        Exportar Tudo (JSON)
+                    </button>
+                    <p class="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
+                        Arquivo único com todos os dados
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom Export -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-purple-600 dark:text-purple-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"/>
+                    </svg>
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white">Exportação Personalizada</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Escolha exatamente o que exportar</p>
+                    </div>
+                </div>
+            </div>
+            
+            <form id="customExportForm" class="p-6">
+                {% csrf_token %}
+                
+                <!-- Data Types -->
+                <div class="space-y-4 mb-6">
+                    <h4 class="text-sm font-medium text-gray-900 dark:text-white">Tipos de Dados</h4>
+                    
+                    <div class="space-y-3">
+                        <label class="flex items-center">
+                            <input type="checkbox" name="include_shortcuts" checked class="rounded border-gray-300 text-symplifika-primary focus:ring-symplifika-primary">
+                            <span class="ml-3 text-sm text-gray-700 dark:text-gray-300">
+                                Atalhos ({{ shortcuts_count|default:0 }})
+                            </span>
+                        </label>
+                        
+                        <label class="flex items-center">
+                            <input type="checkbox" name="include_categories" checked class="rounded border-gray-300 text-symplifika-primary focus:ring-symplifika-primary">
+                            <span class="ml-3 text-sm text-gray-700 dark:text-gray-300">
+                                Categorias ({{ categories_count|default:0 }})
+                            </span>
+                        </label>
+                        
+                        <label class="flex items-center">
+                            <input type="checkbox" name="include_settings" checked class="rounded border-gray-300 text-symplifika-primary focus:ring-symplifika-primary">
+                            <span class="ml-3 text-sm text-gray-700 dark:text-gray-300">
+                                Configurações e preferências
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Format Options -->
+                <div class="space-y-4 mb-6">
+                    <h4 class="text-sm font-medium text-gray-900 dark:text-white">Formato</h4>
+                    
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="radio" name="export_format" value="json" checked class="text-symplifika-primary focus:ring-symplifika-primary">
+                            <span class="ml-3 text-sm text-gray-700 dark:text-gray-300">
+                                JSON (recomendado)
+                            </span>
+                        </label>
+                        
+                        <label class="flex items-center">
+                            <input type="radio" name="export_format" value="csv" class="text-symplifika-primary focus:ring-symplifika-primary">
+                            <span class="ml-3 text-sm text-gray-700 dark:text-gray-300">
+                                CSV (planilhas)
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button 
+                    type="submit"
+                    class="w-full flex items-center justify-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
+                >
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"/>
+                    </svg>
+                    Criar Exportação Personalizada
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- GDPR Info -->
+    <div class="mt-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6">
+        <div class="flex items-start">
+            <svg class="w-6 h-6 text-blue-600 dark:text-blue-400 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <div>
+                <h4 class="text-sm font-medium text-blue-900 dark:text-blue-200 mb-2">
+                    Seus Direitos de Dados
+                </h4>
+                <p class="text-sm text-blue-800 dark:text-blue-300 mb-3">
+                    De acordo com a LGPD e GDPR, você tem direito a uma cópia completa dos seus dados pessoais.
+                </p>
+                <a 
+                    href="#" 
+                    class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 font-medium"
+                >
+                    Saiba mais sobre seus direitos →
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const quickExportBtn = document.getElementById('quickExport');
+    const customExportForm = document.getElementById('customExportForm');
+
+    quickExportBtn.addEventListener('click', function() {
+        window.location.href = '/api/export/quick/';
+    });
+
+    customExportForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        
+        // Create form and submit
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/api/export/custom/';
+        
+        for (let [key, value] of formData.entries()) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = value;
+            form.appendChild(input);
+        }
+        
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+    });
+});
+</script>
+{% endblock %}

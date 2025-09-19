@@ -1,0 +1,226 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tutorial - Symplifika{% endblock %}
+
+{% block content %}
+<div class="min-h-screen">
+    <!-- Progress Header -->
+    <div class="bg-white dark:bg-gray-800 border-b sticky top-0 z-40">
+        <div class="max-w-4xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <button onclick="goBack()" class="mr-4 p-2 text-gray-400 hover:text-gray-600 rounded-md">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                    </button>
+                    <h1 class="text-lg font-semibold text-gray-900 dark:text-white">Tutorial do Symplifika</h1>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="text-sm text-gray-500">
+                        <span id="currentStep">1</span> de <span id="totalSteps">4</span>
+                    </div>
+                    <button onclick="skipTutorial()" class="text-sm text-gray-500 hover:text-gray-700">Pular</button>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                    <div id="progressBar" class="bg-symplifika-primary h-2 rounded-full transition-all duration-300" style="width: 25%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Step 1: Creating Shortcut -->
+        <div id="step-1" class="tutorial-step">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Crie seu Primeiro Atalho</h2>
+                <p class="text-gray-600 dark:text-gray-300">Vamos criar um atalho para uma tarefa frequente</p>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border p-6 mb-6">
+                <form class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nome do Atalho</label>
+                        <input type="text" placeholder="Ex: Abrir Gmail" class="w-full px-3 py-2 border rounded-md focus:ring-symplifika-primary focus:border-symplifika-primary">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">URL</label>
+                        <input type="text" placeholder="https://gmail.com" class="w-full px-3 py-2 border rounded-md focus:ring-symplifika-primary focus:border-symplifika-primary">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Categoria</label>
+                        <select class="w-full px-3 py-2 border rounded-md focus:ring-symplifika-primary focus:border-symplifika-primary">
+                            <option>Trabalho</option>
+                            <option>Pessoal</option>
+                            <option>Ferramentas</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Step 2: Categories -->
+        <div id="step-2" class="tutorial-step hidden">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Organize com Categorias</h2>
+                <p class="text-gray-600 dark:text-gray-300">Mantenha seus atalhos organizados</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg text-center">
+                    <div class="w-10 h-10 bg-blue-600 rounded-lg mx-auto mb-2"></div>
+                    <p class="font-medium">Trabalho</p>
+                </div>
+                <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg text-center">
+                    <div class="w-10 h-10 bg-green-600 rounded-lg mx-auto mb-2"></div>
+                    <p class="font-medium">Ferramentas</p>
+                </div>
+                <div class="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg text-center">
+                    <div class="w-10 h-10 bg-purple-600 rounded-lg mx-auto mb-2"></div>
+                    <p class="font-medium">Pessoal</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Using Shortcuts -->
+        <div id="step-3" class="tutorial-step hidden">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3"/>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Usando seus Atalhos</h2>
+                <p class="text-gray-600 dark:text-gray-300">Diferentes formas de acessar seus atalhos</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="text-center p-6 bg-white dark:bg-gray-800 rounded-lg border">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold mb-2">Clique Rápido</h3>
+                    <p class="text-sm text-gray-600">Clique no dashboard</p>
+                </div>
+
+                <div class="text-center p-6 bg-white dark:bg-gray-800 rounded-lg border">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold mb-2">Busca Rápida</h3>
+                    <p class="text-sm text-gray-600">Use a busca global</p>
+                </div>
+
+                <div class="text-center p-6 bg-white dark:bg-gray-800 rounded-lg border">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold mb-2">Por Categoria</h3>
+                    <p class="text-sm text-gray-600">Navegue por categorias</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Complete -->
+        <div id="step-4" class="tutorial-step hidden">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Parabéns! 🎉</h2>
+                <p class="text-gray-600 dark:text-gray-300 mb-6">Você completou o tutorial do Symplifika!</p>
+                <button onclick="completeTutorial()" class="px-6 py-3 bg-symplifika-primary text-white rounded-lg hover:bg-symplifika-accent transition-colors">
+                    Ir para o Dashboard
+                </button>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex justify-between mt-8">
+            <button id="prevBtn" onclick="previousStep()" class="px-4 py-2 text-gray-600 hover:text-gray-900 disabled:opacity-50" disabled>
+                ← Anterior
+            </button>
+            <button id="nextBtn" onclick="nextStep()" class="px-6 py-2 bg-symplifika-primary text-white rounded-lg hover:bg-symplifika-accent">
+                Próximo →
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentStep = 1;
+const totalSteps = 4;
+
+function nextStep() {
+    if (currentStep < totalSteps) {
+        document.getElementById(`step-${currentStep}`).classList.add('hidden');
+        currentStep++;
+        document.getElementById(`step-${currentStep}`).classList.remove('hidden');
+        updateUI();
+    }
+}
+
+function previousStep() {
+    if (currentStep > 1) {
+        document.getElementById(`step-${currentStep}`).classList.add('hidden');
+        currentStep--;
+        document.getElementById(`step-${currentStep}`).classList.remove('hidden');
+        updateUI();
+    }
+}
+
+function updateUI() {
+    document.getElementById('currentStep').textContent = currentStep;
+    document.getElementById('progressBar').style.width = (currentStep / totalSteps * 100) + '%';
+    
+    document.getElementById('prevBtn').disabled = currentStep === 1;
+    document.getElementById('nextBtn').style.display = currentStep === totalSteps ? 'none' : 'block';
+}
+
+function skipTutorial() {
+    if (confirm('Pular tutorial?')) {
+        window.location.href = '/dashboard/';
+    }
+}
+
+function completeTutorial() {
+    fetch('/api/onboarding/complete/', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCSRFToken() }
+    }).then(() => {
+        window.location.href = '/dashboard/';
+    });
+}
+
+function goBack() {
+    window.location.href = '/onboarding/welcome/';
+}
+
+function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+}
+</script>
+{% endblock %}

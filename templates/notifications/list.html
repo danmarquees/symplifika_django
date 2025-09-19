@@ -1,0 +1,398 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Notificações - Symplifika{% endblock %}
+
+{% block meta_description %}Gerencie suas notificações do Symplifika - visualize, marque como lidas e configure suas preferências.{% endblock %}
+
+{% block body_class %}bg-gray-50 dark:bg-gray-900 min-h-screen{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Notificações</h1>
+                <p class="mt-2 text-gray-600 dark:text-gray-300">
+                    Gerencie suas notificações e mantenha-se atualizado
+                </p>
+            </div>
+            
+            <!-- Actions -->
+            <div class="mt-4 sm:mt-0 flex items-center space-x-3">
+                <button 
+                    id="markAllRead" 
+                    class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Marcar todas como lidas
+                </button>
+                
+                <a 
+                    href="{% url 'notifications:settings' %}" 
+                    class="inline-flex items-center px-4 py-2 bg-symplifika-primary text-white rounded-md hover:bg-symplifika-accent transition-colors text-sm font-medium"
+                >
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    Configurações
+                </a>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="mt-6 border-b border-gray-200 dark:border-gray-700">
+            <nav class="-mb-px flex space-x-8">
+                <button class="notification-filter active" data-filter="all">
+                    Todas
+                    <span class="ml-2 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-300 py-0.5 px-2.5 rounded-full text-xs font-medium">
+                        {{ notifications.count }}
+                    </span>
+                </button>
+                <button class="notification-filter" data-filter="unread">
+                    Não lidas
+                    <span class="ml-2 bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-400 py-0.5 px-2.5 rounded-full text-xs font-medium">
+                        {{ unread_count }}
+                    </span>
+                </button>
+                <button class="notification-filter" data-filter="system">
+                    Sistema
+                </button>
+                <button class="notification-filter" data-filter="social">
+                    Social
+                </button>
+                <button class="notification-filter" data-filter="updates">
+                    Atualizações
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Notifications List -->
+    <div class="space-y-4" id="notifications-container">
+        {% if notifications %}
+            {% for notification in notifications %}
+            <div class="notification-item bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 
+                {% if not notification.read %}border-l-4 border-l-blue-500 bg-blue-50/30 dark:bg-blue-900/10{% endif %}"
+                data-id="{{ notification.id }}"
+                data-type="{{ notification.type }}"
+                data-read="{{ notification.read|yesno:'true,false' }}">
+                
+                <div class="p-6">
+                    <div class="flex items-start space-x-4">
+                        <!-- Icon -->
+                        <div class="flex-shrink-0">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center
+                                {% if notification.type == 'system' %}bg-blue-100 dark:bg-blue-900/20
+                                {% elif notification.type == 'social' %}bg-green-100 dark:bg-green-900/20
+                                {% elif notification.type == 'update' %}bg-purple-100 dark:bg-purple-900/20
+                                {% elif notification.type == 'warning' %}bg-yellow-100 dark:bg-yellow-900/20
+                                {% elif notification.type == 'error' %}bg-red-100 dark:bg-red-900/20
+                                {% else %}bg-gray-100 dark:bg-gray-700{% endif %}">
+                                
+                                {% if notification.type == 'system' %}
+                                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                {% elif notification.type == 'social' %}
+                                    <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a2 2 0 01-2-2v-6a2 2 0 012-2h8z"/>
+                                    </svg>
+                                {% elif notification.type == 'update' %}
+                                    <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                                    </svg>
+                                {% elif notification.type == 'warning' %}
+                                    <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                                    </svg>
+                                {% elif notification.type == 'error' %}
+                                    <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                {% else %}
+                                    <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM11 17H7l4 4v-4zM13 3a9 9 0 00-9 9v4l-2 2h22l-2-2V12a9 9 0 00-9-9z"/>
+                                    </svg>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Content -->
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
+                                        {{ notification.title }}
+                                    </h3>
+                                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                                        {{ notification.message }}
+                                    </p>
+                                    
+                                    <!-- Metadata -->
+                                    <div class="mt-2 flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
+                                        <span class="flex items-center">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            {{ notification.created_at|timesince }} atrás
+                                        </span>
+                                        
+                                        {% if notification.category %}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                                            {{ notification.category }}
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="flex items-center space-x-2 ml-4">
+                                    {% if not notification.read %}
+                                    <button 
+                                        class="mark-read-btn p-1 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                        data-id="{{ notification.id }}"
+                                        title="Marcar como lida"
+                                    >
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                    </button>
+                                    {% endif %}
+                                    
+                                    <button 
+                                        class="delete-btn p-1 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                                        data-id="{{ notification.id }}"
+                                        title="Excluir notificação"
+                                    >
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons (if notification has actions) -->
+                            {% if notification.action_url %}
+                            <div class="mt-4">
+                                <a 
+                                    href="{{ notification.action_url }}" 
+                                    class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-symplifika-primary hover:bg-symplifika-accent transition-colors"
+                                >
+                                    {{ notification.action_text|default:"Ver mais" }}
+                                    <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Unread indicator -->
+                        {% if not notification.read %}
+                        <div class="flex-shrink-0">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- Load More -->
+            {% if has_more %}
+            <div class="text-center py-6">
+                <button 
+                    id="loadMore" 
+                    class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Carregar mais
+                </button>
+            </div>
+            {% endif %}
+
+        {% else %}
+            <!-- Empty State -->
+            <div class="text-center py-12">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM11 17H7l4 4v-4zM13 3a9 9 0 00-9 9v4l-2 2h22l-2-2V12a9 9 0 00-9-9z"/>
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">Nenhuma notificação</h3>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    Você não tem notificações no momento. Quando houver novidades, elas aparecerão aqui.
+                </p>
+                <div class="mt-6">
+                    <a 
+                        href="{% url 'notifications:settings' %}" 
+                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-symplifika-primary hover:bg-symplifika-accent transition-colors"
+                    >
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        Configurar notificações
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.notification-filter {
+    @apply whitespace-nowrap py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 transition-colors cursor-pointer;
+}
+
+.notification-filter.active {
+    @apply border-symplifika-primary text-symplifika-primary;
+}
+
+.notification-item {
+    transition: all 0.2s ease;
+}
+
+.notification-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Filter functionality
+    const filterButtons = document.querySelectorAll('.notification-filter');
+    const notificationItems = document.querySelectorAll('.notification-item');
+
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const filter = this.dataset.filter;
+            
+            // Update active filter
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Filter notifications
+            notificationItems.forEach(item => {
+                const isRead = item.dataset.read === 'true';
+                const type = item.dataset.type;
+                
+                let show = false;
+                
+                switch(filter) {
+                    case 'all':
+                        show = true;
+                        break;
+                    case 'unread':
+                        show = !isRead;
+                        break;
+                    default:
+                        show = type === filter;
+                        break;
+                }
+                
+                item.style.display = show ? 'block' : 'none';
+            });
+        });
+    });
+
+    // Mark as read functionality
+    const markReadButtons = document.querySelectorAll('.mark-read-btn');
+    markReadButtons.forEach(button => {
+        button.addEventListener('click', async function() {
+            const notificationId = this.dataset.id;
+            const notificationItem = this.closest('.notification-item');
+            
+            try {
+                const response = await fetch(`/api/notifications/${notificationId}/read/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCSRFToken(),
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    // Update UI
+                    notificationItem.classList.remove('border-l-4', 'border-l-blue-500', 'bg-blue-50/30', 'dark:bg-blue-900/10');
+                    notificationItem.dataset.read = 'true';
+                    this.remove();
+                    
+                    // Remove unread indicator
+                    const unreadDot = notificationItem.querySelector('.w-2.h-2.bg-blue-500');
+                    if (unreadDot) {
+                        unreadDot.remove();
+                    }
+                }
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+            }
+        });
+    });
+
+    // Delete functionality
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', async function() {
+            if (!confirm('Tem certeza que deseja excluir esta notificação?')) {
+                return;
+            }
+            
+            const notificationId = this.dataset.id;
+            const notificationItem = this.closest('.notification-item');
+            
+            try {
+                const response = await fetch(`/api/notifications/${notificationId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': getCSRFToken()
+                    }
+                });
+                
+                if (response.ok) {
+                    notificationItem.style.opacity = '0';
+                    notificationItem.style.transform = 'translateX(-100%)';
+                    setTimeout(() => {
+                        notificationItem.remove();
+                    }, 300);
+                }
+            } catch (error) {
+                console.error('Error deleting notification:', error);
+            }
+        });
+    });
+
+    // Mark all as read
+    const markAllReadBtn = document.getElementById('markAllRead');
+    if (markAllReadBtn) {
+        markAllReadBtn.addEventListener('click', async function() {
+            try {
+                const response = await fetch('/api/notifications/mark-all-read/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCSRFToken()
+                    }
+                });
+                
+                if (response.ok) {
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Error marking all as read:', error);
+            }
+        });
+    }
+});
+
+function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+           document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
+}
+</script>
+{% endblock %}

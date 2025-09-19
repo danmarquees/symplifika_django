@@ -25,6 +25,7 @@ from .forms import (
     CustomPasswordChangeForm, PlanUpgradeForm, AccountDeleteForm
 )
 from .models import PlanUpgradeRequest
+from .services import PaymentService
 import logging
 from django.core.cache import cache
 from django.conf import settings
@@ -800,17 +801,17 @@ def settings_view(request):
 def subscription_success_view(request):
     """View para sucesso da assinatura"""
     session_id = request.GET.get('session_id')
-    
+
     if session_id:
         # Aqui você pode verificar o status da sessão no Stripe se necessário
         # Por enquanto, apenas mostramos uma mensagem de sucesso
         messages.success(request, 'Pagamento realizado com sucesso! Sua assinatura foi ativada.')
-    
+
     context = {
         'session_id': session_id,
         'user': request.user
     }
-    
+
     return render(request, 'users/subscription_success.html', context)
 
 
@@ -818,24 +819,24 @@ def password_reset_template_view(request):
     """Renderiza o template de reset de senha"""
     if request.user.is_authenticated:
         return redirect('core:dashboard')
-    
+
     from django import forms
     from django.contrib.auth import get_user_model
-    
+
     class PasswordResetForm(forms.Form):
         email = forms.EmailField(
             label='Email',
             max_length=254,
             widget=forms.EmailInput(attrs={'class': 'form-control'})
         )
-        
+
         def clean_email(self):
             email = self.cleaned_data['email']
             User = get_user_model()
             if not User.objects.filter(email=email).exists():
                 raise forms.ValidationError('Este email não está cadastrado.')
             return email
-    
+
     if request.method == 'POST':
         form = PasswordResetForm(request.POST)
         if form.is_valid():
@@ -846,5 +847,5 @@ def password_reset_template_view(request):
             return redirect('users:login')
     else:
         form = PasswordResetForm()
-    
+
     return render(request, 'auth/password_reset.html', {'form': form})

@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Informações GDPR - Symplifika{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            Proteção de Dados e Privacidade
+        </h1>
+        <p class="text-lg text-gray-600 dark:text-gray-300">
+            Informações sobre GDPR e LGPD no Symplifika
+        </p>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <a href="{% url 'export:data' %}" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+            <div class="flex items-center">
+                <svg class="w-8 h-8 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3"/>
+                </svg>
+                <div>
+                    <h3 class="font-semibold text-gray-900 dark:text-white">Exportar Dados</h3>
+                    <p class="text-sm text-gray-500">Baixe seus dados</p>
+                </div>
+            </div>
+        </a>
+
+        <button onclick="requestDataDeletion()" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow text-left">
+            <div class="flex items-center">
+                <svg class="w-8 h-8 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7"/>
+                </svg>
+                <div>
+                    <h3 class="font-semibold text-gray-900 dark:text-white">Excluir Dados</h3>
+                    <p class="text-sm text-gray-500">Remover conta</p>
+                </div>
+            </div>
+        </button>
+
+        <a href="mailto:privacy@symplifika.com" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+            <div class="flex items-center">
+                <svg class="w-8 h-8 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8"/>
+                </svg>
+                <div>
+                    <h3 class="font-semibold text-gray-900 dark:text-white">Contatar DPO</h3>
+                    <p class="text-sm text-gray-500">Dúvidas sobre dados</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Your Rights -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border mb-8">
+        <div class="p-6 border-b">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Seus Direitos</h2>
+        </div>
+        
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <div class="flex items-start">
+                        <svg class="w-6 h-6 text-blue-600 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01"/>
+                        </svg>
+                        <div>
+                            <h3 class="font-medium text-gray-900 dark:text-white">Direito à Informação</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">Saber quais dados coletamos</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start">
+                        <svg class="w-6 h-6 text-green-600 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <div>
+                            <h3 class="font-medium text-gray-900 dark:text-white">Direito de Acesso</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">Visualizar seus dados</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start">
+                        <svg class="w-6 h-6 text-yellow-600 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5"/>
+                        </svg>
+                        <div>
+                            <h3 class="font-medium text-gray-900 dark:text-white">Direito de Retificação</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">Corrigir dados incorretos</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex items-start">
+                        <svg class="w-6 h-6 text-red-600 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862"/>
+                        </svg>
+                        <div>
+                            <h3 class="font-medium text-gray-900 dark:text-white">Direito ao Apagamento</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">Excluir seus dados</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start">
+                        <svg class="w-6 h-6 text-purple-600 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6"/>
+                        </svg>
+                        <div>
+                            <h3 class="font-medium text-gray-900 dark:text-white">Direito à Portabilidade</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">Transferir dados</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start">
+                        <svg class="w-6 h-6 text-orange-600 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636"/>
+                        </svg>
+                        <div>
+                            <h3 class="font-medium text-gray-900 dark:text-white">Direito de Oposição</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">Opor-se ao processamento</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border">
+        <div class="p-6 border-b">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Contato</h2>
+        </div>
+        
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-medium text-gray-900 dark:text-white mb-3">DPO</h3>
+                    <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                        <p>📧 privacy@symplifika.com</p>
+                        <p>📞 +55 (11) 9999-9999</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="font-medium text-gray-900 dark:text-white mb-3">Tempo de Resposta</h3>
+                    <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                        <p>• Solicitações: até 30 dias</p>
+                        <p>• Emergências: até 24 horas</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function requestDataDeletion() {
+    if (confirm('Tem certeza que deseja excluir todos os seus dados?')) {
+        window.location.href = '/api/account/request-deletion/';
+    }
+}
+</script>
+{% endblock %}

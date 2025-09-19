@@ -1,0 +1,469 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Configurações de Notificações - Symplifika{% endblock %}
+
+{% block meta_description %}Configure suas preferências de notificações do Symplifika - escolha quando e como receber alertas.{% endblock %}
+
+{% block body_class %}bg-gray-50 dark:bg-gray-900 min-h-screen{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Configurações de Notificações</h1>
+                <p class="mt-2 text-gray-600 dark:text-gray-300">
+                    Personalize como e quando você recebe notificações
+                </p>
+            </div>
+            <a 
+                href="{% url 'notifications:list' %}" 
+                class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Voltar às Notificações
+            </a>
+        </div>
+    </div>
+
+    <form id="notificationSettingsForm" class="space-y-8">
+        {% csrf_token %}
+        
+        <!-- Email Notifications -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white">Notificações por Email</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Receba atualizações importantes por email</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <!-- Master Email Toggle -->
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <label class="text-sm font-medium text-gray-900 dark:text-white">
+                            Ativar notificações por email
+                        </label>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            Controle geral para todas as notificações por email
+                        </p>
+                    </div>
+                    <div class="ml-4">
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" name="email_enabled" class="sr-only peer" {{ user.profile.email_notifications|yesno:"checked," }}>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-symplifika-primary/25 dark:peer-focus:ring-symplifika-primary/25 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-symplifika-primary"></div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Email Types -->
+                <div class="ml-6 space-y-3 email-options">
+                    <div class="flex items-center justify-between">
+                        <label class="text-sm text-gray-700 dark:text-gray-300">
+                            Novos atalhos compartilhados
+                        </label>
+                        <input type="checkbox" name="email_new_shortcuts" class="rounded border-gray-300 text-symplifika-primary focus:ring-symplifika-primary" checked>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <label class="text-sm text-gray-700 dark:text-gray-300">
+                            Atualizações de sistema
+                        </label>
+                        <input type="checkbox" name="email_system_updates" class="rounded border-gray-300 text-symplifika-primary focus:ring-symplifika-primary" checked>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <label class="text-sm text-gray-700 dark:text-gray-300">
+                            Relatórios semanais
+                        </label>
+                        <input type="checkbox" name="email_weekly_reports" class="rounded border-gray-300 text-symplifika-primary focus:ring-symplifika-primary">
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <label class="text-sm text-gray-700 dark:text-gray-300">
+                            Dicas e tutoriais
+                        </label>
+                        <input type="checkbox" name="email_tips" class="rounded border-gray-300 text-symplifika-primary focus:ring-symplifika-primary">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Push Notifications -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-green-600 dark:text-green-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM11 17H7l4 4v-4zM13 3a9 9 0 00-9 9v4l-2 2h22l-2-2V12a9 9 0 00-9-9z"/>
+                    </svg>
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white">Notificações Push</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Receba notificações instantâneas no navegador</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <!-- Push Permission Status -->
+                <div id="push-permission-status" class="hidden">
+                    <div class="rounded-md bg-yellow-50 dark:bg-yellow-900/20 p-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                                    Permissão necessária
+                                </h3>
+                                <div class="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
+                                    <p>Para receber notificações push, você precisa permitir notificações neste navegador.</p>
+                                </div>
+                                <div class="mt-4">
+                                    <button type="button" id="enable-push" class="bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                                        Ativar notificações
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Push Options -->
+                <div class="push-options space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <label class="text-sm font-medium text-gray-900 dark:text-white">
+                                Ativar notificações push
+                            </label>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                Receba notificações instantâneas no navegador
+                            </p>
+                        </div>
+                        <div class="ml-4">
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="push_enabled" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-symplifika-primary/25 dark:peer-focus:ring-symplifika-primary/25 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-symplifika-primary"></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="ml-6 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm text-gray-700 dark:text-gray-300">
+                                Atividade em tempo real
+                            </label>
+                            <input type="checkbox" name="push_realtime" class="rounded border-gray-300 text-symplifika-primary focus:ring-symplifika-primary" checked>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm text-gray-700 dark:text-gray-300">
+                                Lembretes de uso
+                            </label>
+                            <input type="checkbox" name="push_reminders" class="rounded border-gray-300 text-symplifika-primary focus:ring-symplifika-primary">
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm text-gray-700 dark:text-gray-300">
+                                Novos recursos
+                            </label>
+                            <input type="checkbox" name="push_features" class="rounded border-gray-300 text-symplifika-primary focus:ring-symplifika-primary" checked>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- In-App Notifications -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-purple-600 dark:text-purple-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                    </svg>
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white">Notificações no App</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Configure alertas dentro da aplicação</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <div class="flex items-center justify-between">
+                    <label class="text-sm text-gray-700 dark:text-gray-300">
+                        Sons de notificação
+                    </label>
+                    <input type="checkbox" name="sound_enabled" class="rounded border-gray-300 text-symplifika-primary focus:ring-symplifika-primary" checked>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <label class="text-sm text-gray-700 dark:text-gray-300">
+                        Animações de notificação
+                    </label>
+                    <input type="checkbox" name="animations_enabled" class="rounded border-gray-300 text-symplifika-primary focus:ring-symplifika-primary" checked>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <label class="text-sm text-gray-700 dark:text-gray-300">
+                        Badge de contagem
+                    </label>
+                    <input type="checkbox" name="badge_enabled" class="rounded border-gray-300 text-symplifika-primary focus:ring-symplifika-primary" checked>
+                </div>
+            </div>
+        </div>
+
+        <!-- Frequency Settings -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-orange-600 dark:text-orange-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white">Frequência</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Controle quando receber notificações</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <!-- Digest Frequency -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        Resumo de atividades
+                    </label>
+                    <select name="digest_frequency" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-symplifika-primary focus:border-symplifika-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                        <option value="never">Nunca</option>
+                        <option value="daily">Diariamente</option>
+                        <option value="weekly" selected>Semanalmente</option>
+                        <option value="monthly">Mensalmente</option>
+                    </select>
+                </div>
+
+                <!-- Quiet Hours -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                        Horário silencioso
+                    </label>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center">
+                            <label class="text-sm text-gray-700 dark:text-gray-300 mr-2">De:</label>
+                            <input type="time" name="quiet_start" value="22:00" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-symplifika-primary focus:border-symplifika-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                        </div>
+                        <div class="flex items-center">
+                            <label class="text-sm text-gray-700 dark:text-gray-300 mr-2">Até:</label>
+                            <input type="time" name="quiet_end" value="08:00" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-symplifika-primary focus:border-symplifika-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                        </div>
+                    </div>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        Durante este período, você não receberá notificações push
+                    </p>
+                </div>
+
+                <!-- Weekend Settings -->
+                <div class="flex items-center justify-between">
+                    <div>
+                        <label class="text-sm font-medium text-gray-900 dark:text-white">
+                            Pausar nos fins de semana
+                        </label>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            Não receber notificações aos sábados e domingos
+                        </p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" name="weekend_pause" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-symplifika-primary/25 dark:peer-focus:ring-symplifika-primary/25 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-symplifika-primary"></div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
+            <button 
+                type="button" 
+                id="resetDefaults"
+                class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                Restaurar Padrões
+            </button>
+            
+            <div class="flex items-center space-x-3">
+                <button 
+                    type="button"
+                    id="testNotification"
+                    class="inline-flex items-center px-4 py-2 border border-symplifika-primary rounded-md shadow-sm text-sm font-medium text-symplifika-primary bg-white dark:bg-gray-800 hover:bg-symplifika-primary/5 transition-colors"
+                >
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM11 17H7l4 4v-4zM13 3a9 9 0 00-9 9v4l-2 2h22l-2-2V12a9 9 0 00-9-9z"/>
+                    </svg>
+                    Testar Notificação
+                </button>
+                
+                <button 
+                    type="submit"
+                    class="inline-flex items-center px-6 py-2 bg-symplifika-primary text-white rounded-md hover:bg-symplifika-accent transition-colors text-sm font-medium"
+                >
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Salvar Configurações
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('notificationSettingsForm');
+    const emailToggle = document.querySelector('input[name="email_enabled"]');
+    const pushToggle = document.querySelector('input[name="push_enabled"]');
+    const emailOptions = document.querySelector('.email-options');
+    const pushOptions = document.querySelector('.push-options');
+
+    // Handle email toggle
+    emailToggle.addEventListener('change', function() {
+        const checkboxes = emailOptions.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.disabled = !this.checked;
+            if (!this.checked) {
+                checkbox.checked = false;
+            }
+        });
+        emailOptions.style.opacity = this.checked ? '1' : '0.5';
+    });
+
+    // Handle push toggle
+    pushToggle.addEventListener('change', function() {
+        const checkboxes = pushOptions.querySelectorAll('input[type="checkbox"]:not([name="push_enabled"])');
+        checkboxes.forEach(checkbox => {
+            checkbox.disabled = !this.checked;
+            if (!this.checked) {
+                checkbox.checked = false;
+            }
+        });
+    });
+
+    // Check push notification permission
+    if ('Notification' in window) {
+        const permissionStatus = document.getElementById('push-permission-status');
+        const enablePushBtn = document.getElementById('enable-push');
+        
+        if (Notification.permission === 'denied' || Notification.permission === 'default') {
+            permissionStatus.classList.remove('hidden');
+            pushToggle.disabled = true;
+        }
+
+        enablePushBtn.addEventListener('click', async function() {
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                permissionStatus.classList.add('hidden');
+                pushToggle.disabled = false;
+            }
+        });
+    }
+
+    // Form submission
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        const data = {};
+        
+        for (let [key, value] of formData.entries()) {
+            if (form.querySelector(`input[name="${key}"]`).type === 'checkbox') {
+                data[key] = true;
+            } else {
+                data[key] = value;
+            }
+        }
+        
+        // Add unchecked checkboxes as false
+        const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            if (!checkbox.checked) {
+                data[checkbox.name] = false;
+            }
+        });
+
+        try {
+            const response = await fetch('/api/notifications/settings/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                showNotification('Configurações salvas com sucesso!', 'success');
+            } else {
+                throw new Error('Erro ao salvar configurações');
+            }
+        } catch (error) {
+            showNotification('Erro ao salvar configurações. Tente novamente.', 'error');
+        }
+    });
+
+    // Test notification
+    document.getElementById('testNotification').addEventListener('click', function() {
+        if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification('Teste do Symplifika', {
+                body: 'Esta é uma notificação de teste. Suas configurações estão funcionando!',
+                icon: '/static/images/logo.png'
+            });
+        } else {
+            showNotification('Ative as notificações push primeiro para testar.', 'warning');
+        }
+    });
+
+    // Reset defaults
+    document.getElementById('resetDefaults').addEventListener('click', function() {
+        if (confirm('Tem certeza que deseja restaurar as configurações padrão?')) {
+            // Reset form to defaults
+            form.reset();
+            emailToggle.checked = true;
+            emailToggle.dispatchEvent(new Event('change'));
+        }
+    });
+});
+
+function showNotification(message, type = 'info') {
+    // Create a simple notification toast
+    const toast = document.createElement('div');
+    toast.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+        type === 'success' ? 'bg-green-500' : 
+        type === 'error' ? 'bg-red-500' : 
+        type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+    } text-white`;
+    toast.textContent = message;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
+function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+           document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
+}
+</script>
+{% endblock %}
