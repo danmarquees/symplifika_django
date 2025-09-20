@@ -50,6 +50,10 @@ urlpatterns = [
 
     # Notifications app URLs
     path('notifications/', include(('notifications.urls', 'notifications'), namespace='notifications')),
+
+    # Onboarding app URLs
+    path('onboarding/', include(('onboarding.urls', 'onboarding'), namespace='onboarding')),
+
     # Notifications API URLs
     path('api/notifications/', include(('notifications.api_urls', 'notifications-api'))),
 

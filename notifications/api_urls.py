@@ -7,8 +7,10 @@ from .api import (
 )
 
 urlpatterns = [
-    path('', NotificationListAPI.as_view(), name='list'),
-    path('mark-all-read/', MarkAllReadAPI.as_view(), name='mark-all-read'),
-    path('<int:pk>/', NotificationDeleteAPI.as_view(), name='delete'),
-    path('<int:pk>/read/', NotificationMarkReadAPI.as_view(), name='mark-read'),
+    path('', NotificationListAPI.as_view(), name='notification-list'),
+    path('create/', NotificationListAPI.as_view(), name='notification-create'),
+    path('unread-count/', NotificationListAPI.as_view(), name='notification-unread-count'),
+    path('mark-all-read/', MarkAllReadAPI.as_view(), name='notification-mark-all-read'),
+    path('<int:pk>/', NotificationDeleteAPI.as_view(), name='notification-delete'),
+    path('<int:pk>/read/', NotificationMarkReadAPI.as_view(), name='notification-mark-read'),
 ]
