@@ -224,25 +224,27 @@ class ShortcutViewSet(viewsets.ModelViewSet):
 
             processing_time = time.time() - start_time
 
-            # Salva o log
-            AIEnhancementLog.objects.create(
-                shortcut=shortcut,
-                original_content=content,
-                enhanced_content=enhanced_content,
-                ai_model_used=ai_service.model_name,
-                processing_time=processing_time
-            )
+            # Salva o log apenas se houve expansão real
+            if enhanced_content != content:
+                AIEnhancementLog.objects.create(
+                    shortcut=shortcut,
+                    original_content=content,
+                    enhanced_content=enhanced_content,
+                    ai_model_used=ai_service.model_name,
+                    processing_time=processing_time
+                )
 
-            # Atualiza contador de uso de IA
-            self.request.user.profile.increment_ai_usage()
+                # Atualiza contador de uso de IA
+                self.request.user.profile.increment_ai_usage()
 
-            # Salva conteúdo expandido no atalho
-            shortcut.expanded_content = enhanced_content
-            shortcut.save(update_fields=['expanded_content'])
+                # Salva conteúdo expandido no atalho
+                shortcut.expanded_content = enhanced_content
+                shortcut.save(update_fields=['expanded_content'])
 
             return enhanced_content
 
-        except Exception:
+        except Exception as e:
+            logger.error(f"Erro no enhance_with_ai: {e}")
             # Em caso de erro, retorna conteúdo original
             return content
 

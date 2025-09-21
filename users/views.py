@@ -86,12 +86,13 @@ class UserViewSet(viewsets.ModelViewSet):
         active_shortcuts = shortcuts.filter(is_active=True).count()
         total_uses = shortcuts.aggregate(total=Sum('use_count'))['total'] or 0
 
-        # Estatísticas de IA
-        ai_requests_used = user.profile.ai_requests_used
-        ai_requests_remaining = max(0, user.profile.max_ai_requests - ai_requests_used)
+        # Estatísticas de IA (cria profile se não existir)
+        profile, created = UserProfile.objects.get_or_create(user=user)
+        ai_requests_used = profile.ai_requests_used
+        ai_requests_remaining = max(0, profile.max_ai_requests - ai_requests_used)
 
         # Tempo economizado
-        time_saved_minutes = user.profile.time_saved_minutes
+        time_saved_minutes = profile.time_saved_minutes
         time_saved_hours = round(time_saved_minutes / 60, 2)
 
         # Atalhos mais usados (top 5)
@@ -181,7 +182,8 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
     def get_object(self):
         """Retorna o perfil do usuário logado"""
-        return self.request.user.profile
+        profile, created = UserProfile.objects.get_or_create(user=self.request.user)
+        return profile
 
     @action(detail=False, methods=['post'])
     def upgrade_plan(self, request):
@@ -355,7 +357,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        profile = request.user.profile
+        profile, created = UserProfile.objects.get_or_create(user=request.user)
         profile.reset_monthly_counters()
 
         return Response({'message': 'Contadores mensais resetados'})
@@ -417,9 +419,10 @@ def login_view(request):
         # Faz login
         login(request, user)
 
-        # Atualiza último login no perfil
-        user.profile.last_login = timezone.now()
-        user.profile.save(update_fields=['last_login'])
+        # Atualiza último login no perfil (cria se não existir)
+        profile, created = UserProfile.objects.get_or_create(user=user)
+        profile.last_login = timezone.now()
+        profile.save(update_fields=['last_login'])
 
         # Resetar contador de falhas após sucesso
         cache.delete(brute_force_key)
@@ -528,11 +531,11 @@ def dashboard_data(request):
         'shortcuts_count': shortcuts_count,
         'total_uses': total_uses,
         'recent_activity': recent_activity,
-        'ai_requests_remaining': max(0, user.profile.max_ai_requests - user.profile.ai_requests_used),
+        'ai_requests_remaining': max(0, profile.max_ai_requests - profile.ai_requests_used),
         'recent_shortcuts': ShortcutSerializer(recent_shortcuts, many=True).data,
         'top_shortcuts': ShortcutSerializer(top_shortcuts, many=True).data,
-        'plan': user.profile.get_plan_display(),
-        'theme': user.profile.theme
+        'plan': profile.get_plan_display(),
+        'theme': profile.theme
     })
 
 
@@ -615,7 +618,7 @@ def profile_template_view(request):
         return redirect('users:login')
 
     user = request.user
-    profile = user.userprofile
+    profile, created = UserProfile.objects.get_or_create(user=user)
 
     return render(request, 'auth/profile.html', {'user': user, 'profile': profile})
 
@@ -625,7 +628,7 @@ def profile_update_view(request):
         return redirect('users:login')
 
     user = request.user
-    profile = user.profile
+    profile, created = UserProfile.objects.get_or_create(user=user)
 
     if request.method == 'POST':
         form = UserProfileForm(request.POST, instance=profile)
@@ -714,7 +717,7 @@ def plan_upgrade_view(request):
         'plans': plans,
         'payment_methods': payment_methods,
         'subscription_info': subscription_info,
-        'current_plan': request.user.profile.plan
+        'current_plan': UserProfile.objects.get_or_create(user=request.user)[0].plan
     }
 
     return render(request, 'users/plan_upgrade.html', context)
@@ -779,7 +782,7 @@ def subscription_management_view(request):
     context = {
         'subscription_info': subscription_info,
         'payment_history': payment_history,
-        'current_plan': request.user.profile.plan
+        'current_plan': UserProfile.objects.get_or_create(user=request.user)[0].plan
     }
 
     return render(request, 'users/subscription.html', context)
@@ -789,9 +792,10 @@ def settings_view(request):
     if not request.user.is_authenticated:
         return redirect('users:login')
 
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
     context = {
         'user': request.user,
-        'profile': request.user.profile
+        'profile': profile
     }
 
     return render(request, 'users/settings.html', context)

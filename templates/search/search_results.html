@@ -1,0 +1,380 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+{% if query %}
+    Resultados para "{{ query }}" - Symplifika
+{% else %}
+    Pesquisar - Symplifika
+{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/search.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="search-page-container min-h-screen bg-gray-50 dark:bg-gray-900">
+    <!-- Header Section -->
+    <div class="search-header bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <!-- Breadcrumbs -->
+            {% if breadcrumbs %}
+                {% include 'includes/breadcrumbs.html' %}
+            {% endif %}
+
+            <!-- Search Bar -->
+            <div class="mt-6">
+                {% include 'includes/search_bar.html' %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="search-results-section py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {% if query %}
+                <!-- Results Header -->
+                <div class="results-header mb-8">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                                Resultados para "{{ query }}"
+                            </h1>
+                            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                                {% if total_count > 0 %}
+                                    {{ total_count }} resultado{{ total_count|pluralize }} encontrado{{ total_count|pluralize }}
+                                {% else %}
+                                    Nenhum resultado encontrado
+                                {% endif %}
+                            </p>
+                        </div>
+
+                        <!-- Filter Toggle (Mobile) -->
+                        <div class="mt-4 sm:mt-0">
+                            <button
+                                type="button"
+                                id="toggleFilters"
+                                class="sm:hidden inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                            >
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z"/>
+                                </svg>
+                                Filtros
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Search Filters -->
+                    {% if show_search_filters %}
+                        <div id="searchFilters" class="mt-4 flex flex-wrap gap-2">
+                            <a
+                                href="?q={{ query }}&filter=all"
+                                class="filter-tag {% if filter_type == 'all' %}active{% endif %}"
+                            >
+                                Todos
+                            </a>
+                            <a
+                                href="?q={{ query }}&filter=shortcuts"
+                                class="filter-tag {% if filter_type == 'shortcuts' %}active{% endif %}"
+                            >
+                                Atalhos
+                            </a>
+                            <a
+                                href="?q={{ query }}&filter=categories"
+                                class="filter-tag {% if filter_type == 'categories' %}active{% endif %}"
+                            >
+                                Categorias
+                            </a>
+                            <a
+                                href="?q={{ query }}&filter=commands"
+                                class="filter-tag {% if filter_type == 'commands' %}active{% endif %}"
+                            >
+                                Comandos
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Results Content -->
+                {% if results %}
+                    <div class="results-grid grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        {% for result in results %}
+                            {% if result.__class__.__name__ == 'Shortcut' %}
+                                <!-- Shortcut Result Card -->
+                                <div class="result-card shortcut-card bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200">
+                                    <div class="flex items-start justify-between">
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center">
+                                                <div class="result-icon mr-3">
+                                                    <svg class="w-5 h-5 text-symplifika-primary" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
+                                                    </svg>
+                                                </div>
+                                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white truncate">
+                                                    {{ result.title }}
+                                                </h3>
+                                            </div>
+
+                                            {% if result.description %}
+                                                <p class="mt-2 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                                                    {{ result.description }}
+                                                </p>
+                                            {% endif %}
+
+                                            {% if result.command %}
+                                                <div class="mt-3 p-2 bg-gray-100 dark:bg-gray-700 rounded text-sm font-mono text-gray-800 dark:text-gray-200">
+                                                    {{ result.command }}
+                                                </div>
+                                            {% endif %}
+
+                                            {% if result.category %}
+                                                <div class="mt-3">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-symplifika-primary bg-opacity-20 text-symplifika-primary">
+                                                        {{ result.category.name }}
+                                                    </span>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Shortcut Actions -->
+                                        <div class="ml-4 flex-shrink-0">
+                                            {% if result.user == request.user %}
+                                                <button
+                                                    type="button"
+                                                    class="favorite-btn p-2 text-gray-400 hover:text-red-500 transition-colors duration-200"
+                                                    data-shortcut-id="{{ result.id }}"
+                                                    title="{% if result.is_favorite %}Remover dos favoritos{% else %}Adicionar aos favoritos{% endif %}"
+                                                >
+                                                    <svg class="w-5 h-5 {% if result.is_favorite %}text-red-500 fill-current{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                                    </svg>
+                                                </button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                            {% elif result.__class__.__name__ == 'Category' %}
+                                <!-- Category Result Card -->
+                                <div class="result-card category-card bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200">
+                                    <div class="flex items-start">
+                                        <div class="result-icon mr-3">
+                                            <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                                {{ result.name }}
+                                            </h3>
+
+                                            {% if result.description %}
+                                                <p class="mt-2 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                                                    {{ result.description }}
+                                                </p>
+                                            {% endif %}
+
+                                            <div class="mt-3 text-sm text-gray-500 dark:text-gray-400">
+                                                {{ result.shortcuts.count }} atalho{{ result.shortcuts.count|pluralize }}
+                                            </div>
+
+                                            <div class="mt-3">
+                                                <a
+                                                    href="{% url 'shortcuts:category' result.id %}"
+                                                    class="inline-flex items-center text-sm text-symplifika-primary hover:text-symplifika-accent font-medium"
+                                                >
+                                                    Ver atalhos
+                                                    <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                                    </svg>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if page_obj.has_other_pages %}
+                        <div class="mt-8">
+                            {% include 'includes/pagination.html' %}
+                        </div>
+                    {% endif %}
+
+                {% else %}
+                    <!-- No Results -->
+                    <div class="no-results text-center py-12">
+                        <div class="mx-auto w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-6">
+                            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6M3 12a9 9 0 1118 0 9 9 0 01-18 0z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-2">
+                            Nenhum resultado encontrado
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+                            Não encontramos nada para "{{ query }}". Tente ajustar os termos de busca ou explore nossas categorias.
+                        </p>
+
+                        <div class="mt-6">
+                            <a
+                                href="{% url 'core:dashboard' %}"
+                                class="inline-flex items-center px-4 py-2 bg-symplifika-primary text-white rounded-lg hover:bg-symplifika-accent transition-colors duration-200"
+                            >
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                                </svg>
+                                Voltar ao Dashboard
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+
+            {% else %}
+                <!-- Empty Search State -->
+                <div class="empty-search text-center py-12">
+                    <div class="mx-auto w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-6">
+                        <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-medium text-gray-900 dark:text-white mb-2">
+                        Pesquisar no Symplifika
+                    </h2>
+                    <p class="text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-6">
+                        Use a barra de pesquisa acima para encontrar atalhos, categorias e comandos.
+                    </p>
+
+                    <!-- Quick Search Suggestions -->
+                    <div class="quick-suggestions">
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">Sugestões populares:</p>
+                        <div class="flex flex-wrap justify-center gap-2">
+                            <a href="?q=copiar" class="suggestion-tag">copiar</a>
+                            <a href="?q=colar" class="suggestion-tag">colar</a>
+                            <a href="?q=salvar" class="suggestion-tag">salvar</a>
+                            <a href="?q=desfazer" class="suggestion-tag">desfazer</a>
+                            <a href="?q=VS Code" class="suggestion-tag">VS Code</a>
+                            <a href="?q=Chrome" class="suggestion-tag">Chrome</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Loading Spinner -->
+{% include 'includes/loading_spinner.html' %}
+
+<!-- Toast Notifications -->
+{% include 'includes/toast_notifications.html' %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Mobile filter toggle
+    const toggleFilters = document.getElementById('toggleFilters');
+    const searchFilters = document.getElementById('searchFilters');
+
+    if (toggleFilters && searchFilters) {
+        toggleFilters.addEventListener('click', function() {
+            searchFilters.classList.toggle('hidden');
+        });
+    }
+
+    // Favorite button functionality
+    document.querySelectorAll('.favorite-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const shortcutId = this.dataset.shortcutId;
+            toggleFavorite(shortcutId, this);
+        });
+    });
+
+    function toggleFavorite(shortcutId, button) {
+        LoadingSpinner.showButton(button, 'Salvando...');
+
+        fetch(`/shortcuts/api/shortcuts/${shortcutId}/favorite/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCSRFToken(),
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const svg = button.querySelector('svg');
+                if (data.is_favorite) {
+                    svg.classList.add('text-red-500', 'fill-current');
+                    button.title = 'Remover dos favoritos';
+                    Toast.success('Adicionado aos favoritos!');
+                } else {
+                    svg.classList.remove('text-red-500', 'fill-current');
+                    button.title = 'Adicionar aos favoritos';
+                    Toast.success('Removido dos favoritos!');
+                }
+            } else {
+                Toast.error(data.error || 'Erro ao atualizar favorito');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Toast.error('Erro de conexão');
+        })
+        .finally(() => {
+            LoadingSpinner.hideButton(button);
+        });
+    }
+
+    // Search analytics
+    if (window.gtag && '{{ query }}') {
+        gtag('event', 'search', {
+            search_term: '{{ query }}',
+            search_filter: '{{ filter_type }}',
+            results_count: {{ total_count }}
+        });
+    }
+});
+</script>
+
+<style>
+.filter-tag {
+    @apply inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium border transition-all duration-200;
+    @apply border-gray-300 text-gray-600 hover:border-symplifika-primary hover:text-symplifika-primary;
+    @apply dark:border-gray-600 dark:text-gray-400 dark:hover:border-symplifika-primary dark:hover:text-symplifika-primary;
+}
+
+.filter-tag.active {
+    @apply bg-symplifika-primary text-white border-symplifika-primary;
+}
+
+.suggestion-tag {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-symplifika-primary hover:text-white transition-colors duration-200;
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.result-card:hover {
+    transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+    .results-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #searchFilters.hidden {
+        display: none;
+    }
+}
+</style>
+{% endblock %}

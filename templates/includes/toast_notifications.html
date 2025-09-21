@@ -1,0 +1,580 @@
+{% load static %}
+
+<!-- Toast Notifications Container -->
+<div
+    id="toastContainer"
+    class="toast-container fixed top-4 right-4 z-[9999] space-y-2 pointer-events-none"
+    role="alert"
+    aria-live="polite"
+    aria-atomic="true"
+>
+    <!-- Toast templates will be injected here -->
+</div>
+
+<!-- Toast Template -->
+<template id="toastTemplate">
+    <div
+        class="toast-notification max-w-sm w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 pointer-events-auto transform translate-x-full opacity-0 transition-all duration-300 ease-in-out"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+    >
+        <div class="toast-header flex items-center justify-between p-4 pb-2">
+            <div class="flex items-center">
+                <div class="toast-icon mr-3">
+                    <!-- Icon will be injected based on type -->
+                </div>
+                <h4
+                    class="toast-title text-sm font-semibold text-gray-900 dark:text-white"
+                >
+                    <!-- Title will be injected -->
+                </h4>
+            </div>
+            <button
+                type="button"
+                class="toast-close ml-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors duration-200"
+                aria-label="Fechar notificação"
+            >
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                        fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd"
+                    />
+                </svg>
+            </button>
+        </div>
+        <div class="toast-body px-4 pb-4">
+            <p class="toast-message text-sm text-gray-600 dark:text-gray-300">
+                <!-- Message will be injected -->
+            </p>
+        </div>
+        <div class="toast-progress">
+            <div class="toast-progress-bar h-1 bg-gray-200 dark:bg-gray-600">
+                <div
+                    class="toast-progress-fill h-full transition-all duration-100 ease-linear"
+                    style="width: 100%"
+                ></div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<style>
+    .toast-container {
+        max-height: calc(100vh - 2rem);
+        overflow-y: auto;
+        overflow-x: visible;
+    }
+
+    .toast-notification {
+        min-width: 300px;
+        max-width: 420px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    .toast-notification.show {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .toast-notification.hide {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+
+    /* Toast Types */
+    .toast-success {
+        border-left: 4px solid #10b981;
+    }
+
+    .toast-success .toast-progress-fill {
+        background-color: #10b981;
+    }
+
+    .toast-error {
+        border-left: 4px solid #ef4444;
+    }
+
+    .toast-error .toast-progress-fill {
+        background-color: #ef4444;
+    }
+
+    .toast-warning {
+        border-left: 4px solid #f59e0b;
+    }
+
+    .toast-warning .toast-progress-fill {
+        background-color: #f59e0b;
+    }
+
+    .toast-info {
+        border-left: 4px solid #3b82f6;
+    }
+
+    .toast-info .toast-progress-fill {
+        background-color: #3b82f6;
+    }
+
+    .toast-symplifika {
+        border-left: 4px solid #00c853;
+    }
+
+    .toast-symplifika .toast-progress-fill {
+        background-color: #00c853;
+    }
+
+    /* Toast Icons */
+    .toast-icon-success {
+        color: #10b981;
+    }
+
+    .toast-icon-error {
+        color: #ef4444;
+    }
+
+    .toast-icon-warning {
+        color: #f59e0b;
+    }
+
+    .toast-icon-info {
+        color: #3b82f6;
+    }
+
+    .toast-icon-symplifika {
+        color: #00c853;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 640px) {
+        .toast-container {
+            top: 1rem;
+            right: 1rem;
+            left: 1rem;
+            right: 1rem;
+        }
+
+        .toast-notification {
+            min-width: unset;
+            max-width: unset;
+            width: 100%;
+        }
+    }
+
+    /* Dark Mode Enhancements */
+    .dark .toast-notification {
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        box-shadow:
+            0 20px 25px -5px rgba(0, 0, 0, 0.3),
+            0 10px 10px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Animation Keyframes */
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideOutRight {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+
+    @keyframes shake {
+        0%,
+        100% {
+            transform: translateX(0);
+        }
+        25% {
+            transform: translateX(-5px);
+        }
+        75% {
+            transform: translateX(5px);
+        }
+    }
+
+    .toast-shake {
+        animation: shake 0.5s ease-in-out;
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+        .toast-notification {
+            transition: none;
+        }
+
+        .toast-progress-fill {
+            transition: none;
+        }
+    }
+</style>
+
+<script>
+    // Toast Notification System
+    window.Toast = {
+        // Configuration
+        config: {
+            defaultDuration: 5000,
+            maxToasts: 5,
+            position: "top-right",
+            animations: true,
+        },
+
+        // Toast counter for unique IDs
+        toastCounter: 0,
+
+        // Active toasts tracking
+        activeToasts: new Map(),
+
+        // Icons for different toast types
+        icons: {
+            success: `<svg class="w-5 h-5 toast-icon-success" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>`,
+            error: `<svg class="w-5 h-5 toast-icon-error" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+            </svg>`,
+            warning: `<svg class="w-5 h-5 toast-icon-warning" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>`,
+            info: `<svg class="w-5 h-5 toast-icon-info" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+            </svg>`,
+            symplifika: `<svg class="w-5 h-5 toast-icon-symplifika" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+            </svg>`,
+        },
+
+        // Show toast notification
+        show: function (options) {
+            // Default options
+            const defaults = {
+                type: "info",
+                title: "",
+                message: "",
+                duration: this.config.defaultDuration,
+                closable: true,
+                persistent: false,
+                onClick: null,
+                onClose: null,
+            };
+
+            const config = { ...defaults, ...options };
+
+            // Validate required fields
+            if (!config.message) {
+                console.error("Toast message is required");
+                return null;
+            }
+
+            // Limit number of active toasts
+            if (this.activeToasts.size >= this.config.maxToasts) {
+                const oldestToast = this.activeToasts.keys().next().value;
+                this.hide(oldestToast);
+            }
+
+            // Create toast element
+            const toastId = ++this.toastCounter;
+            const toastElement = this.createToastElement(toastId, config);
+
+            // Add to container
+            const container = document.getElementById("toastContainer");
+            if (!container) {
+                console.error("Toast container not found");
+                return null;
+            }
+
+            container.appendChild(toastElement);
+            this.activeToasts.set(toastId, {
+                element: toastElement,
+                config: config,
+            });
+
+            // Show animation
+            setTimeout(() => {
+                toastElement.classList.add("show");
+            }, 10);
+
+            // Auto-hide if not persistent
+            if (!config.persistent && config.duration > 0) {
+                this.startAutoHide(toastId, config.duration);
+            }
+
+            return toastId;
+        },
+
+        // Create toast DOM element
+        createToastElement: function (toastId, config) {
+            const template = document.getElementById("toastTemplate");
+            const toastElement = template.content
+                .cloneNode(true)
+                .querySelector(".toast-notification");
+
+            // Set toast ID and type
+            toastElement.dataset.toastId = toastId;
+            toastElement.classList.add(`toast-${config.type}`);
+
+            // Set icon
+            const iconContainer = toastElement.querySelector(".toast-icon");
+            iconContainer.innerHTML =
+                this.icons[config.type] || this.icons.info;
+
+            // Set title
+            const titleElement = toastElement.querySelector(".toast-title");
+            if (config.title) {
+                titleElement.textContent = config.title;
+            } else {
+                titleElement.style.display = "none";
+            }
+
+            // Set message
+            const messageElement = toastElement.querySelector(".toast-message");
+            messageElement.textContent = config.message;
+
+            // Set up close button
+            const closeButton = toastElement.querySelector(".toast-close");
+            if (config.closable) {
+                closeButton.addEventListener("click", () => this.hide(toastId));
+            } else {
+                closeButton.style.display = "none";
+            }
+
+            // Set up click handler
+            if (config.onClick) {
+                toastElement.style.cursor = "pointer";
+                toastElement.addEventListener("click", (e) => {
+                    if (
+                        e.target !== closeButton &&
+                        !closeButton.contains(e.target)
+                    ) {
+                        config.onClick(toastId);
+                    }
+                });
+            }
+
+            return toastElement;
+        },
+
+        // Start auto-hide timer
+        startAutoHide: function (toastId, duration) {
+            const toastData = this.activeToasts.get(toastId);
+            if (!toastData) return;
+
+            const progressBar = toastData.element.querySelector(
+                ".toast-progress-fill",
+            );
+
+            // Animate progress bar
+            if (progressBar) {
+                progressBar.style.transition = `width ${duration}ms linear`;
+                progressBar.style.width = "0%";
+            }
+
+            // Set hide timer
+            toastData.hideTimer = setTimeout(() => {
+                this.hide(toastId);
+            }, duration);
+        },
+
+        // Hide toast notification
+        hide: function (toastId) {
+            const toastData = this.activeToasts.get(toastId);
+            if (!toastData) return;
+
+            // Clear timer
+            if (toastData.hideTimer) {
+                clearTimeout(toastData.hideTimer);
+            }
+
+            // Hide animation
+            toastData.element.classList.remove("show");
+            toastData.element.classList.add("hide");
+
+            // Remove from DOM after animation
+            setTimeout(() => {
+                if (toastData.element.parentNode) {
+                    toastData.element.parentNode.removeChild(toastData.element);
+                }
+                this.activeToasts.delete(toastId);
+
+                // Call onClose callback
+                if (toastData.config.onClose) {
+                    toastData.config.onClose(toastId);
+                }
+            }, 300);
+        },
+
+        // Convenience methods
+        success: function (message, title, options = {}) {
+            return this.show({
+                type: "success",
+                title: title || "Sucesso",
+                message: message,
+                ...options,
+            });
+        },
+
+        error: function (message, title, options = {}) {
+            return this.show({
+                type: "error",
+                title: title || "Erro",
+                message: message,
+                duration: 8000, // Longer duration for errors
+                ...options,
+            });
+        },
+
+        warning: function (message, title, options = {}) {
+            return this.show({
+                type: "warning",
+                title: title || "Aviso",
+                message: message,
+                duration: 6000,
+                ...options,
+            });
+        },
+
+        info: function (message, title, options = {}) {
+            return this.show({
+                type: "info",
+                title: title || "Informação",
+                message: message,
+                ...options,
+            });
+        },
+
+        symplifika: function (message, title, options = {}) {
+            return this.show({
+                type: "symplifika",
+                title: title || "Symplifika",
+                message: message,
+                ...options,
+            });
+        },
+
+        // Clear all toasts
+        clear: function () {
+            for (const toastId of this.activeToasts.keys()) {
+                this.hide(toastId);
+            }
+        },
+
+        // Shake a toast (for attention)
+        shake: function (toastId) {
+            const toastData = this.activeToasts.get(toastId);
+            if (toastData) {
+                toastData.element.classList.add("toast-shake");
+                setTimeout(() => {
+                    toastData.element.classList.remove("toast-shake");
+                }, 500);
+            }
+        },
+    };
+
+    // Auto-initialize when DOM is ready
+    document.addEventListener("DOMContentLoaded", function () {
+        // Show Django messages as toasts
+        const djangoMessages = document.querySelectorAll(".alert");
+        djangoMessages.forEach(function (message) {
+            let type = "info";
+            if (message.classList.contains("alert-success")) type = "success";
+            else if (
+                message.classList.contains("alert-error") ||
+                message.classList.contains("alert-danger")
+            )
+                type = "error";
+            else if (message.classList.contains("alert-warning"))
+                type = "warning";
+
+            Toast.show({
+                type: type,
+                message: message.textContent.trim(),
+                duration: 5000,
+            });
+
+            // Hide original Django message
+            message.style.display = "none";
+        });
+    });
+
+    // Global error handler
+    window.addEventListener("error", function (event) {
+        if (window.DEBUG === false) {
+            // Only in production
+            Toast.error("Ocorreu um erro inesperado. Tente novamente.", "Erro");
+        }
+    });
+
+    // Network error handler for fetch requests
+    if (window.fetch) {
+        const originalFetch = window.fetch;
+        window.fetch = function (...args) {
+            return originalFetch.apply(this, args).catch((error) => {
+                if (
+                    error.name === "TypeError" &&
+                    error.message.includes("fetch")
+                ) {
+                    Toast.error(
+                        "Erro de conexão. Verifique sua internet.",
+                        "Conexão",
+                    );
+                }
+                throw error;
+            });
+        };
+    }
+</script>
+
+<!--
+Usage Examples:
+
+1. Basic Usage:
+   Toast.show({
+       type: 'success',
+       title: 'Sucesso!',
+       message: 'Dados salvos com sucesso.',
+       duration: 3000
+   });
+
+2. Convenience Methods:
+   Toast.success('Ação realizada com sucesso!');
+   Toast.error('Algo deu errado!');
+   Toast.warning('Atenção necessária!');
+   Toast.info('Informação importante.');
+   Toast.symplifika('Bem-vindo ao Symplifika!');
+
+3. Advanced Options:
+   const toastId = Toast.show({
+       type: 'info',
+       title: 'Processando',
+       message: 'Aguarde enquanto processamos sua solicitação...',
+       persistent: true,
+       closable: false,
+       onClick: function(id) { console.log('Toast clicked:', id); },
+       onClose: function(id) { console.log('Toast closed:', id); }
+   });
+
+   // Later...
+   Toast.hide(toastId);
+
+4. Integration with Django Messages:
+   This component automatically converts Django messages to toasts.
+   Just use Django's messages framework normally.
+
+5. Manual Control:
+   Toast.clear(); // Clear all toasts
+   Toast.shake(toastId); // Shake a specific toast
+-->

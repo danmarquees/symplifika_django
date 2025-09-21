@@ -11,19 +11,22 @@ class AIService:
     """Serviço para expansão de texto usando IA (Google Gemini)"""
 
     def __init__(self):
-        self.api_key = settings.GEMINI_API_KEY
+        self.api_key = getattr(settings, 'GEMINI_API_KEY', '')
         self.model_name = "gemini-1.5-flash"
         self.max_tokens = 500
         self.temperature = 0.7
 
         if not self.api_key:
             logger.warning("Gemini API key não configurada")
-
-        if self.api_key:
-            genai.configure(api_key=self.api_key)
-            self.model = genai.GenerativeModel(self.model_name)
-        else:
             self.model = None
+        else:
+            try:
+                genai.configure(api_key=self.api_key)
+                self.model = genai.GenerativeModel(self.model_name)
+                logger.info(f"AIService inicializado com sucesso usando {self.model_name}")
+            except Exception as e:
+                logger.error(f"Erro ao inicializar AIService: {e}")
+                self.model = None
 
     def enhance_text(self, content: str, custom_prompt: str = "") -> str:
         """
@@ -36,8 +39,9 @@ class AIService:
         Returns:
             Texto expandido pela IA
         """
-        if not self.api_key:
-            raise Exception("API key do Gemini não configurada")
+        if not self.api_key or not self.model:
+            logger.warning("AIService não configurado - retornando conteúdo original")
+            return content
 
         try:
             # Constrói o prompt
@@ -63,25 +67,16 @@ class AIService:
 
             if response.candidates and response.candidates[0].content:
                 enhanced_content = response.candidates[0].content.parts[0].text.strip()
+                logger.info(f"Texto expandido com sucesso usando {self.model_name}")
+                return enhanced_content
             else:
-                raise Exception("Resposta vazia do modelo")
-
-            logger.info(f"Texto expandido com sucesso usando {self.model_name}")
-            return enhanced_content
+                logger.warning("Resposta vazia do modelo - retornando conteúdo original")
+                return content
 
         except Exception as e:
-            if "quota" in str(e).lower() or "limit" in str(e).lower():
-                logger.error("Limite de uso excedido na API do Gemini")
-                raise Exception("Limite de uso da IA temporariamente excedido. Tente novamente em alguns minutos.")
-            elif "authentication" in str(e).lower() or "api_key" in str(e).lower():
-                logger.error("Erro de autenticação com a API do Gemini")
-                raise Exception("Erro de configuração da IA. Contate o administrador.")
-            elif "invalid" in str(e).lower():
-                logger.error(f"Requisição inválida para a API do Gemini: {e}")
-                raise Exception("Erro na requisição de expansão de texto.")
-            else:
-                logger.error(f"Erro inesperado na expansão de texto: {e}")
-                raise Exception(f"Erro ao expandir texto: {str(e)}")
+            logger.error(f"Erro ao expandir texto com IA: {str(e)}")
+            # Em caso de erro, retorna o conteúdo original
+            return content
 
     def _build_base_prompt(self) -> str:
         """Constrói o prompt base para expansão de texto"""

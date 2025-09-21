@@ -6,7 +6,7 @@
 }
 
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     line-height: 1.6;
@@ -14,9 +14,9 @@ body {
 
 /* Symplifika Brand Colors */
 :root {
-    --symplifika-primary: #00C853;
-    --symplifika-secondary: #00FF57;
-    --symplifika-accent: #4CAF50;
+    --symplifika-primary: #00c853;
+    --symplifika-secondary: #00ff57;
+    --symplifika-accent: #4caf50;
     --symplifika-dark: #1a1a1a;
     --symplifika-light: #f8f9fa;
 }
@@ -24,12 +24,20 @@ body {
 /* Gradients */
 .bg-symplifika-gradient {
     background-color: var(--symplifika-primary);
-    background-image: linear-gradient(135deg, var(--symplifika-secondary) 0%, var(--symplifika-primary) 100%);
+    background-image: linear-gradient(
+        135deg,
+        var(--symplifika-secondary) 0%,
+        var(--symplifika-primary) 100%
+    );
 }
 
 .bg-symplifika-gradient-reverse {
     background-color: var(--symplifika-secondary);
-    background-image: linear-gradient(135deg, var(--symplifika-primary) 0%, var(--symplifika-secondary) 100%);
+    background-image: linear-gradient(
+        135deg,
+        var(--symplifika-primary) 0%,
+        var(--symplifika-secondary) 100%
+    );
 }
 
 /* Mesh Background Pattern */
@@ -42,7 +50,12 @@ body {
 }
 
 /* Transitions */
-.page, .modal-overlay, .toast, .sidebar-item, .card, .btn {
+.page,
+.modal-overlay,
+.toast,
+.sidebar-item,
+.card,
+.btn {
     transition: all 0.25s ease-in-out;
 }
 
@@ -114,8 +127,12 @@ body {
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 /* Cards */
@@ -154,6 +171,84 @@ body {
     outline: none;
     border-color: var(--symplifika-primary);
     box-shadow: 0 0 0 3px rgba(0, 200, 83, 0.1);
+}
+
+/* Safe Area Support for devices with notch */
+:root {
+    --safe-area-top: env(safe-area-inset-top, 0px);
+    --safe-area-right: env(safe-area-inset-right, 0px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-left: env(safe-area-inset-left, 0px);
+}
+
+.safe-area-top {
+    padding-top: var(--safe-area-top);
+}
+
+.safe-area-bottom {
+    padding-bottom: var(--safe-area-bottom);
+}
+
+.safe-area-left {
+    padding-left: var(--safe-area-left);
+}
+
+.safe-area-right {
+    padding-right: var(--safe-area-right);
+}
+
+.safe-area-inset {
+    padding-top: var(--safe-area-top);
+    padding-right: var(--safe-area-right);
+    padding-bottom: var(--safe-area-bottom);
+    padding-left: var(--safe-area-left);
+}
+
+/* Mobile viewport height fix */
+:root {
+    --vh: 1vh;
+}
+
+.min-h-screen-mobile {
+    min-height: 100vh;
+    min-height: calc(var(--vh, 1vh) * 100);
+}
+
+.h-screen-mobile {
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+}
+
+/* Enhanced mobile touch interactions */
+@media (pointer: coarse) {
+    .touch-target {
+        min-height: 44px;
+        min-width: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .touch-target-lg {
+        min-height: 48px;
+        min-width: 48px;
+    }
+
+    /* Prevent text selection on touch devices for better UX */
+    .no-select-touch {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    /* Better tap highlighting */
+    .tap-highlight {
+        -webkit-tap-highlight-color: rgba(0, 200, 83, 0.3);
+        tap-highlight-color: rgba(0, 200, 83, 0.3);
+    }
 }
 
 .dark .form-input {

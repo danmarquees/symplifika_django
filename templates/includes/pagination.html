@@ -1,0 +1,424 @@
+{% load static %}
+
+<!-- Pagination Component -->
+<div
+    class="pagination-container flex flex-col items-center justify-center space-y-4 py-6"
+>
+    {% if page_obj.has_other_pages %}
+
+    <!-- Pagination Info -->
+    <div
+        class="pagination-info text-sm text-gray-600 dark:text-gray-400 text-center"
+    >
+        <!-- prettier-ignore -->
+        Mostrando {{ page_obj.start_index }} a {{ page_obj.end_index }} de
+        {{ page_obj.paginator.count }} resultados
+    </div>
+
+    <!-- Pagination Controls -->
+    <nav class="pagination-nav" aria-label="Navegação de páginas">
+        <ul class="flex items-center space-x-1">
+            <!-- First Page -->
+            {% if page_obj.has_previous %}
+            <li>
+                <a
+                    href="?{% if request.GET.q %}q={{ request.GET.q|urlencode }}&{% endif %}page=1"
+                    class="pagination-btn pagination-btn-nav group"
+                    title="Primeira página"
+                >
+                    <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M11 19l-7-7 7-7M21 19l-7-7 7-7"
+                        />
+                    </svg>
+                </a>
+            </li>
+            {% else %}
+            <li>
+                <span class="pagination-btn pagination-btn-disabled">
+                    <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M11 19l-7-7 7-7M21 19l-7-7 7-7"
+                        />
+                    </svg>
+                </span>
+            </li>
+            {% endif %}
+
+            <!-- Previous Page -->
+            {% if page_obj.has_previous %}
+            <li>
+                <a
+                    href="?{% if request.GET.q %}q={{ request.GET.q|urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}"
+                    class="pagination-btn pagination-btn-nav group"
+                    title="Página anterior"
+                >
+                    <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M15 19l-7-7 7-7"
+                        />
+                    </svg>
+                </a>
+            </li>
+            {% else %}
+            <li>
+                <span class="pagination-btn pagination-btn-disabled">
+                    <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M15 19l-7-7 7-7"
+                        />
+                    </svg>
+                </span>
+            </li>
+            {% endif %}
+
+            <!-- Page Numbers -->
+            <!-- prettier-ignore -->
+            {% for page_num in page_obj.paginator.page_range %} {% if page_num == page_obj.number %}
+            <li>
+                <span
+                    class="pagination-btn pagination-btn-current"
+                    aria-current="page"
+                >
+                    {{ page_num }}
+                </span>
+            </li>
+            <!-- prettier-ignore -->
+            {% elif page_num > page_obj.number|add:'-3' and page_num < page_obj.number|add:'3' %}
+            <li>
+                <a
+                    href="?{% if request.GET.q %}q={{ request.GET.q|urlencode }}&{% endif %}page={{ page_num }}"
+                    class="pagination-btn pagination-btn-number"
+                >
+                    {{ page_num }}
+                </a>
+            </li>
+            {% elif page_num == 1 or page_num == page_obj.paginator.num_pages %}
+            <li>
+                <a
+                    href="?{% if request.GET.q %}q={{ request.GET.q|urlencode }}&{% endif %}page={{ page_num }}"
+                    class="pagination-btn pagination-btn-number"
+                >
+                    {{ page_num }}
+                </a>
+            </li>
+            <!-- prettier-ignore -->
+            {% elif page_num == page_obj.number|add:'-4' or page_num == page_obj.number|add:'4' %}
+            <li>
+                <span class="pagination-ellipsis">...</span>
+            </li>
+            {% endif %} {% endfor %}
+
+            <!-- Next Page -->
+            {% if page_obj.has_next %}
+            <li>
+                <a
+                    href="?{% if request.GET.q %}q={{ request.GET.q|urlencode }}&{% endif %}page={{ page_obj.next_page_number }}"
+                    class="pagination-btn pagination-btn-nav group"
+                    title="Próxima página"
+                >
+                    <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M9 5l7 7-7 7"
+                        />
+                    </svg>
+                </a>
+            </li>
+            {% else %}
+            <li>
+                <span class="pagination-btn pagination-btn-disabled">
+                    <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M9 5l7 7-7 7"
+                        />
+                    </svg>
+                </span>
+            </li>
+            {% endif %}
+
+            <!-- Last Page -->
+            {% if page_obj.has_next %}
+            <li>
+                <a
+                    href="?{% if request.GET.q %}q={{ request.GET.q|urlencode }}&{% endif %}page={{ page_obj.paginator.num_pages }}"
+                    class="pagination-btn pagination-btn-nav group"
+                    title="Última página"
+                >
+                    <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M13 5l7 7-7 7M5 5l7 7-7 7"
+                        />
+                    </svg>
+                </a>
+            </li>
+            {% else %}
+            <li>
+                <span class="pagination-btn pagination-btn-disabled">
+                    <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M13 5l7 7-7 7M5 5l7 7-7 7"
+                        />
+                    </svg>
+                </span>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <!-- Mobile Pagination (Simplified) -->
+    <div
+        class="pagination-mobile md:hidden flex items-center justify-between w-full max-w-xs"
+    >
+        {% if page_obj.has_previous %}
+        <a
+            href="?{% if request.GET.q %}q={{ request.GET.q|urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}"
+            class="pagination-mobile-btn"
+        >
+            <svg
+                class="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 19l-7-7 7-7"
+                />
+            </svg>
+            Anterior
+        </a>
+        {% else %}
+        <span class="pagination-mobile-btn-disabled">
+            <svg
+                class="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 19l-7-7 7-7"
+                />
+            </svg>
+            Anterior
+        </span>
+        {% endif %}
+
+        <span
+            class="pagination-mobile-info text-sm text-gray-600 dark:text-gray-400"
+        >
+            {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+        <a
+            href="?{% if request.GET.q %}q={{ request.GET.q|urlencode }}&{% endif %}page={{ page_obj.next_page_number }}"
+            class="pagination-mobile-btn"
+        >
+            Próximo
+            <svg
+                class="w-4 h-4 ml-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                />
+            </svg>
+        </a>
+        {% else %}
+        <span class="pagination-mobile-btn-disabled">
+            Próximo
+            <svg
+                class="w-4 h-4 ml-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                />
+            </svg>
+        </span>
+        {% endif %}
+    </div>
+
+    {% endif %}
+</div>
+
+<style>
+    .pagination-container {
+        margin: 2rem 0;
+    }
+
+    .pagination-btn {
+        @apply inline-flex items-center justify-center px-3 py-2 text-sm font-medium leading-tight border transition-all duration-200;
+        min-width: 40px;
+        height: 40px;
+    }
+
+    .pagination-btn-nav {
+        @apply text-gray-500 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white;
+        border-radius: 6px;
+    }
+
+    .pagination-btn-nav:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .pagination-btn-number {
+        @apply text-gray-500 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white;
+        border-radius: 6px;
+    }
+
+    .pagination-btn-number:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .pagination-btn-current {
+        @apply text-white bg-symplifika-primary border-symplifika-primary hover:bg-symplifika-accent;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px -1px rgba(0, 200, 83, 0.3);
+    }
+
+    .pagination-btn-disabled {
+        @apply text-gray-300 bg-white border-gray-300 cursor-not-allowed dark:bg-gray-800 dark:border-gray-700 dark:text-gray-600;
+        border-radius: 6px;
+    }
+
+    .pagination-ellipsis {
+        @apply inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400;
+        min-width: 40px;
+        height: 40px;
+    }
+
+    .pagination-mobile-btn {
+        @apply inline-flex items-center px-4 py-2 text-sm font-medium text-symplifika-primary bg-white border border-symplifika-primary rounded-lg hover:bg-symplifika-primary hover:text-white transition-all duration-200 dark:bg-gray-800 dark:hover:bg-symplifika-primary;
+    }
+
+    .pagination-mobile-btn-disabled {
+        @apply inline-flex items-center px-4 py-2 text-sm font-medium text-gray-400 bg-white border border-gray-300 rounded-lg cursor-not-allowed dark:bg-gray-800 dark:border-gray-600 dark:text-gray-600;
+    }
+
+    .pagination-mobile-info {
+        @apply font-medium;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 640px) {
+        .pagination-nav {
+            display: none;
+        }
+
+        .pagination-info {
+            font-size: 12px;
+        }
+    }
+
+    @media (min-width: 641px) {
+        .pagination-mobile {
+            display: none;
+        }
+    }
+
+    /* Dark mode adjustments */
+    .dark .pagination-btn-nav svg,
+    .dark .pagination-btn-number svg {
+        color: #9ca3af;
+    }
+
+    .dark .pagination-btn-nav:hover svg,
+    .dark .pagination-btn-number:hover svg {
+        color: #ffffff;
+    }
+</style>
+
+<!--
+Usage Example:
+1. In your view, use Django's Paginator:
+   paginator = Paginator(queryset, 10)  # 10 items per page
+   page_obj = paginator.get_page(request.GET.get('page'))
+
+2. In your template context:
+   context['page_obj'] = page_obj
+
+3. Include this template:
+   {% include 'includes/pagination.html' %}
+-->

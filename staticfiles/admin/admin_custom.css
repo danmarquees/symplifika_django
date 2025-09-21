@@ -1,0 +1,101 @@
+:root {
+  --primary-color: #2b6777;
+  --secondary-color: #c8d8e4;
+  --accent-color: #52ab98;
+  --danger-color: #ff6b6b;
+  --background: #f8f8f8;
+  --text-color: #222;
+}
+
+body {
+  background: var(--background);
+  color: var(--text-color);
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+#header {
+  background: var(--primary-color);
+  color: #fff;
+  padding: 1.2rem 2rem;
+  border-bottom: 4px solid var(--accent-color);
+}
+
+#branding h1 {
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+}
+
+#branding img {
+  height: 40px;
+  vertical-align: middle;
+  margin-right: 10px;
+}
+
+#user-tools {
+  color: #fff;
+}
+
+.module {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+}
+
+.button, input[type="submit"], .submit-row input {
+  background: var(--accent-color);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.button:hover, input[type="submit"]:hover, .submit-row input:hover {
+  background: var(--primary-color);
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+a:hover {
+  color: var(--accent-color);
+  text-decoration: underline;
+}
+
+#content {
+  margin-top: 2rem;
+}
+
+#nav-sidebar {
+  background: var(--secondary-color);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+#nav-sidebar .module {
+  box-shadow: none;
+  padding: 0.5rem 1rem;
+}
+
+@media (max-width: 900px) {
+  #header {
+    padding: 1rem;
+    font-size: 1.2rem;
+  }
+  .module {
+    padding: 1rem;
+  }
+  #branding h1 {
+    font-size: 1.2rem;
+  }
+}

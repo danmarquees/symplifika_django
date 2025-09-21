@@ -1,6 +1,5 @@
 {% load static %} {% load custom_filters %}
 
-<!-- Phosphor Icons CDN para o ícone do sininho -->
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
 <nav
@@ -8,9 +7,7 @@
 >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
-            <!-- Logo and brand -->
             <div class="flex items-center">
-                <!-- Mobile menu button -->
                 <button
                     type="button"
                     class="md:hidden inline-flex items-center justify-center p-3 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-symplifika-primary mr-2"
@@ -19,7 +16,6 @@
                     id="mobile-menu-button"
                 >
                     <span class="sr-only">Abrir menu principal</span>
-                    <!-- Hamburger icon -->
                     <svg
                         class="hamburger-icon h-6 w-6"
                         xmlns="http://www.w3.org/2000/svg"
@@ -34,7 +30,6 @@
                             d="M4 6h16M4 12h16M4 18h16"
                         />
                     </svg>
-                    <!-- Close icon -->
                     <svg
                         class="close-icon h-6 w-6 hidden"
                         xmlns="http://www.w3.org/2000/svg"
@@ -51,7 +46,6 @@
                     </svg>
                 </button>
 
-                <!-- Logo -->
                 <a
                     href="{% url 'core:index' %}"
                     class="flex items-center space-x-2"
@@ -92,7 +86,6 @@
                 </a>
             </div>
 
-            <!-- Global Search (authenticated users only) -->
             {% if user.is_authenticated %}
             <div class="hidden md:flex flex-1 max-w-lg mx-8">
                 <div class="relative w-full">
@@ -120,18 +113,14 @@
                         placeholder="Buscar atalhos, categorias..."
                         autocomplete="off"
                     />
-                    <!-- Search Results Dropdown -->
                     <div
                         id="search-results"
                         class="hidden absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 max-h-96 overflow-y-auto z-50"
-                    >
-                        <!-- Results will be populated by JavaScript -->
-                    </div>
+                    ></div>
                 </div>
             </div>
             {% endif %}
 
-            <!-- Navigation links (desktop) -->
             <div
                 class="hidden md:flex md:items-center md:space-x-6 lg:space-x-8"
             >
@@ -183,7 +172,7 @@
                     Atalhos
                 </a>
                 <a
-                    href="{% url 'core:profile' %}"
+                    href="{% url 'users:profile' %}"
                     class="nav-link {% if request.resolver_match.url_name == 'profile' %}nav-link-active{% else %}nav-link-inactive{% endif %} px-3 py-2 rounded-md text-sm font-medium transition-colors relative"
                     data-nav="profile"
                 >
@@ -224,11 +213,9 @@
                 {% endif %}
             </div>
 
-            <!-- Right side buttons -->
             <div class="flex items-center space-x-2 md:space-x-4">
                 {% if user.is_authenticated %}
 
-                <!-- Notifications -->
                 <div class="relative">
                     <button
                         type="button"
@@ -237,21 +224,18 @@
                         onclick="toggleNotifications()"
                         title="Notificações"
                     >
-                        <!-- Notification Badge -->
                         <span
                             id="notification-badge"
                             class="hidden absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"
                         >
                             3
                         </span>
-                        <!-- Ícone Phosphor Bell Simple -->
                         <i
                             class="ph ph-bell-simple-z text-xl"
                             style="font-size: 1.5rem"
                         ></i>
                     </button>
 
-                    <!-- Notifications Dropdown -->
                     <div
                         id="notifications-dropdown"
                         class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50"
@@ -266,19 +250,13 @@
                             </h3>
                         </div>
                         <div class="max-h-96 overflow-y-auto">
-                            <!-- Notification items will be populated by JavaScript -->
                             <div
                                 class="p-4 text-center text-gray-500 dark:text-gray-400"
                             >
-                                <!-- Phosphor Bell Simple Icon via CDN -->
                                 <i
                                     class="ph ph-bell-simple-z"
                                     style="font-size: 24px"
                                 ></i>
-                                <!-- Para funcionar, adicione no <head> do seu HTML:
-                                <script src="https://unpkg.com/@phosphor-icons/web"></script>
-                                -->
-
                                 <p>Nenhuma notificação</p>
                             </div>
                         </div>
@@ -294,12 +272,10 @@
                     </div>
                 </div>
 
-                <!-- Plan Status Widget -->
                 <div class="hidden lg:block">
                     {% include 'includes/plan_status_widget.html' %}
                 </div>
                 {% if user.profile.plan == 'free' %}
-                <!-- Botão Preços para usuários Free -->
                 <a
                     href="{% url 'core:pricing' %}"
                     class="text-symplifika-primary hover:text-symplifika-primary-dark px-3 py-2 rounded-md text-sm font-medium transition-colors border border-symplifika-primary bg-symplifika-primary/10 ml-2"
@@ -309,7 +285,6 @@
                 </a>
                 {% endif %} {% endif %}
 
-                <!-- Theme toggle -->
                 <button
                     type="button"
                     class="p-2 text-gray-400 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-symplifika-primary min-h-[44px] min-w-[44px]"
@@ -320,88 +295,406 @@
                 </button>
 
                 {% if user.is_authenticated %}
-                <!-- User menu -->
-                <div class="relative">
+
+                <div
+                    class="user-menu-container relative"
+                    id="userMenuContainer"
+                >
                     <button
                         type="button"
-                        class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-symplifika-primary min-h-[44px] min-w-[44px]"
-                        id="user-menu-button"
+                        class="user-menu-trigger flex items-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-symplifika-primary focus:ring-opacity-50"
+                        id="userMenuTrigger"
                         aria-expanded="false"
-                        onclick="toggleUserMenu()"
+                        aria-haspopup="true"
+                        aria-label="Menu do usuário"
                     >
-                        <span class="sr-only">Abrir menu do usuário</span>
-                        {% if user.profile.avatar %}
-                        <img
-                            class="h-8 w-8 sm:h-9 sm:w-9 rounded-full object-cover"
-                            src="{{ user.profile.avatar.url }}"
-                            alt="{{ user.get_full_name|default:user.username }}"
-                        />
-                        {% else %}
+                        <div class="user-avatar relative">
+                            {% if user.profile.avatar %}
+                            <img
+                                src="{{ user.profile.avatar.url }}"
+                                alt="Avatar de {{ user.get_full_name|default:user.username }}"
+                                class="w-10 h-10 rounded-full object-cover border-2 border-white dark:border-gray-600 shadow-sm"
+                            />
+                            {% else %}
+                            <div
+                                class="w-10 h-10 rounded-full bg-gradient-to-br from-symplifika-primary to-symplifika-secondary flex items-center justify-center text-white font-semibold text-sm shadow-sm"
+                            >
+                                <!-- prettier-ignore -->
+                                {{ user.get_full_name|default:user.username|first|upper }}
+                            </div>
+                            {% endif %}
+
+                            <div
+                                class="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-white dark:border-gray-800"
+                                title="Online"
+                            ></div>
+                        </div>
+
                         <div
-                            class="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-symplifika-primary flex items-center justify-center"
+                            class="hidden md:flex flex-col items-start ml-3 mr-2"
                         >
-                            <span class="text-white font-medium text-sm">
-                                <!--prettier-ignore -->
-                                {{user.first_name|first|default:user.username|first|upper}}
+                            <span
+                                class="text-sm font-medium text-gray-700 dark:text-gray-200 truncate max-w-32"
+                            >
+                                {{ user.get_full_name|default:user.username }}
+                            </span>
+                            <span
+                                class="text-xs text-gray-500 dark:text-gray-400"
+                            >
+                                <!-- prettier-ignore -->
+                                {% if user.profile.plan %} {{ user.profile.plan.name }} {% else %} Plano
+                                Gratuito {% endif %}
                             </span>
                         </div>
-                        {% endif %}
+
+                        <svg
+                            class="user-menu-chevron w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform duration-200 ml-1"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M19 9l-7 7-7-7"
+                            />
+                        </svg>
                     </button>
 
-                    <!-- User dropdown menu -->
                     <div
-                        class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700"
-                        id="user-menu"
+                        id="userMenuDropdown"
+                        class="user-menu-dropdown absolute right-0 top-full mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-600 z-50 opacity-0 invisible transform -translate-y-2 transition-all duration-200 ease-out"
+                        role="menu"
+                        aria-orientation="vertical"
+                        aria-labelledby="userMenuTrigger"
                     >
                         <div
-                            class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 border-b border-gray-200 dark:border-gray-700"
+                            class="user-info-header p-4 border-b border-gray-200 dark:border-gray-600"
                         >
-                            <div class="font-medium">
-                                {{ user.get_full_name|default:user.username }}
-                            </div>
-                            <div class="text-gray-500 dark:text-gray-400">
-                                {{ user.email }}
+                            <div class="flex items-center space-x-3">
+                                {% if user.profile.avatar %}
+                                <img
+                                    src="{{ user.profile.avatar.url }}"
+                                    alt="Avatar de {{ user.get_full_name|default:user.username }}"
+                                    class="w-12 h-12 rounded-full object-cover"
+                                />
+                                {% else %}
+                                <div
+                                    class="w-12 h-12 rounded-full bg-gradient-to-br from-symplifika-primary to-symplifika-secondary flex items-center justify-center text-white font-semibold"
+                                >
+                                    <!-- prettier-ignore -->
+                                    {{ user.get_full_name|default:user.username|first|upper }}
+                                </div>
+                                {% endif %}
+
+                                <div class="flex-1 min-w-0">
+                                    <h3
+                                        class="text-sm font-semibold text-gray-900 dark:text-white truncate"
+                                    >
+                                        <!-- prettier-ignore -->
+                                        {{ user.get_full_name|default:user.username }}
+                                    </h3>
+                                    <p
+                                        class="text-sm text-gray-500 dark:text-gray-400 truncate"
+                                    >
+                                        {{ user.email }}
+                                    </p>
+                                    <div class="flex items-center mt-1">
+                                        {% if user.profile.plan %}
+                                        <span
+                                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-symplifika-primary bg-opacity-20 text-symplifika-primary"
+                                        >
+                                            <svg
+                                                class="w-3 h-3 mr-1"
+                                                fill="currentColor"
+                                                viewBox="0 0 20 20"
+                                            >
+                                                <path
+                                                    fill-rule="evenodd"
+                                                    d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732L14.146 12.8l-1.179 4.456a1 1 0 01-1.934 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732L9.854 7.2l1.179-4.456A1 1 0 0112 2z"
+                                                    clip-rule="evenodd"
+                                                />
+                                            </svg>
+                                            {{ user.profile.plan.name }}
+                                        </span>
+                                        {% else %}
+                                        <span
+                                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
+                                        >
+                                            Gratuito
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <a
-                            href="{% url 'core:profile' %}"
-                            class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                        >
-                            Perfil
-                        </a>
-                        <a
-                            href="{% url 'core:settings' %}"
-                            class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                        >
-                            Configurações
-                        </a>
-                        <div
-                            class="border-t border-gray-200 dark:border-gray-700"
-                        ></div>
-                        <form
-                            method="post"
-                            action="{% url 'users:logout' %}"
-                            class="block"
-                        >
-                            {% csrf_token %}
-                            <button
-                                type="submit"
-                                class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+
+                        <div class="py-2">
+                            <div class="menu-section">
+                                <a
+                                    href="{% url 'users:profile' %}"
+                                    class="menu-item flex items-center px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150"
+                                    role="menuitem"
+                                >
+                                    <svg class="menu-icon w-5 h-5 mr-3 text-gray-400 group-hover:text-symplifika-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                    </svg>
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                            Meu Perfil
+                                        </div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                                            Editar informações pessoais
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <a
+                                    href="{% url 'users:settings' %}"
+                                    class="menu-item flex items-center px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150"
+                                    role="menuitem"
+                                >
+                                    <svg class="menu-icon w-5 h-5 mr-3 text-gray-400 group-hover:text-symplifika-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    </svg>
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                            Configurações
+                                        </div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                                            Preferências da conta
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div
+                                class="border-t border-gray-200 dark:border-gray-600 my-2"
+                            ></div>
+
+                            <div class="menu-section">
+                                <a
+                                    href="{% url 'core:shortcuts' %}"
+                                    class="menu-item flex items-center px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150"
+                                    role="menuitem"
+                                >
+                                    <svg class="menu-icon w-5 h-5 mr-3 text-gray-400 group-hover:text-symplifika-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                    </svg>
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                            Meus Atalhos
+                                        </div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                                            Gerenciar atalhos salvos
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <a
+                                    href="{% url 'core:shortcuts' %}"
+                                    class="menu-item flex items-center px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150"
+                                    role="menuitem"
+                                >
+                                    <svg class="menu-icon w-5 h-5 mr-3 text-gray-400 group-hover:text-symplifika-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                    </svg>
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                            Favoritos
+                                        </div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                                            Atalhos marcados como favoritos
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div
+                                class="border-t border-gray-200 dark:border-gray-600 my-2"
                             >
-                                Sair
-                            </button>
-                        </form>
+                                <!-- prettier-ignore -->
+                            </div>
+                            <!-- prettier-ignore -->
+                            {% if not user.profile.plan or user.profile.plan.name == 'Free' %}
+                            <div class="menu-section">
+                                <a
+                                    href="{% url 'core:pricing' %}"
+                                    class="menu-item flex items-center px-4 py-3 hover:bg-symplifika-primary hover:bg-opacity-10 transition-colors duration-150 group"
+                                    role="menuitem"
+                                >
+                                    <svg class="menu-icon w-5 h-5 mr-3 text-symplifika-primary group-hover:text-symplifika-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                                    </svg>
+                                    <div>
+                                        <div class="text-sm font-medium text-symplifika-primary group-hover:text-symplifika-accent">
+                                            Fazer Upgrade
+                                        </div>
+                                        <div class="text-xs text-symplifika-primary/70 group-hover:text-symplifika-accent/70">
+                                            Desbloqueie recursos premium
+                                        </div>
+                                    </div>
+                                    <div class="ml-auto">
+                                        <span
+                                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-symplifika-primary to-symplifika-accent text-white shadow-sm"
+                                            >PRO</span
+                                        >
+                                    </div>
+                                </a>
+                            </div>
+                            {% else %}
+                            <div class="menu-section">
+                                <a
+                                    href="#"
+                                    class="menu-item flex items-center px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150"
+                                    role="menuitem"
+                                >
+                                    <svg class="menu-icon w-5 h-5 mr-3 text-gray-400 group-hover:text-symplifika-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                                    </svg>
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                            Faturamento
+                                        </div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                                            Gerenciar plano e pagamentos
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            {% endif %}
+
+                            <div
+                                class="border-t border-gray-200 dark:border-gray-600 my-2"
+                            ></div>
+
+                            <div class="menu-section">
+                                <a
+                                    href="{% url 'core:help' %}"
+                                    class="menu-item flex items-center px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150"
+                                    role="menuitem"
+                                >
+                                    <svg class="menu-icon w-5 h-5 mr-3 text-gray-400 group-hover:text-symplifika-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                            Ajuda & Suporte
+                                        </div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                                            FAQ e documentação
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <a
+                                    href="{% url 'core:feedback' %}"
+                                    class="menu-item flex items-center px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150"
+                                    role="menuitem"
+                                >
+                                    <svg class="menu-icon w-5 h-5 mr-3 text-gray-400 group-hover:text-symplifika-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+                                    </svg>
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                            Feedback
+                                        </div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                                            Compartilhe sua opinião
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div
+                                class="border-t border-gray-200 dark:border-gray-600 my-2"
+                            ></div>
+
+                            <div class="menu-section">
+                                <button
+                                    type="button"
+                                    id="themeToggle"
+                                    class="menu-item flex items-center px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 w-full text-left"
+                                    role="menuitem"
+                                >
+                                    <svg
+                                        class="menu-icon w-5 h-5 mr-3 text-gray-400 group-hover:text-symplifika-primary transition-colors dark:hidden"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    >
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                                    </svg>
+                                    <svg
+                                        class="menu-icon w-5 h-5 mr-3 text-gray-400 group-hover:text-symplifika-primary transition-colors hidden dark:block"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    >
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                                    </svg>
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                            <span class="dark:hidden"
+                                                >Modo Escuro</span
+                                            >
+                                            <span class="hidden dark:inline"
+                                                >Modo Claro</span
+                                            >
+                                        </div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                                            Alterar aparência
+                                        </div>
+                                    </div>
+                                </button>
+                            </div>
+
+                            <div
+                                class="border-t border-gray-200 dark:border-gray-600 my-2"
+                            ></div>
+
+                            <div class="menu-section">
+                                <form
+                                    method="post"
+                                    action="{% url 'users:logout' %}"
+                                    class="w-full"
+                                >
+                                    {% csrf_token %}
+                                    <button
+                                        type="submit"
+                                        class="menu-item flex items-center px-4 py-3 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-150 w-full text-left group"
+                                        role="menuitem"
+                                    >
+                                        <svg
+                                            class="menu-icon w-5 h-5 mr-3 text-red-400 group-hover:text-red-500 transition-colors"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        >
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                        </svg>
+                                        <div>
+                                            <div
+                                                class="text-sm font-medium text-red-600 dark:text-red-400 group-hover:text-red-700 dark:group-hover:text-red-300"
+                                            >
+                                                Sair
+                                            </div>
+                                            <div
+                                                class="text-xs text-red-500 dark:text-red-400 group-hover:text-red-600 dark:group-hover:text-red-300"
+                                            >
+                                                Encerrar sessão
+                                            </div>
+                                        </div>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
                 {% else %}
-                <!-- Pricing Button -->
                 <a
                     href="{% url 'core:pricing' %}"
                     class="hidden sm:block text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
                     Preços
                 </a>
-                <!-- Login/Register buttons -->
                 <a
                     href="{% url 'users:login' %}"
                     class="hidden sm:block text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
@@ -420,107 +713,274 @@
         </div>
     </div>
 
-    <!-- Mobile navigation menu -->
     <div class="md:hidden hidden overflow-hidden" id="mobile-menu">
         <div
             class="px-4 pt-4 pb-4 space-y-1 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 max-h-[70vh] overflow-y-auto"
         >
             {% if user.is_authenticated %}
-            <a
-                href="{% url 'core:dashboard' %}"
-                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-4 py-3 rounded-md text-base font-medium border-b border-gray-100 dark:border-gray-700 min-h-[44px] flex items-center"
-            >
-                Dashboard
-            </a>
-            <a
-                href="{% url 'core:dashboard' %}#shortcuts"
-                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-4 py-3 rounded-md text-base font-medium border-b border-gray-100 dark:border-gray-700 min-h-[44px] flex items-center"
-            >
-                Atalhos
-            </a>
-            <a
-                href="{% url 'core:profile' %}"
-                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-4 py-3 rounded-md text-base font-medium border-b border-gray-100 dark:border-gray-700 min-h-[44px] flex items-center"
-            >
-                Perfil
-            </a>
-            <a
-                href="{% url 'core:pricing' %}"
-                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-4 py-3 rounded-md text-base font-medium border-b border-gray-100 dark:border-gray-700 min-h-[44px] flex items-center"
-            >
-                Preços
-            </a>
+            <a href="{% url 'core:dashboard' %}" class="...">Dashboard</a>
+            <a href="{% url 'core:shortcuts' %}" class="...">Atalhos</a>
+            <a href="{% url 'users:profile' %}" class="...">Perfil</a>
+            <a href="{% url 'core:pricing' %}" class="...">Preços</a>
             {% else %}
-            <a
-                href="{% url 'core:index' %}"
-                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-4 py-3 rounded-md text-base font-medium border-b border-gray-100 dark:border-gray-700 min-h-[44px] flex items-center"
-            >
-                Início
-            </a>
-            <a
-                href="{% url 'core:index' %}#features"
-                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-4 py-3 rounded-md text-base font-medium border-b border-gray-100 dark:border-gray-700 min-h-[44px] flex items-center"
-            >
-                Recursos
-            </a>
-            <a
-                href="{% url 'core:about' %}"
-                class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-4 py-3 rounded-md text-base font-medium border-b border-gray-100 dark:border-gray-700 min-h-[44px] flex items-center"
-            >
-                Sobre
-            </a>
+            <a href="{% url 'core:index' %}" class="...">Início</a>
+            <a href="{% url 'core:index' %}#features" class="...">Recursos</a>
+            <a href="{% url 'core:about' %}" class="...">Sobre</a>
             <div
                 class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4"
             >
-                <a
-                    href="{% url 'core:pricing' %}"
-                    class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-4 py-3 rounded-md text-base font-medium border-b border-gray-100 dark:border-gray-700 min-h-[44px] flex items-center"
+                <a href="{% url 'core:pricing' %}" class="...">Preços</a>
+                <a href="{% url 'users:login' %}" class="...">Entrar</a>
+                <a href="{% url 'users:register' %}" class="btn btn-primary ..."
+                    >Registrar</a
                 >
-                    Preços
-                </a>
-                <a
-                    href="{% url 'users:login' %}"
-                    class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white block px-4 py-3 rounded-md text-base font-medium border-b border-gray-100 dark:border-gray-700 min-h-[44px] flex items-center"
-                >
-                    Entrar
-                </a>
-                <a
-                    href="{% url 'users:register' %}"
-                    class="btn btn-primary block mx-4 mt-3 mb-2 text-center min-h-[48px] flex items-center justify-center"
-                >
-                    Registrar
-                </a>
             </div>
             {% endif %}
         </div>
     </div>
 </nav>
 
-<!-- Include Pricing Modal -->
 {% include 'includes/pricing_modal.html' %}
 
-<script>
-    // Toggle user menu
-    function toggleUserMenu() {
-        const menu = document.getElementById("user-menu");
-        menu.classList.toggle("hidden");
+<style>
+    .user-menu-container {
+        position: relative;
     }
 
-    // Close user menu when clicking outside
-    document.addEventListener("click", function (event) {
-        const userMenuButton = document.getElementById("user-menu-button");
-        const userMenu = document.getElementById("user-menu");
+    .user-menu-trigger:hover .user-avatar img,
+    .user-menu-trigger:hover .user-avatar > div {
+        transform: scale(1.05);
+    }
 
-        if (
-            userMenu &&
-            !userMenu.contains(event.target) &&
-            !userMenuButton.contains(event.target)
-        ) {
-            userMenu.classList.add("hidden");
+    .user-menu-trigger[aria-expanded="true"] .user-menu-chevron {
+        transform: rotate(180deg);
+    }
+
+    .user-menu-dropdown.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .user-menu-dropdown {
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow:
+            0 20px 25px -5px rgba(0, 0, 0, 0.1),
+            0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    .dark .user-menu-dropdown {
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        box-shadow:
+            0 20px 25px -5px rgba(0, 0, 0, 0.3),
+            0 10px 10px -5px rgba(0, 0, 0, 0.2);
+    }
+
+    .menu-item {
+        cursor: pointer;
+    }
+
+    .menu-item:hover .menu-icon {
+        color: #00c853;
+        transform: translateX(2px);
+    }
+
+    .menu-item:focus {
+        outline: 2px solid #00c853;
+        outline-offset: -2px;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 640px) {
+        .user-menu-dropdown {
+            right: -1rem;
+            width: calc(100vw - 2rem);
+            max-width: 20rem;
         }
+    }
+
+    /* High contrast mode */
+    @media (prefers-contrast: high) {
+        .user-menu-dropdown {
+            border-width: 2px;
+        }
+
+        .menu-item:hover {
+            background-color: #000 !important;
+            color: #fff !important;
+        }
+
+        .dark .menu-item:hover {
+            background-color: #fff !important;
+            color: #000 !important;
+        }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+        .user-menu-dropdown,
+        .user-menu-chevron,
+        .menu-item,
+        .menu-icon {
+            transition: none;
+        }
+    }
+</style>
+
+<script>
+    // User Menu Dropdown JavaScript (New and Integrated)
+    class UserMenu {
+        constructor() {
+            this.trigger = document.getElementById("userMenuTrigger");
+            this.dropdown = document.getElementById("userMenuDropdown");
+            this.themeToggle = document.getElementById("themeToggle");
+            this.isOpen = false;
+
+            if (!this.trigger || !this.dropdown) {
+                console.error("User menu elements not found.");
+                return;
+            }
+
+            this.init();
+        }
+
+        init() {
+            this.bindEvents();
+            this.setupThemeToggle();
+            this.setupKeyboardNavigation();
+        }
+
+        bindEvents() {
+            this.trigger.addEventListener("click", (e) => {
+                e.preventDefault();
+                this.toggle();
+            });
+
+            document.addEventListener("click", (e) => {
+                if (
+                    this.isOpen &&
+                    !this.trigger.contains(e.target) &&
+                    !this.dropdown.contains(e.target)
+                ) {
+                    this.close();
+                }
+            });
+
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" && this.isOpen) {
+                    this.close();
+                    this.trigger.focus();
+                }
+            });
+
+            const menuItems =
+                this.dropdown.querySelectorAll('[role="menuitem"]');
+            menuItems.forEach((item) => {
+                item.addEventListener("keydown", (e) => {
+                    this.handleMenuItemKeydown(e, item, menuItems);
+                });
+            });
+        }
+
+        toggle() {
+            if (this.isOpen) {
+                this.close();
+            } else {
+                this.open();
+            }
+        }
+
+        open() {
+            this.dropdown.classList.add("show");
+            this.trigger.setAttribute("aria-expanded", "true");
+            this.isOpen = true;
+
+            setTimeout(() => {
+                const firstItem =
+                    this.dropdown.querySelector('[role="menuitem"]');
+                if (firstItem) firstItem.focus();
+            }, 100);
+
+            this.trackEvent("user_menu_opened");
+        }
+
+        close() {
+            this.dropdown.classList.remove("show");
+            this.trigger.setAttribute("aria-expanded", "false");
+            this.isOpen = false;
+        }
+
+        setupThemeToggle() {
+            if (this.themeToggle) {
+                this.themeToggle.addEventListener("click", () => {
+                    this.toggleTheme();
+                });
+            }
+        }
+
+        toggleTheme() {
+            // This function is illustrative. Assumes theme logic is handled elsewhere.
+            // You can integrate your existing `data-theme-toggle` logic here.
+            const html = document.documentElement;
+            html.classList.toggle("dark");
+            localStorage.setItem(
+                "theme",
+                html.classList.contains("dark") ? "dark" : "light",
+            );
+            this.close();
+        }
+
+        setupKeyboardNavigation() {
+            this.trigger.addEventListener("keydown", (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    this.toggle();
+                } else if (e.key === "ArrowDown" && !this.isOpen) {
+                    e.preventDefault();
+                    this.open();
+                }
+            });
+        }
+
+        handleMenuItemKeydown(e, currentItem, allItems) {
+            const currentIndex = Array.from(allItems).indexOf(currentItem);
+            switch (e.key) {
+                case "ArrowDown":
+                    e.preventDefault();
+                    allItems[(currentIndex + 1) % allItems.length].focus();
+                    break;
+                case "ArrowUp":
+                    e.preventDefault();
+                    allItems[
+                        (currentIndex - 1 + allItems.length) % allItems.length
+                    ].focus();
+                    break;
+                case "Home":
+                    e.preventDefault();
+                    allItems[0].focus();
+                    break;
+                case "End":
+                    e.preventDefault();
+                    allItems[allItems.length - 1].focus();
+                    break;
+                case "Tab":
+                    this.close();
+                    break;
+            }
+        }
+
+        trackEvent(eventName, properties = {}) {
+            // Placeholder for your analytics tracking
+        }
+    }
+
+    // Initialize User Menu on DOM ready
+    document.addEventListener("DOMContentLoaded", () => {
+        new UserMenu();
     });
 
-    // Enhanced mobile menu functionality
+    // Original Scripts from Navbar (Mobile Menu, Sidebar, etc.)
     document.addEventListener("DOMContentLoaded", function () {
         const mobileMenuButton = document.getElementById("mobile-menu-button");
         const mobileMenu = document.getElementById("mobile-menu");
@@ -528,21 +988,13 @@
         const closeIcon = document.querySelector(".close-icon");
 
         if (mobileMenuButton && mobileMenu) {
-            // Toggle mobile menu
             mobileMenuButton.addEventListener("click", function (e) {
                 e.preventDefault();
                 e.stopPropagation();
-
                 const isOpen = !mobileMenu.classList.contains("hidden");
-
-                if (isOpen) {
-                    closeMobileMenu();
-                } else {
-                    openMobileMenu();
-                }
+                isOpen ? closeMobileMenu() : openMobileMenu();
             });
 
-            // Close mobile menu when clicking outside
             document.addEventListener("click", function (event) {
                 if (
                     !mobileMenu.contains(event.target) &&
@@ -553,30 +1005,21 @@
                 }
             });
 
-            // Close mobile menu on window resize to desktop
-            window.addEventListener("resize", function () {
-                if (window.innerWidth >= 768) {
-                    // md breakpoint
-                    closeMobileMenu();
-                }
+            window.addEventListener("resize", () => {
+                if (window.innerWidth >= 768) closeMobileMenu();
             });
-
-            // Close mobile menu on escape key
-            document.addEventListener("keydown", function (event) {
+            document.addEventListener("keydown", (e) => {
                 if (
-                    event.key === "Escape" &&
+                    e.key === "Escape" &&
                     !mobileMenu.classList.contains("hidden")
-                ) {
+                )
                     closeMobileMenu();
-                }
             });
 
-            // Auto-close menu when clicking on links (mobile)
-            const mobileMenuLinks = mobileMenu.querySelectorAll("a");
-            mobileMenuLinks.forEach((link) => {
-                link.addEventListener("click", function () {
-                    setTimeout(closeMobileMenu, 150); // Small delay for better UX
-                });
+            mobileMenu.querySelectorAll("a").forEach((link) => {
+                link.addEventListener("click", () =>
+                    setTimeout(closeMobileMenu, 150),
+                );
             });
         }
 
@@ -585,17 +1028,10 @@
             hamburgerIcon.classList.add("hidden");
             closeIcon.classList.remove("hidden");
             mobileMenuButton.setAttribute("aria-expanded", "true");
-
-            // Prevent body scroll on mobile
-            if (window.innerWidth < 768) {
+            if (window.innerWidth < 768)
                 document.body.style.overflow = "hidden";
-            }
-
-            // Focus management
             const firstLink = mobileMenu.querySelector("a");
-            if (firstLink) {
-                setTimeout(() => firstLink.focus(), 100);
-            }
+            if (firstLink) setTimeout(() => firstLink.focus(), 100);
         }
 
         function closeMobileMenu() {
@@ -603,172 +1039,39 @@
             hamburgerIcon.classList.remove("hidden");
             closeIcon.classList.add("hidden");
             mobileMenuButton.setAttribute("aria-expanded", "false");
-
-            // Restore body scroll
             document.body.style.overflow = "";
-
-            // Return focus to button
             mobileMenuButton.focus();
         }
-
-        // Keyboard navigation for mobile menu
-        mobileMenu.addEventListener("keydown", function (event) {
-            const focusableElements = mobileMenu.querySelectorAll(
-                'a, button, [tabindex]:not([tabindex="-1"])',
-            );
-            const firstElement = focusableElements[0];
-            const lastElement = focusableElements[focusableElements.length - 1];
-
-            if (event.key === "Tab") {
-                if (event.shiftKey) {
-                    // Shift + Tab
-                    if (document.activeElement === firstElement) {
-                        event.preventDefault();
-                        lastElement.focus();
-                    }
-                } else {
-                    // Tab
-                    if (document.activeElement === lastElement) {
-                        event.preventDefault();
-                        firstElement.focus();
-                    }
-                }
-            }
-        });
     });
 
     // Toggle mobile menu or sidebar depending on page context
-    document
-        .querySelector("[data-sidebar-toggle]")
-        .addEventListener("click", function () {
-            // Check if we're on the app dashboard page (has sidebar)
+    const sidebarToggle = document.querySelector("[data-sidebar-toggle]");
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener("click", function () {
             const appSidebar = document.getElementById("app-sidebar");
-
             if (appSidebar) {
-                // We're on app page - toggle sidebar
                 const backdrop = document.getElementById("sidebar-backdrop");
                 const isOpen =
                     !appSidebar.classList.contains("-translate-x-full");
-
                 if (isOpen) {
-                    // Close sidebar
                     appSidebar.classList.add("-translate-x-full");
                     if (backdrop) backdrop.classList.add("hidden");
                     document.body.style.overflow = "";
-                    appSidebar.removeAttribute("aria-hidden");
-                    appSidebar.setAttribute("inert", "");
-                    this.setAttribute("aria-expanded", "false");
                 } else {
-                    // Open sidebar
                     appSidebar.classList.remove("-translate-x-full");
                     if (backdrop) backdrop.classList.remove("hidden");
                     document.body.style.overflow = "hidden";
-                    appSidebar.removeAttribute("inert");
-                    appSidebar.setAttribute("aria-hidden", "false");
-                    this.setAttribute("aria-expanded", "true");
-
-                    // Focus first interactive element in sidebar
-                    const firstFocusable = appSidebar.querySelector(
-                        'a, button, [tabindex]:not([tabindex="-1"])',
-                    );
-                    if (firstFocusable) {
-                        setTimeout(() => firstFocusable.focus(), 100);
-                    }
                 }
-            } else {
-                // We're on regular page - toggle navbar mobile menu
-                const mobileMenu = document.getElementById("mobile-menu");
-                const button = document.getElementById("mobile-menu-button");
-                const hamburgerIcon = button.querySelector(".hamburger-icon");
-                const closeIcon = button.querySelector(".close-icon");
-
-                mobileMenu.classList.toggle("hidden");
-                hamburgerIcon.classList.toggle("hidden");
-                closeIcon.classList.toggle("hidden");
-
-                // Update aria-expanded
-                const isExpanded = !mobileMenu.classList.contains("hidden");
-                button.setAttribute("aria-expanded", isExpanded);
             }
         });
-
-    // Close mobile menu or sidebar when clicking outside
-    document.addEventListener("click", function (event) {
-        const toggleButton = document.querySelector("[data-sidebar-toggle]");
-        const appSidebar = document.getElementById("app-sidebar");
-
-        if (appSidebar) {
-            // Handle sidebar backdrop clicks on app page
-            const backdrop = document.getElementById("sidebar-backdrop");
-            const isOpen = !appSidebar.classList.contains("-translate-x-full");
-
-            if (isOpen && backdrop && backdrop.contains(event.target)) {
-                // Close sidebar
-                appSidebar.classList.add("-translate-x-full");
-                backdrop.classList.add("hidden");
-                document.body.style.overflow = "";
-                appSidebar.removeAttribute("aria-hidden");
-                appSidebar.setAttribute("inert", "");
-                toggleButton.setAttribute("aria-expanded", "false");
-            }
-        } else {
-            // Handle regular mobile menu clicks
-            const mobileMenu = document.getElementById("mobile-menu");
-
-            if (
-                mobileMenu &&
-                !mobileMenu.classList.contains("hidden") &&
-                !mobileMenu.contains(event.target) &&
-                !toggleButton.contains(event.target)
-            ) {
-                mobileMenu.classList.add("hidden");
-                const button = document.getElementById("mobile-menu-button");
-                const hamburgerIcon = button.querySelector(".hamburger-icon");
-                const closeIcon = button.querySelector(".close-icon");
-
-                hamburgerIcon.classList.remove("hidden");
-                closeIcon.classList.add("hidden");
-                button.setAttribute("aria-expanded", "false");
-            }
-        }
-    });
-
-    // Add ESC key support for closing sidebar
-    document.addEventListener("keydown", function (event) {
-        if (event.key === "Escape") {
-            const appSidebar = document.getElementById("app-sidebar");
-
-            if (
-                appSidebar &&
-                !appSidebar.classList.contains("-translate-x-full")
-            ) {
-                // Close sidebar
-                const backdrop = document.getElementById("sidebar-backdrop");
-                const toggleButton = document.querySelector(
-                    "[data-sidebar-toggle]",
-                );
-
-                appSidebar.classList.add("-translate-x-full");
-                if (backdrop) backdrop.classList.add("hidden");
-                document.body.style.overflow = "";
-                appSidebar.removeAttribute("aria-hidden");
-                appSidebar.setAttribute("inert", "");
-                if (toggleButton)
-                    toggleButton.setAttribute("aria-expanded", "false");
-
-                // Return focus to toggle button
-                if (toggleButton) toggleButton.focus();
-            }
-        }
-    });
+    }
 
     // Toggle Notifications
     function toggleNotifications() {
         const dropdown = document.getElementById("notifications-dropdown");
-        dropdown.classList.toggle("hidden");
+        if (dropdown) dropdown.classList.toggle("hidden");
     }
 
-    // Close notifications when clicking outside
     document.addEventListener("click", function (e) {
         const notificationsButton = document.getElementById(
             "notifications-button",
@@ -776,7 +1079,6 @@
         const notificationsDropdown = document.getElementById(
             "notifications-dropdown",
         );
-
         if (
             notificationsDropdown &&
             !notificationsDropdown.contains(e.target) &&
@@ -792,12 +1094,13 @@
         globalSearch.addEventListener("input", function (e) {
             const query = e.target.value.trim();
             const results = document.getElementById("search-results");
-
-            if (query.length >= 2) {
-                results.classList.remove("hidden");
-                // Add search logic here
-            } else {
-                results.classList.add("hidden");
+            if (results) {
+                if (query.length >= 2) {
+                    results.classList.remove("hidden");
+                    // Add search logic here
+                } else {
+                    results.classList.add("hidden");
+                }
             }
         });
     }

@@ -1,0 +1,152 @@
+/* Cookie Consent Popup Styles */
+.cookie-consent-popup {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    animation: slideUp 0.3s ease-out;
+}
+
+.cookie-consent-popup.hidden {
+    display: none;
+}
+
+.cookie-settings-modal {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.cookie-settings-modal.hidden {
+    display: none;
+}
+
+/* Animations */
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+}
+
+.cookie-consent-popup.hiding {
+    animation: slideDown 0.3s ease-in;
+}
+
+/* Modal animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.cookie-settings-modal:not(.hidden) {
+    animation: fadeIn 0.2s ease-out;
+}
+
+.cookie-settings-modal:not(.hidden) > div > div:last-child {
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+/* Custom checkbox styles for better visibility */
+.cookie-settings-modal input[type="checkbox"]:checked {
+    background-color: var(--symplifika-primary, #3b82f6);
+    border-color: var(--symplifika-primary, #3b82f6);
+}
+
+.cookie-settings-modal input[type="checkbox"]:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .cookie-consent-popup {
+        border-radius: 0;
+    }
+    
+    .cookie-consent-popup .max-w-7xl {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .cookie-settings-modal .inline-block {
+        margin: 1rem;
+        max-width: calc(100vw - 2rem);
+    }
+}
+
+/* Dark mode specific adjustments */
+@media (prefers-color-scheme: dark) {
+    .cookie-consent-popup {
+        border-color: rgb(55, 65, 81);
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .cookie-consent-popup {
+        border-width: 2px;
+    }
+    
+    .cookie-consent-popup button {
+        border-width: 2px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .cookie-consent-popup,
+    .cookie-settings-modal,
+    .cookie-consent-popup.hiding {
+        animation: none;
+    }
+    
+    .cookie-settings-modal:not(.hidden),
+    .cookie-settings-modal:not(.hidden) > div > div:last-child {
+        animation: none;
+    }
+}
+
+/* Focus styles for accessibility */
+.cookie-consent-popup button:focus,
+.cookie-settings-modal button:focus,
+.cookie-settings-modal input[type="checkbox"]:focus {
+    outline: 2px solid var(--symplifika-primary, #3b82f6);
+    outline-offset: 2px;
+}
+
+/* Ensure proper z-index stacking */
+.cookie-consent-popup {
+    z-index: 9998;
+}
+
+.cookie-settings-modal {
+    z-index: 9999;
+}

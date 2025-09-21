@@ -12,10 +12,7 @@ router.register(r'ai-logs', views.AIEnhancementLogViewSet, basename='ai-logs')
 app_name = 'shortcuts'
 
 urlpatterns = [
-    # URLs do router
-    path('', include(router.urls)),
-
-    # URLs customizadas adicionais se necessário
+    # URLs customizadas específicas (devem vir ANTES do router)
     path('shortcuts/search/', views.ShortcutViewSet.as_view({'post': 'search'}), name='shortcut-search'),
     path('shortcuts/stats/', views.ShortcutViewSet.as_view({'get': 'stats'}), name='shortcut-stats'),
     path('shortcuts/most-used/', views.ShortcutViewSet.as_view({'get': 'most_used'}), name='shortcut-most-used'),
@@ -24,4 +21,7 @@ urlpatterns = [
     path('shortcuts/<int:pk>/regenerate-ai/', views.ShortcutViewSet.as_view({'post': 'regenerate_ai'}), name='shortcut-regenerate-ai'),
     path('shortcuts/<int:pk>/usage-history/', views.ShortcutViewSet.as_view({'get': 'usage_history'}), name='shortcut-usage-history'),
     path('categories/<int:pk>/shortcuts/', views.CategoryViewSet.as_view({'get': 'shortcuts'}), name='category-shortcuts'),
+    
+    # URLs do router (API) - incluir depois das URLs específicas
+    path('', include(router.urls)),
 ]

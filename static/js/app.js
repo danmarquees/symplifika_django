@@ -5,7 +5,7 @@
 
 class SymphilikaApp {
   constructor() {
-    this.apiBaseUrl = "/shortcuts/api";
+    this.apiBaseUrl = "/shortcuts/api/";
     this.csrfToken = this.getCSRFToken();
     this.currentUser = null;
     this.categories = [];
@@ -102,7 +102,7 @@ class SymphilikaApp {
    */
   async loadCategories() {
     try {
-      const response = await fetch(`${this.apiBaseUrl}/categories/`, {
+      const response = await fetch(`${this.apiBaseUrl}categories/`, {
         headers: {
           "Content-Type": "application/json",
           "X-CSRFToken": this.csrfToken,
@@ -128,7 +128,7 @@ class SymphilikaApp {
   async loadRecentShortcuts() {
     try {
       const response = await fetch(
-        `${this.apiBaseUrl}/shortcuts/?ordering=-last_used&page_size=5`,
+        `${this.apiBaseUrl}shortcuts/?ordering=-last_used&page_size=5`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -155,7 +155,7 @@ class SymphilikaApp {
    */
   async loadDashboardStats() {
     try {
-      const response = await fetch(`${this.apiBaseUrl}/shortcuts/stats/`, {
+      const response = await fetch(`/api/dashboard/stats/`, {
         headers: {
           "Content-Type": "application/json",
           "X-CSRFToken": this.csrfToken,
@@ -303,8 +303,8 @@ class SymphilikaApp {
       const isEdit = shortcutId && shortcutId !== "";
 
       const url = isEdit
-        ? `${this.apiBaseUrl}/shortcuts/${shortcutId}/`
-        : `${this.apiBaseUrl}/shortcuts/`;
+        ? `${this.apiBaseUrl}shortcuts/${shortcutId}/`
+        : `${this.apiBaseUrl}shortcuts/`;
 
       const method = isEdit ? "PUT" : "POST";
 
@@ -388,8 +388,8 @@ class SymphilikaApp {
       const isEdit = categoryId && categoryId !== "";
 
       const url = isEdit
-        ? `${this.apiBaseUrl}/categories/${categoryId}/`
-        : `${this.apiBaseUrl}/categories/`;
+        ? `${this.apiBaseUrl}categories/${categoryId}/`
+        : `${this.apiBaseUrl}categories/`;
 
       const method = isEdit ? "PUT" : "POST";
 
@@ -851,7 +851,7 @@ class SymphilikaApp {
   async loadAllShortcuts() {
     try {
       console.log("Chamando loadAllShortcuts");
-      const response = await fetch(`${this.apiBaseUrl}/shortcuts/`, {
+      const response = await fetch(`${this.apiBaseUrl}shortcuts/`, {
         headers: {
           "Content-Type": "application/json",
           "X-CSRFToken": this.csrfToken,
@@ -1090,7 +1090,7 @@ class SymphilikaApp {
   async useShortcut(shortcutId, context = "") {
     try {
       const response = await fetch(
-        `${this.apiBaseUrl}/shortcuts/${shortcutId}/use/`,
+        `${this.apiBaseUrl}shortcuts/${shortcutId}/use/`,
         {
           method: "POST",
           headers: {
@@ -1323,7 +1323,7 @@ class SymphilikaApp {
     try {
       // Carregar dados do atalho
       const response = await fetch(
-        `${this.apiBaseUrl}/shortcuts/${shortcutId}/`,
+        `${this.apiBaseUrl}shortcuts/${shortcutId}/`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -1357,7 +1357,7 @@ class SymphilikaApp {
       async () => {
         try {
           const response = await fetch(
-            `${this.apiBaseUrl}/shortcuts/${shortcutId}/`,
+            `${this.apiBaseUrl}shortcuts/${shortcutId}/`,
             {
               method: "DELETE",
               headers: {
@@ -1731,7 +1731,7 @@ class SymphilikaApp {
    */
   async loadStatistics() {
     try {
-      const response = await fetch(`${this.apiBaseUrl}/shortcuts/stats/`, {
+      const response = await fetch(`${this.apiBaseUrl}shortcuts/stats/`, {
         headers: {
           "Content-Type": "application/json",
           "X-CSRFToken": this.csrfToken,
@@ -2049,8 +2049,8 @@ class SymphilikaApp {
   showToast(message, type = "info", duration = 5000) {
     const container = document.getElementById("toastContainer");
     if (!container) {
-      // Fallback para notificação existente
-      this.showNotification(message, type);
+      // Fallback para console log apenas
+      console.log(`[${type.toUpperCase()}] ${message}`);
       return;
     }
 
@@ -2126,7 +2126,7 @@ class SymphilikaApp {
         document.getElementById("includeCategories")?.checked || true;
 
       // Buscar atalhos
-      const shortcutsResponse = await fetch(`${this.apiBaseUrl}/shortcuts/`, {
+      const shortcutsResponse = await fetch(`${this.apiBaseUrl}shortcuts/`, {
         headers: {
           "Content-Type": "application/json",
           "X-CSRFToken": this.csrfToken,
@@ -2159,7 +2159,7 @@ class SymphilikaApp {
 
       if (includeCategories) {
         const categoriesResponse = await fetch(
-          `${this.apiBaseUrl}/categories/`,
+          `${this.apiBaseUrl}categories/`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -2244,7 +2244,7 @@ class SymphilikaApp {
             );
 
             if (!existingCategory) {
-              await fetch(`${this.apiBaseUrl}/categories/`, {
+              await fetch(`${this.apiBaseUrl}categories/`, {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
@@ -2302,8 +2302,8 @@ class SymphilikaApp {
           const method = existingShortcut && overwriteExisting ? "PUT" : "POST";
           const url =
             existingShortcut && overwriteExisting
-              ? `${this.apiBaseUrl}/shortcuts/${existingShortcut.id}/`
-              : `${this.apiBaseUrl}/shortcuts/`;
+              ? `${this.apiBaseUrl}shortcuts/${existingShortcut.id}/`
+              : `${this.apiBaseUrl}shortcuts/`;
 
           const response = await fetch(url, {
             method: method,
@@ -2412,7 +2412,7 @@ class SymphilikaApp {
     }
     try {
       const response = await fetch(
-        `${this.apiBaseUrl}/categories/${categoryId}/`,
+        `${this.apiBaseUrl}categories/${categoryId}/`,
         {
           method: "DELETE",
           headers: {

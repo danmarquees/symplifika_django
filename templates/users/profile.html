@@ -1,0 +1,855 @@
+{% extends 'base.html' %} {% load static %} {% block title %}
+<!-- prettier-ignore -->
+{% if is_own_profile %} Meu Perfil - Symplifika {% else %}
+<!-- prettier-ignore -->
+Perfil de {{ profile_user.get_full_name|default:profile_user.username }} - Symplifika
+<!-- prettier-ignore -->
+{% endif %} {% endblock %} {% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}" />
+{% endblock %} {% block content %}
+<div class="profile-page-container min-h-screen bg-gray-50 dark:bg-gray-900">
+    <!-- Header Section -->
+    <div
+        class="profile-header bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700"
+    >
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <!-- Breadcrumbs -->
+            {% if breadcrumbs %} {% include 'includes/breadcrumbs.html' %} {%
+            endif %}
+
+            <!-- Profile Header -->
+            <div class="mt-6">
+                <div class="md:flex md:items-center md:justify-between">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center">
+                            <!-- Avatar -->
+                            <div class="relative">
+                                {% if profile.avatar %}
+                                <img
+                                    src="{{ profile.avatar.url }}"
+                                    alt="Avatar de {{ profile_user.get_full_name|default:profile_user.username }}"
+                                    class="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-gray-600 shadow-lg"
+                                />
+                                {% else %}
+                                <div
+                                    class="w-24 h-24 rounded-full bg-gradient-to-br from-symplifika-primary to-symplifika-secondary flex items-center justify-center text-white font-bold text-2xl border-4 border-white dark:border-gray-600 shadow-lg"
+                                >
+                                    <!-- prettier-ignore -->
+                                    {{ profile_user.get_full_name|default:profile_user.username|first|upper }}
+                                </div>
+                                {% endif %}
+
+                                <!-- Online Status -->
+                                <div
+                                    class="absolute bottom-2 right-2 w-6 h-6 bg-green-400 rounded-full border-2 border-white dark:border-gray-800"
+                                    title="Online"
+                                ></div>
+
+                                {% if is_own_profile %}
+                                <!-- Change Avatar Button -->
+                                <button
+                                    type="button"
+                                    id="changeAvatarBtn"
+                                    class="absolute inset-0 w-24 h-24 rounded-full bg-black bg-opacity-50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200"
+                                >
+                                    <svg
+                                        class="w-6 h-6 text-white"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                                        />
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                                        />
+                                    </svg>
+                                </button>
+                                {% endif %}
+                            </div>
+
+                            <!-- User Info -->
+                            <div class="ml-6">
+                                <h1
+                                    class="text-3xl font-bold text-gray-900 dark:text-white"
+                                >
+                                    <!-- prettier-ignore -->
+                                    {{ profile_user.get_full_name|default:profile_user.username }}
+                                </h1>
+                                <p
+                                    class="text-lg text-gray-600 dark:text-gray-400"
+                                >
+                                    @{{ profile_user.username }}
+                                </p>
+                                {% if profile_user.email and is_own_profile %}
+                                <p
+                                    class="text-sm text-gray-500 dark:text-gray-400 mt-1"
+                                >
+                                    {{ profile_user.email }}
+                                </p>
+                                {% endif %}
+
+                                <!-- Plan Badge -->
+                                <div class="mt-3">
+                                    {% if profile.plan %}
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-symplifika-primary bg-opacity-20 text-symplifika-primary"
+                                    >
+                                        <svg
+                                            class="w-4 h-4 mr-1"
+                                            fill="currentColor"
+                                            viewBox="0 0 20 20"
+                                        >
+                                            <path
+                                                fill-rule="evenodd"
+                                                d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732L14.146 12.8l-1.179 4.456a1 1 0 01-1.934 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732L9.854 7.2l1.179-4.456A1 1 0 0112 2z"
+                                                clip-rule="evenodd"
+                                            />
+                                        </svg>
+                                        {{ profile.plan.name }}
+                                    </span>
+                                    {% else %}
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
+                                    >
+                                        Plano Gratuito
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    {% if is_own_profile %}
+                    <div class="mt-6 flex space-x-3 md:mt-0 md:ml-4">
+                        <a
+                            href="{% url 'users:edit-profile' %}"
+                            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors duration-200"
+                        >
+                            <svg
+                                class="w-4 h-4 mr-2"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                />
+                            </svg>
+                            Editar Perfil
+                        </a>
+                        <a
+                            href="{% url 'users:settings' %}"
+                            class="inline-flex items-center px-4 py-2 bg-symplifika-primary text-white rounded-lg hover:bg-symplifika-accent transition-colors duration-200"
+                        >
+                            <svg
+                                class="w-4 h-4 mr-2"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                                />
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                                />
+                            </svg>
+                            Configurações
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Section -->
+    <div class="profile-content py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Stats Cards -->
+                <div class="lg:col-span-2">
+                    <!-- Statistics -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <!-- Shortcuts Count -->
+                        <div
+                            class="stats-card bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+                        >
+                            <div class="flex items-center">
+                                <div
+                                    class="stats-icon bg-symplifika-primary bg-opacity-20 p-3 rounded-lg"
+                                >
+                                    <svg
+                                        class="w-6 h-6 text-symplifika-primary"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M13 10V3L4 14h7v7l9-11h-7z"
+                                        />
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p
+                                        class="text-2xl font-bold text-gray-900 dark:text-white"
+                                    >
+                                        {{ shortcuts_count }}
+                                    </p>
+                                    <p
+                                        class="text-sm text-gray-600 dark:text-gray-400"
+                                    >
+                                        Atalhos
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Categories Count -->
+                        <div
+                            class="stats-card bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+                        >
+                            <div class="flex items-center">
+                                <div
+                                    class="stats-icon bg-blue-500 bg-opacity-20 p-3 rounded-lg"
+                                >
+                                    <svg
+                                        class="w-6 h-6 text-blue-500"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M19 11H5m14-7H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"
+                                        />
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p
+                                        class="text-2xl font-bold text-gray-900 dark:text-white"
+                                    >
+                                        {{ categories_count }}
+                                    </p>
+                                    <p
+                                        class="text-sm text-gray-600 dark:text-gray-400"
+                                    >
+                                        Categorias
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Favorites Count -->
+                        <div
+                            class="stats-card bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+                        >
+                            <div class="flex items-center">
+                                <div
+                                    class="stats-icon bg-red-500 bg-opacity-20 p-3 rounded-lg"
+                                >
+                                    <svg
+                                        class="w-6 h-6 text-red-500"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                                        />
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p
+                                        class="text-2xl font-bold text-gray-900 dark:text-white"
+                                    >
+                                        {{ favorites_count }}
+                                    </p>
+                                    <p
+                                        class="text-sm text-gray-600 dark:text-gray-400"
+                                    >
+                                        Favoritos
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Shortcuts -->
+                    {% if recent_shortcuts %}
+                    <div
+                        class="recent-shortcuts bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700"
+                    >
+                        <div
+                            class="px-6 py-4 border-b border-gray-200 dark:border-gray-700"
+                        >
+                            <div class="flex items-center justify-between">
+                                <h3
+                                    class="text-lg font-medium text-gray-900 dark:text-white"
+                                >
+                                    Atalhos Recentes
+                                </h3>
+                                {% if is_own_profile %}
+                                <a
+                                    href="{% url 'shortcuts:list' %}"
+                                    class="text-sm text-symplifika-primary hover:text-symplifika-accent font-medium"
+                                >
+                                    Ver todos
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div
+                            class="divide-y divide-gray-200 dark:divide-gray-700"
+                        >
+                            {% for shortcut in recent_shortcuts %}
+                            <div
+                                class="px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150"
+                            >
+                                <div class="flex items-center justify-between">
+                                    <div class="flex-1 min-w-0">
+                                        <h4
+                                            class="text-sm font-medium text-gray-900 dark:text-white truncate"
+                                        >
+                                            {{ shortcut.title }}
+                                        </h4>
+                                        {% if shortcut.description %}
+                                        <p
+                                            class="text-sm text-gray-600 dark:text-gray-400 truncate mt-1"
+                                        >
+                                            {{ shortcut.description }}
+                                        </p>
+                                        {% endif %} {% if shortcut.category %}
+                                        <span
+                                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 mt-2"
+                                        >
+                                            {{ shortcut.category.name }}
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                    <div
+                                        class="ml-4 flex-shrink-0 text-sm text-gray-500 dark:text-gray-400"
+                                    >
+                                        {{ shortcut.created_at|timesince }}
+                                        atrás
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div
+                        class="no-shortcuts bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 text-center"
+                    >
+                        <div
+                            class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4"
+                        >
+                            <svg
+                                class="w-8 h-8 text-gray-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                                />
+                            </svg>
+                        </div>
+                        <h3
+                            class="text-lg font-medium text-gray-900 dark:text-white mb-2"
+                        >
+                            Nenhum atalho ainda
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">
+                            {% if is_own_profile %} Comece criando seu primeiro
+                            atalho para aumentar sua produtividade. {% else %}
+                            Este usuário ainda não criou nenhum atalho.
+                            <!-- prettier-ignore -->
+                            {% endif %}
+                        </p>
+                        {% if is_own_profile %}
+                        <a
+                            href="{% url 'shortcuts:create' %}"
+                            class="inline-flex items-center px-4 py-2 bg-symplifika-primary text-white rounded-lg hover:bg-symplifika-accent transition-colors duration-200"
+                        >
+                            <svg
+                                class="w-4 h-4 mr-2"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 4v16m8-8H4"
+                                />
+                            </svg>
+                            Criar Atalho
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Sidebar -->
+                <div class="lg:col-span-1">
+                    <!-- Profile Info Card -->
+                    <div
+                        class="profile-info bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6"
+                    >
+                        <h3
+                            class="text-lg font-medium text-gray-900 dark:text-white mb-4"
+                        >
+                            Informações
+                        </h3>
+
+                        <div class="space-y-3">
+                            <!-- Join Date -->
+                            <div class="flex items-center text-sm">
+                                <svg
+                                    class="w-4 h-4 text-gray-400 mr-2"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                    />
+                                </svg>
+                                <!-- prettier-ignore -->
+                                <span class="text-gray-600 dark:text-gray-400">
+                                    Membro desde {{ profile_user.date_joined|date:"F Y" }}
+                                </span>
+                            </div>
+
+                            <!-- Last Login -->
+                            {% if profile_user.last_login %}
+                            <div class="flex items-center text-sm">
+                                <svg
+                                    class="w-4 h-4 text-gray-400 mr-2"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    />
+                                </svg>
+                                <!-- prettier-ignore -->
+                                <span class="text-gray-600 dark:text-gray-400">
+                                    Último acesso {{ profile_user.last_login|timesince }} atrás
+                                </span>
+                            </div>
+                            {% endif %}
+
+                            <!-- Theme -->
+                            {% if is_own_profile %}
+                            <div class="flex items-center text-sm">
+                                <svg
+                                    class="w-4 h-4 text-gray-400 mr-2"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"
+                                    />
+                                </svg>
+                                <!-- prettier-ignore -->
+                                <span class="text-gray-600 dark:text-gray-400">
+                                    Tema: {{ profile.theme|default:"Claro"|title }}
+                                </span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    {% if is_own_profile %}
+                    <div
+                        class="quick-actions bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+                    >
+                        <h3
+                            class="text-lg font-medium text-gray-900 dark:text-white mb-4"
+                        >
+                            Ações Rápidas
+                        </h3>
+
+                        <div class="space-y-3">
+                            <a
+                                href="{% url 'shortcuts:list' %}"
+                                class="flex items-center p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150"
+                            >
+                                <svg
+                                    class="w-5 h-5 text-symplifika-primary mr-3"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M13 10V3L4 14h7v7l9-11h-7z"
+                                    />
+                                </svg>
+                                <span
+                                    class="text-sm font-medium text-gray-900 dark:text-white"
+                                >
+                                    Meus Atalhos
+                                </span>
+                            </a>
+
+                            <a
+                                href="{% url 'shortcuts:favorites' %}"
+                                class="flex items-center p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150"
+                            >
+                                <svg
+                                    class="w-5 h-5 text-red-500 mr-3"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                                    />
+                                </svg>
+                                <span
+                                    class="text-sm font-medium text-gray-900 dark:text-white"
+                                >
+                                    Favoritos
+                                </span>
+                            </a>
+
+                            <a
+                                href="{% url 'core:help' %}"
+                                class="flex items-center p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150"
+                            >
+                                <svg
+                                    class="w-5 h-5 text-blue-500 mr-3"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    />
+                                </svg>
+                                <span
+                                    class="text-sm font-medium text-gray-900 dark:text-white"
+                                >
+                                    Ajuda
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Avatar Change Modal -->
+{% if is_own_profile %}
+<div
+    id="avatarModal"
+    class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4"
+>
+    <div class="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+                Alterar Avatar
+            </h3>
+            <button
+                type="button"
+                id="closeAvatarModal"
+                class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            >
+                <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M6 18L18 6M6 6l12 12"
+                    />
+                </svg>
+            </button>
+        </div>
+
+        <form id="avatarForm" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
+                    Escolher nova imagem
+                </label>
+                <input
+                    type="file"
+                    id="avatarInput"
+                    name="avatar"
+                    accept="image/*"
+                    class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-symplifika-primary file:text-white hover:file:bg-symplifika-accent"
+                />
+            </div>
+
+            <div class="flex justify-between">
+                <button
+                    type="button"
+                    id="removeAvatarBtn"
+                    class="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                >
+                    Remover Avatar
+                </button>
+                <div class="space-x-3">
+                    <button
+                        type="button"
+                        id="cancelAvatarBtn"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-300 dark:hover:bg-gray-500"
+                    >
+                        Cancelar
+                    </button>
+                    <button
+                        type="submit"
+                        class="px-4 py-2 text-sm font-medium text-white bg-symplifika-primary rounded-lg hover:bg-symplifika-accent"
+                    >
+                        Salvar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<!-- Loading Spinner -->
+{% include 'includes/loading_spinner.html' %}
+
+<!-- Toast Notifications -->
+
+{% include 'includes/toast_notifications.html' %} {% endblock %} {% block
+extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        {% if is_own_profile %}
+        // Avatar change functionality
+        const changeAvatarBtn = document.getElementById('changeAvatarBtn');
+        const avatarModal = document.getElementById('avatarModal');
+        const closeAvatarModal = document.getElementById('closeAvatarModal');
+        const cancelAvatarBtn = document.getElementById('cancelAvatarBtn');
+        const avatarForm = document.getElementById('avatarForm');
+        const removeAvatarBtn = document.getElementById('removeAvatarBtn');
+
+        if (changeAvatarBtn) {
+            changeAvatarBtn.addEventListener('click', function() {
+                avatarModal.classList.remove('hidden');
+            });
+        }
+
+        [closeAvatarModal, cancelAvatarBtn].forEach(btn => {
+            if (btn) {
+                btn.addEventListener('click', function() {
+                    avatarModal.classList.add('hidden');
+                });
+            }
+        });
+
+        // Close modal on backdrop click
+        avatarModal.addEventListener('click', function(e) {
+            if (e.target === avatarModal) {
+                avatarModal.classList.add('hidden');
+            }
+        });
+
+        // Avatar form submission
+        if (avatarForm) {
+            avatarForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const formData = new FormData(avatarForm);
+                LoadingSpinner.show('Atualizando avatar...');
+
+                fetch('{% url "users:change-avatar" %}', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Toast.success('Avatar atualizado com sucesso!');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        Toast.error(data.error || 'Erro ao atualizar avatar');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Toast.error('Erro de conexão');
+                })
+                .finally(() => {
+                    LoadingSpinner.hide();
+                    avatarModal.classList.add('hidden');
+                });
+            });
+        }
+
+        // Remove avatar functionality
+        if (removeAvatarBtn) {
+            removeAvatarBtn.addEventListener('click', function() {
+                if (confirm('Tem certeza que deseja remover seu avatar?')) {
+                    LoadingSpinner.show('Removendo avatar...');
+
+                    fetch('{% url "users:delete-avatar" %}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': getCSRFToken(),
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Toast.success('Avatar removido com sucesso!');
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                        } else {
+                            Toast.error(data.error || 'Erro ao remover avatar');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Toast.error('Erro de conexão');
+                    })
+                    .finally(() => {
+                        LoadingSpinner.hide();
+                        avatarModal.classList.add('hidden');
+                    });
+                }
+            });
+        }
+        {% endif %}
+
+        // Stats animation on scroll
+        const statsCards = document.querySelectorAll('.stats-card');
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-fade-in-up');
+                }
+            });
+        }, observerOptions);
+
+        statsCards.forEach(card => {
+            observer.observe(card);
+        });
+    });
+</script>
+
+<style>
+    .stats-card {
+        transition:
+            transform 0.2s ease-in-out,
+            box-shadow 0.2s ease-in-out;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-2px);
+        box-shadow:
+            0 10px 25px -3px rgba(0, 0, 0, 0.1),
+            0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .stats-icon {
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .stats-card:hover .stats-icon {
+        transform: scale(1.1);
+    }
+
+    @media (max-width: 768px) {
+        .profile-header .md\\:flex {
+            display: block;
+        }
+
+        .profile-header .md\\:mt-0 {
+            margin-top: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}

@@ -497,3 +497,176 @@
         display: none;
     }
 }
+
+/* Enhanced Navigation Link States */
+.nav-link-active {
+    @apply text-symplifika-primary bg-symplifika-primary/10 border-b-2 border-symplifika-primary;
+}
+
+.nav-link-inactive {
+    @apply text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background-color: var(--symplifika-primary);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+.nav-link-active::after {
+    width: 100%;
+}
+
+/* Global Search Enhancements */
+#global-search {
+    transition: all 0.3s ease;
+}
+
+#global-search:focus {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Search Results */
+#search-results {
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.search-result-item {
+    @apply px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-100 dark:border-gray-600 last:border-b-0;
+    transition: background-color 0.2s ease;
+}
+
+.search-result-item:hover {
+    @apply bg-symplifika-primary/5;
+}
+
+/* Enhanced Notification Badge */
+#notification-badge {
+    animation: pulse 2s infinite;
+}
+
+/* Notification Dropdown Enhancements */
+#notifications-dropdown {
+    animation: slideDown 0.2s ease-out;
+}
+
+.notification-item {
+    @apply px-4 py-3 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer;
+    transition: background-color 0.2s ease;
+}
+
+.notification-item.unread {
+    @apply bg-blue-50 dark:bg-blue-900/20 border-l-4 border-l-blue-500;
+}
+
+/* Sticky Navbar Blur Effect Enhancement */
+nav.sticky {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* Quick Actions */
+.quick-action-btn {
+    @apply p-2 text-gray-400 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-symplifika-primary transition-all duration-200;
+}
+
+.quick-action-btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Breadcrumb Styles */
+.breadcrumb {
+    @apply flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400;
+}
+
+.breadcrumb-item {
+    @apply hover:text-gray-700 dark:hover:text-gray-200 transition-colors;
+}
+
+.breadcrumb-separator {
+    @apply text-gray-300 dark:text-gray-600;
+}
+
+/* Loading States */
+.loading-skeleton {
+    @apply animate-pulse bg-gray-200 dark:bg-gray-700 rounded;
+}
+
+/* Enhanced Focus Indicators */
+.focus-visible {
+    @apply outline-none ring-2 ring-symplifika-primary ring-offset-2 ring-offset-white dark:ring-offset-gray-800;
+}
+
+/* Enhanced Mobile Menu */
+@media (max-width: 768px) {
+    #mobile-menu {
+        animation: slideInFromTop 0.3s ease-out;
+    }
+    
+    @keyframes slideInFromTop {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}
+
+/* Enhanced User Menu */
+#user-menu {
+    animation: slideDown 0.2s ease-out;
+}
+
+/* Enhanced Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .nav-link::after,
+    #global-search,
+    .search-result-item,
+    .notification-item,
+    .quick-action-btn {
+        transition: none;
+    }
+    
+    #search-results,
+    #notifications-dropdown,
+    #user-menu,
+    #mobile-menu {
+        animation: none;
+    }
+    
+    #notification-badge {
+        animation: none;
+    }
+}
+
+/* Enhanced High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .nav-link-active {
+        @apply border-2 border-symplifika-primary;
+    }
+}

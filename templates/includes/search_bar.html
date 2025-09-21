@@ -1,0 +1,790 @@
+{% load static %}
+
+<!-- Advanced Search Bar Component -->
+<div class="search-bar-wrapper relative">
+    <!-- Main Search Form -->
+    <form
+        method="GET"
+        action="{% url 'core:search' %}"
+        class="search-bar-container relative flex items-center w-full max-w-2xl mx-auto"
+        id="searchForm"
+        autocomplete="off"
+    >
+        <!-- Search Icon -->
+        <div
+            class="search-icon absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 z-10"
+        >
+            <svg
+                class="w-5 h-5 transition-colors duration-200"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+            >
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+        </div>
+
+        <!-- Search Input -->
+        <input
+            type="text"
+            name="q"
+            id="searchInput"
+            class="search-input w-full pl-12 pr-20 py-4 text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-symplifika-primary focus:border-symplifika-primary transition-all duration-200 bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+            placeholder="Pesquisar atalhos, categorias, comandos..."
+            value="{{ request.GET.q }}"
+            aria-label="Campo de pesquisa"
+            role="searchbox"
+            aria-expanded="false"
+            aria-autocomplete="list"
+            aria-owns="searchSuggestions"
+        />
+
+        <!-- Search Actions -->
+        <div
+            class="search-actions absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-2"
+        >
+            <!-- Clear Button -->
+            <button
+                type="button"
+                id="clearSearch"
+                class="search-clear-btn hidden p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
+                aria-label="Limpar pesquisa"
+                title="Limpar pesquisa"
+            >
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                        fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd"
+                    />
+                </svg>
+            </button>
+
+            <!-- Voice Search Button (if supported) -->
+            <button
+                type="button"
+                id="voiceSearch"
+                class="voice-search-btn hidden p-1 text-gray-400 hover:text-symplifika-primary transition-colors duration-200"
+                aria-label="Pesquisa por voz"
+                title="Pesquisa por voz"
+            >
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                        fill-rule="evenodd"
+                        d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z"
+                        clip-rule="evenodd"
+                    />
+                </svg>
+            </button>
+
+            <!-- Submit Button -->
+            <button
+                type="submit"
+                class="search-submit-btn bg-symplifika-primary hover:bg-symplifika-accent text-white p-2 rounded-lg transition-all duration-200 transform hover:scale-105 focus:ring-2 focus:ring-symplifika-primary focus:ring-opacity-50"
+                aria-label="Pesquisar"
+                title="Pesquisar"
+            >
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                        fill-rule="evenodd"
+                        d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                        clip-rule="evenodd"
+                    />
+                </svg>
+            </button>
+        </div>
+    </form>
+
+    <!-- Search Suggestions Dropdown -->
+    <div
+        id="searchSuggestions"
+        class="search-suggestions absolute top-full left-0 right-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl mt-2 shadow-lg z-50 hidden overflow-hidden"
+        role="listbox"
+        aria-label="Sugestões de pesquisa"
+    >
+        <!-- Suggestions will be populated via JavaScript -->
+    </div>
+
+    <!-- Search Filters (Optional) -->
+    <div
+        id="searchFilters"
+        class="search-filters hidden flex flex-wrap gap-2 mt-3"
+    >
+        <button
+            type="button"
+            class="filter-btn active"
+            data-filter="all"
+            aria-pressed="true"
+        >
+            Todos
+        </button>
+        <button
+            type="button"
+            class="filter-btn"
+            data-filter="shortcuts"
+            aria-pressed="false"
+        >
+            Atalhos
+        </button>
+        <button
+            type="button"
+            class="filter-btn"
+            data-filter="categories"
+            aria-pressed="false"
+        >
+            Categorias
+        </button>
+        <button
+            type="button"
+            class="filter-btn"
+            data-filter="commands"
+            aria-pressed="false"
+        >
+            Comandos
+        </button>
+    </div>
+
+    <!-- Search Loading State -->
+    <div
+        id="searchLoading"
+        class="search-loading absolute top-full left-0 right-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl mt-2 p-4 shadow-lg z-50 hidden"
+    >
+        <div class="flex items-center justify-center space-x-2">
+            <div
+                class="w-4 h-4 border-2 border-symplifika-primary border-t-transparent rounded-full animate-spin"
+            ></div>
+            <span class="text-sm text-gray-600 dark:text-gray-400"
+                >Pesquisando...</span
+            >
+        </div>
+    </div>
+</div>
+
+<!-- Quick Search Shortcuts (Mobile) -->
+<div class="quick-search-mobile md:hidden mt-4">
+    <div class="flex space-x-2 overflow-x-auto pb-2">
+        <button class="quick-search-tag">Produtividade</button>
+        <button class="quick-search-tag">VS Code</button>
+        <button class="quick-search-tag">Chrome</button>
+        <button class="quick-search-tag">Windows</button>
+        <button class="quick-search-tag">Mac</button>
+    </div>
+</div>
+
+<style>
+    .search-bar-container {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border-radius: 12px;
+        box-shadow:
+            0 4px 6px -1px rgba(0, 0, 0, 0.05),
+            0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .dark .search-bar-container {
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        box-shadow:
+            0 4px 6px -1px rgba(0, 0, 0, 0.3),
+            0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    }
+
+    .search-bar-container:focus-within {
+        transform: translateY(-2px);
+        box-shadow:
+            0 10px 25px -3px rgba(0, 0, 0, 0.1),
+            0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .search-input {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        font-size: 16px; /* Prevent zoom on iOS */
+    }
+
+    .search-input::placeholder {
+        color: #9ca3af;
+        font-weight: 400;
+    }
+
+    .dark .search-input::placeholder {
+        color: #6b7280;
+    }
+
+    .search-icon.active {
+        color: #00c853;
+    }
+
+    /* Suggestions Dropdown */
+    .search-suggestions {
+        max-height: 400px;
+        overflow-y: auto;
+        animation: slideDown 0.2s ease-out;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .suggestion-item {
+        @apply px-4 py-3 cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-b-0 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150;
+    }
+
+    .suggestion-item.highlighted {
+        @apply bg-symplifika-primary bg-opacity-10;
+    }
+
+    .suggestion-item .suggestion-icon {
+        @apply w-4 h-4 text-gray-400 mr-3;
+    }
+
+    .suggestion-item .suggestion-text {
+        @apply text-sm text-gray-700 dark:text-gray-300;
+    }
+
+    .suggestion-item .suggestion-type {
+        @apply text-xs text-gray-500 dark:text-gray-400 ml-auto;
+    }
+
+    /* Search Filters */
+    .filter-btn {
+        @apply px-4 py-2 text-sm font-medium rounded-full border transition-all duration-200;
+        @apply border-gray-300 text-gray-600 hover:border-symplifika-primary hover:text-symplifika-primary;
+        @apply dark:border-gray-600 dark:text-gray-400 dark:hover:border-symplifika-primary dark:hover:text-symplifika-primary;
+    }
+
+    .filter-btn.active {
+        @apply bg-symplifika-primary text-white border-symplifika-primary;
+    }
+
+    /* Quick Search Tags (Mobile) */
+    .quick-search-tag {
+        @apply flex-shrink-0 px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full hover:bg-symplifika-primary hover:text-white transition-colors duration-200;
+    }
+
+    /* Voice Search Animation */
+    .voice-search-listening {
+        @apply text-red-500;
+        animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+        0%,
+        100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 640px) {
+        .search-input {
+            font-size: 16px; /* Prevent zoom on iOS */
+            padding-left: 2.5rem;
+            padding-right: 4rem;
+        }
+
+        .search-bar-container {
+            margin-left: 1rem;
+            margin-right: 1rem;
+        }
+
+        .search-suggestions {
+            left: 1rem;
+            right: 1rem;
+            margin-left: 0;
+            margin-right: 0;
+        }
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+        .search-bar-container,
+        .suggestion-item,
+        .filter-btn {
+            transition: none;
+        }
+
+        .search-suggestions {
+            animation: none;
+        }
+    }
+
+    /* High contrast mode */
+    @media (prefers-contrast: high) {
+        .search-input {
+            border: 2px solid #000 !important;
+        }
+
+        .dark .search-input {
+            border: 2px solid #fff !important;
+        }
+    }
+</style>
+
+<script>
+    // Advanced Search Bar JavaScript
+    class SearchBar {
+        constructor() {
+            this.searchInput = document.getElementById("searchInput");
+            this.searchForm = document.getElementById("searchForm");
+            this.clearBtn = document.getElementById("clearSearch");
+            this.voiceBtn = document.getElementById("voiceSearch");
+            this.suggestions = document.getElementById("searchSuggestions");
+            this.loading = document.getElementById("searchLoading");
+            this.filters = document.getElementById("searchFilters");
+
+            this.currentFilter = "all";
+            this.suggestionIndex = -1;
+            this.debounceTimer = null;
+            this.isVoiceSupported =
+                "webkitSpeechRecognition" in window ||
+                "SpeechRecognition" in window;
+
+            this.init();
+        }
+
+        init() {
+            this.bindEvents();
+            this.checkVoiceSupport();
+            this.setupKeyboardNavigation();
+            this.toggleClearButton();
+        }
+
+        bindEvents() {
+            // Input events
+            this.searchInput.addEventListener("input", (e) =>
+                this.handleInput(e),
+            );
+            this.searchInput.addEventListener("focus", () =>
+                this.handleFocus(),
+            );
+            this.searchInput.addEventListener("blur", (e) =>
+                this.handleBlur(e),
+            );
+
+            // Clear button
+            this.clearBtn.addEventListener("click", () => this.clearSearch());
+
+            // Voice search
+            if (this.voiceBtn) {
+                this.voiceBtn.addEventListener("click", () =>
+                    this.startVoiceSearch(),
+                );
+            }
+
+            // Form submission
+            this.searchForm.addEventListener("submit", (e) =>
+                this.handleSubmit(e),
+            );
+
+            // Filter buttons
+            document.querySelectorAll(".filter-btn").forEach((btn) => {
+                btn.addEventListener("click", (e) =>
+                    this.setFilter(e.target.dataset.filter),
+                );
+            });
+
+            // Quick search tags
+            document.querySelectorAll(".quick-search-tag").forEach((tag) => {
+                tag.addEventListener("click", (e) => {
+                    this.searchInput.value = e.target.textContent;
+                    this.searchInput.focus();
+                    this.getSuggestions(e.target.textContent);
+                });
+            });
+
+            // Close suggestions on outside click
+            document.addEventListener("click", (e) => {
+                if (!this.searchForm.contains(e.target)) {
+                    this.hideSuggestions();
+                }
+            });
+        }
+
+        handleInput(e) {
+            const query = e.target.value.trim();
+            this.toggleClearButton();
+
+            // Debounce suggestions
+            clearTimeout(this.debounceTimer);
+            this.debounceTimer = setTimeout(() => {
+                if (query.length >= 2) {
+                    this.getSuggestions(query);
+                } else {
+                    this.hideSuggestions();
+                }
+            }, 300);
+        }
+
+        handleFocus() {
+            const query = this.searchInput.value.trim();
+            if (query.length >= 2) {
+                this.getSuggestions(query);
+            }
+            this.showFilters();
+        }
+
+        handleBlur(e) {
+            // Delay hiding to allow clicking on suggestions
+            setTimeout(() => {
+                if (!this.suggestions.contains(document.activeElement)) {
+                    this.hideSuggestions();
+                }
+            }, 150);
+        }
+
+        handleSubmit(e) {
+            const query = this.searchInput.value.trim();
+            if (!query) {
+                e.preventDefault();
+                return;
+            }
+
+            // Add current filter to form data
+            if (this.currentFilter !== "all") {
+                const filterInput = document.createElement("input");
+                filterInput.type = "hidden";
+                filterInput.name = "filter";
+                filterInput.value = this.currentFilter;
+                this.searchForm.appendChild(filterInput);
+            }
+
+            // Track search analytics
+            this.trackSearch(query, this.currentFilter);
+        }
+
+        async getSuggestions(query) {
+            this.showLoading();
+
+            try {
+                const response = await fetch(
+                    `/api/search/suggestions/?q=${encodeURIComponent(query)}&filter=${this.currentFilter}`,
+                    {
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest",
+                            "Content-Type": "application/json",
+                        },
+                    },
+                );
+
+                if (response.ok) {
+                    const data = await response.json();
+                    this.renderSuggestions(data.suggestions || []);
+                } else {
+                    this.hideSuggestions();
+                }
+            } catch (error) {
+                console.error("Error fetching suggestions:", error);
+                this.hideSuggestions();
+            } finally {
+                this.hideLoading();
+            }
+        }
+
+        renderSuggestions(suggestions) {
+            if (suggestions.length === 0) {
+                this.hideSuggestions();
+                return;
+            }
+
+            const html = suggestions
+                .map(
+                    (item, index) => `
+                <div class="suggestion-item flex items-center" data-index="${index}" data-value="${item.text}">
+                    <div class="suggestion-icon">
+                        ${this.getSuggestionIcon(item.type)}
+                    </div>
+                    <div class="flex-1">
+                        <div class="suggestion-text">${this.highlightMatch(item.text, this.searchInput.value)}</div>
+                        ${item.description ? `<div class="text-xs text-gray-500 dark:text-gray-400 mt-1">${item.description}</div>` : ""}
+                    </div>
+                    <div class="suggestion-type">${item.type}</div>
+                </div>
+            `,
+                )
+                .join("");
+
+            this.suggestions.innerHTML = html;
+            this.showSuggestions();
+            this.bindSuggestionEvents();
+            this.suggestionIndex = -1;
+        }
+
+        bindSuggestionEvents() {
+            this.suggestions
+                .querySelectorAll(".suggestion-item")
+                .forEach((item, index) => {
+                    item.addEventListener("click", () => {
+                        this.selectSuggestion(index);
+                    });
+
+                    item.addEventListener("mouseenter", () => {
+                        this.highlightSuggestion(index);
+                    });
+                });
+        }
+
+        getSuggestionIcon(type) {
+            const icons = {
+                shortcut:
+                    '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+                category:
+                    '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>',
+                command:
+                    '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>',
+            };
+            return icons[type] || icons.shortcut;
+        }
+
+        highlightMatch(text, query) {
+            if (!query) return text;
+            const regex = new RegExp(
+                `(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
+                "gi",
+            );
+            return text.replace(
+                regex,
+                '<strong class="text-symplifika-primary">$1</strong>',
+            );
+        }
+
+        setupKeyboardNavigation() {
+            this.searchInput.addEventListener("keydown", (e) => {
+                const suggestions =
+                    this.suggestions.querySelectorAll(".suggestion-item");
+
+                switch (e.key) {
+                    case "ArrowDown":
+                        e.preventDefault();
+                        this.suggestionIndex = Math.min(
+                            this.suggestionIndex + 1,
+                            suggestions.length - 1,
+                        );
+                        this.highlightSuggestion(this.suggestionIndex);
+                        break;
+
+                    case "ArrowUp":
+                        e.preventDefault();
+                        this.suggestionIndex = Math.max(
+                            this.suggestionIndex - 1,
+                            -1,
+                        );
+                        this.highlightSuggestion(this.suggestionIndex);
+                        break;
+
+                    case "Enter":
+                        if (
+                            this.suggestionIndex >= 0 &&
+                            suggestions[this.suggestionIndex]
+                        ) {
+                            e.preventDefault();
+                            this.selectSuggestion(this.suggestionIndex);
+                        }
+                        break;
+
+                    case "Escape":
+                        this.hideSuggestions();
+                        this.searchInput.blur();
+                        break;
+                }
+            });
+        }
+
+        highlightSuggestion(index) {
+            const suggestions =
+                this.suggestions.querySelectorAll(".suggestion-item");
+            suggestions.forEach((item, i) => {
+                item.classList.toggle("highlighted", i === index);
+            });
+            this.suggestionIndex = index;
+        }
+
+        selectSuggestion(index) {
+            const suggestion =
+                this.suggestions.querySelectorAll(".suggestion-item")[index];
+            if (suggestion) {
+                const value = suggestion.dataset.value;
+                this.searchInput.value = value;
+                this.hideSuggestions();
+                this.searchForm.submit();
+            }
+        }
+
+        clearSearch() {
+            this.searchInput.value = "";
+            this.searchInput.focus();
+            this.hideSuggestions();
+            this.toggleClearButton();
+        }
+
+        toggleClearButton() {
+            const hasValue = this.searchInput.value.trim().length > 0;
+            this.clearBtn.classList.toggle("hidden", !hasValue);
+        }
+
+        checkVoiceSupport() {
+            if (this.isVoiceSupported && this.voiceBtn) {
+                this.voiceBtn.classList.remove("hidden");
+            }
+        }
+
+        startVoiceSearch() {
+            if (!this.isVoiceSupported) return;
+
+            const SpeechRecognition =
+                window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+
+            recognition.lang = "pt-BR";
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onstart = () => {
+                this.voiceBtn.classList.add("voice-search-listening");
+                this.searchInput.placeholder = "Fale agora...";
+            };
+
+            recognition.onresult = (event) => {
+                const speechResult = event.results[0][0].transcript;
+                this.searchInput.value = speechResult;
+                this.getSuggestions(speechResult);
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Voice recognition error:", event.error);
+            };
+
+            recognition.onend = () => {
+                this.voiceBtn.classList.remove("voice-search-listening");
+                this.searchInput.placeholder =
+                    "Pesquisar atalhos, categorias, comandos...";
+            };
+
+            recognition.start();
+        }
+
+        setFilter(filter) {
+            this.currentFilter = filter;
+
+            // Update button states
+            document.querySelectorAll(".filter-btn").forEach((btn) => {
+                const isActive = btn.dataset.filter === filter;
+                btn.classList.toggle("active", isActive);
+                btn.setAttribute("aria-pressed", isActive.toString());
+            });
+
+            // Refresh suggestions if there's a query
+            const query = this.searchInput.value.trim();
+            if (query.length >= 2) {
+                this.getSuggestions(query);
+            }
+        }
+
+        showSuggestions() {
+            this.suggestions.classList.remove("hidden");
+            this.searchInput.setAttribute("aria-expanded", "true");
+        }
+
+        hideSuggestions() {
+            this.suggestions.classList.add("hidden");
+            this.searchInput.setAttribute("aria-expanded", "false");
+        }
+
+        showLoading() {
+            this.loading.classList.remove("hidden");
+        }
+
+        hideLoading() {
+            this.loading.classList.add("hidden");
+        }
+
+        showFilters() {
+            if (this.filters) {
+                this.filters.classList.remove("hidden");
+            }
+        }
+
+        trackSearch(query, filter) {
+            // Analytics tracking
+            if (typeof gtag !== "undefined") {
+                gtag("event", "search", {
+                    search_term: query,
+                    search_filter: filter,
+                });
+            }
+        }
+    }
+
+    // Initialize search bar when DOM is ready
+    document.addEventListener("DOMContentLoaded", function () {
+        new SearchBar();
+    });
+
+    // Global search function for external use
+    window.focusSearch = function () {
+        const searchInput = document.getElementById("searchInput");
+        if (searchInput) {
+            searchInput.focus();
+        }
+    };
+</script>
+
+<!-- Keyboard Shortcut: Ctrl/Cmd + K to focus search -->
+<script>
+    document.addEventListener("keydown", function (e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+            e.preventDefault();
+            window.focusSearch();
+        }
+    });
+</script>
+
+<!--
+Usage Notes:
+
+1. Backend API Endpoint:
+   Create an endpoint at /api/search/suggestions/ that returns:
+   {
+       "suggestions": [
+           {
+               "text": "Copiar texto",
+               "type": "shortcut",
+               "description": "Ctrl+C - Copiar conteúdo selecionado"
+           },
+           ...
+       ]
+   }
+
+2. Search URL:
+   Update the form action to your search results page URL
+
+3. CSS Classes:
+   The component uses Tailwind CSS classes and custom CSS variables
+
+4. Voice Search:
+   Automatically detects browser support and shows/hides the button
+
+5. Keyboard Navigation:
+   - Arrow keys: Navigate suggestions
+   - Enter: Select suggestion or submit
+   - Escape: Close suggestions
+   - Ctrl/Cmd + K: Focus search from anywhere
+
+6. Accessibility:
+   - ARIA attributes for screen readers
+   - Keyboard navigation support
+   - High contrast mode support
+   - Reduced motion respect
+-->

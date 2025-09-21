@@ -112,7 +112,7 @@
                 Página Inicial
             </a>
             {% if user.is_authenticated %}
-            <a href="{% url 'shortcuts:list' %}" class="text-symplifika-primary hover:text-symplifika-accent transition-colors">
+            <a href="{% url 'core:shortcuts' %}" class="text-symplifika-primary hover:text-symplifika-accent transition-colors">
                 Meus Atalhos
             </a>
             <a href="{% url 'users:profile' %}" class="text-symplifika-primary hover:text-symplifika-accent transition-colors">

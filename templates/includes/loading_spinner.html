@@ -1,0 +1,407 @@
+{% load static %}
+
+<!-- Loading Spinner Component -->
+<div
+    id="loadingSpinner"
+    class="loading-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] hidden"
+    role="status"
+    aria-label="Carregando..."
+>
+    <div
+        class="loading-container bg-white dark:bg-gray-800 rounded-lg p-6 shadow-2xl"
+    >
+        <!-- Main Spinner -->
+        <div class="flex flex-col items-center space-y-4">
+            <!-- Symplifika Branded Spinner -->
+            <div class="relative">
+                <div
+                    class="spinner-ring w-16 h-16 border-4 border-gray-300 dark:border-gray-600 border-t-symplifika-primary rounded-full animate-spin"
+                ></div>
+                <div
+                    class="spinner-inner absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 border-2 border-transparent border-t-symplifika-secondary rounded-full animate-spin"
+                    style="
+                        animation-direction: reverse;
+                        animation-duration: 0.8s;
+                    "
+                ></div>
+            </div>
+
+            <!-- Loading Text -->
+            <div class="text-center">
+                <p
+                    class="text-gray-700 dark:text-gray-300 font-medium text-base"
+                    id="loadingText"
+                >
+                    Carregando...
+                </p>
+                <div
+                    class="loading-dots text-symplifika-primary font-bold text-lg"
+                >
+                    <span class="dot animate-pulse">.</span>
+                    <span
+                        class="dot animate-pulse"
+                        style="animation-delay: 0.2s"
+                        >.</span
+                    >
+                    <span
+                        class="dot animate-pulse"
+                        style="animation-delay: 0.4s"
+                        >.</span
+                    >
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Inline/Small Loading Spinner -->
+<div
+    class="loading-spinner-inline hidden items-center justify-center"
+    data-loading="inline"
+>
+    <div
+        class="spinner-small w-6 h-6 border-2 border-gray-300 border-t-symplifika-primary rounded-full animate-spin"
+    ></div>
+    <span class="ml-2 text-sm text-gray-600 dark:text-gray-400"
+        >Carregando...</span
+    >
+</div>
+
+<!-- Button Loading State -->
+<template id="buttonLoadingTemplate">
+    <div class="flex items-center justify-center">
+        <div
+            class="spinner-button w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"
+        ></div>
+        <span>Carregando...</span>
+    </div>
+</template>
+
+<!-- Page Loading Progress Bar -->
+<div
+    id="pageLoadingProgress"
+    class="loading-progress-bar fixed top-0 left-0 w-full h-1 bg-gray-200 dark:bg-gray-700 z-[9998] hidden"
+>
+    <div
+        class="loading-progress bg-gradient-to-r from-symplifika-primary to-symplifika-secondary h-full transition-all duration-300 ease-out"
+        style="width: 0%"
+    ></div>
+</div>
+
+<style>
+    /* Main Loading Spinner Styles */
+    .loading-overlay {
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+    }
+
+    .loading-container {
+        animation: fadeInScale 0.3s ease-out;
+        max-width: 90vw;
+    }
+
+    @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    /* Spinner Animations */
+    .spinner-ring {
+        animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    }
+
+    .spinner-inner {
+        animation: spin-reverse 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite
+            reverse;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes spin-reverse {
+        0% {
+            transform: rotate(360deg);
+        }
+        100% {
+            transform: rotate(0deg);
+        }
+    }
+
+    /* Loading Dots Animation */
+    .loading-dots .dot {
+        animation: dotPulse 1.4s ease-in-out infinite;
+    }
+
+    .loading-dots .dot:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .loading-dots .dot:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    @keyframes dotPulse {
+        0%,
+        20%,
+        50%,
+        80%,
+        100% {
+            opacity: 0.3;
+            transform: scale(1);
+        }
+        40% {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+    }
+
+    /* Progress Bar Styles */
+    .loading-progress-bar {
+        transition: opacity 0.3s ease;
+    }
+
+    .loading-progress {
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: linear-gradient(
+            90deg,
+            #00c853 0%,
+            #00ff57 50%,
+            #4caf50 100%
+        );
+        animation: progressShimmer 2s ease-in-out infinite;
+    }
+
+    @keyframes progressShimmer {
+        0%,
+        100% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 640px) {
+        .loading-container {
+            padding: 1rem;
+            margin: 1rem;
+        }
+
+        .spinner-ring {
+            width: 3rem;
+            height: 3rem;
+        }
+
+        .spinner-inner {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+        #loadingText {
+            font-size: 0.875rem;
+        }
+    }
+
+    /* Dark Mode Adjustments */
+    .dark .loading-container {
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        border: 1px solid #374151;
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+        .spinner-ring,
+        .spinner-inner,
+        .loading-progress {
+            animation-duration: 2s;
+        }
+
+        .loading-dots .dot {
+            animation: none;
+            opacity: 0.7;
+        }
+    }
+
+    /* Loading States */
+    .loading-state-active {
+        pointer-events: none;
+        opacity: 0.7;
+    }
+
+    .loading-state-active * {
+        cursor: wait !important;
+    }
+</style>
+
+<script>
+    // Loading Spinner JavaScript Functions
+    window.LoadingSpinner = {
+        // Show main loading overlay
+        show: function (message = "Carregando...") {
+            const spinner = document.getElementById("loadingSpinner");
+            const loadingText = document.getElementById("loadingText");
+            if (spinner) {
+                if (loadingText) loadingText.textContent = message;
+                spinner.classList.remove("hidden");
+                document.body.classList.add("loading-state-active");
+            }
+        },
+
+        // Hide main loading overlay
+        hide: function () {
+            const spinner = document.getElementById("loadingSpinner");
+            if (spinner) {
+                spinner.classList.add("hidden");
+                document.body.classList.remove("loading-state-active");
+            }
+        },
+
+        // Show inline spinner
+        showInline: function (container, message = "Carregando...") {
+            if (typeof container === "string") {
+                container = document.querySelector(container);
+            }
+            if (container) {
+                const spinner = container.querySelector(
+                    '[data-loading="inline"]',
+                );
+                if (spinner) {
+                    const text = spinner.querySelector("span");
+                    if (text) text.textContent = message;
+                    spinner.classList.remove("hidden");
+                    spinner.classList.add("flex");
+                }
+            }
+        },
+
+        // Hide inline spinner
+        hideInline: function (container) {
+            if (typeof container === "string") {
+                container = document.querySelector(container);
+            }
+            if (container) {
+                const spinner = container.querySelector(
+                    '[data-loading="inline"]',
+                );
+                if (spinner) {
+                    spinner.classList.add("hidden");
+                    spinner.classList.remove("flex");
+                }
+            }
+        },
+
+        // Show button loading state
+        showButton: function (button, loadingText = "Carregando...") {
+            if (typeof button === "string") {
+                button = document.querySelector(button);
+            }
+            if (button) {
+                const template = document.getElementById(
+                    "buttonLoadingTemplate",
+                );
+                const loadingContent = template.content.cloneNode(true);
+                loadingContent.querySelector("span").textContent = loadingText;
+
+                button.dataset.originalContent = button.innerHTML;
+                button.innerHTML = "";
+                button.appendChild(loadingContent);
+                button.disabled = true;
+            }
+        },
+
+        // Hide button loading state
+        hideButton: function (button) {
+            if (typeof button === "string") {
+                button = document.querySelector(button);
+            }
+            if (button && button.dataset.originalContent) {
+                button.innerHTML = button.dataset.originalContent;
+                button.disabled = false;
+                delete button.dataset.originalContent;
+            }
+        },
+
+        // Show progress bar
+        showProgress: function (percentage = 0) {
+            const progressBar = document.getElementById("pageLoadingProgress");
+            if (progressBar) {
+                const progress = progressBar.querySelector(".loading-progress");
+                progress.style.width = percentage + "%";
+                progressBar.classList.remove("hidden");
+            }
+        },
+
+        // Update progress bar
+        updateProgress: function (percentage) {
+            const progressBar = document.getElementById("pageLoadingProgress");
+            if (progressBar) {
+                const progress = progressBar.querySelector(".loading-progress");
+                progress.style.width =
+                    Math.min(100, Math.max(0, percentage)) + "%";
+            }
+        },
+
+        // Hide progress bar
+        hideProgress: function () {
+            const progressBar = document.getElementById("pageLoadingProgress");
+            if (progressBar) {
+                setTimeout(() => {
+                    progressBar.classList.add("hidden");
+                    const progress =
+                        progressBar.querySelector(".loading-progress");
+                    progress.style.width = "0%";
+                }, 300);
+            }
+        },
+    };
+
+    // Auto-hide loading spinner on page load
+    document.addEventListener("DOMContentLoaded", function () {
+        // Hide any loading spinners that might be showing
+        LoadingSpinner.hide();
+        LoadingSpinner.hideProgress();
+    });
+
+    // Show loading for form submissions
+    document.addEventListener("submit", function (e) {
+        const form = e.target;
+        if (form.tagName === "FORM" && !form.dataset.noLoading) {
+            const submitBtn = form.querySelector(
+                'button[type="submit"], input[type="submit"]',
+            );
+            if (submitBtn) {
+                LoadingSpinner.showButton(submitBtn);
+            }
+        }
+    });
+
+    // Show loading for AJAX requests
+    if (window.fetch) {
+        const originalFetch = window.fetch;
+        window.fetch = function (...args) {
+            LoadingSpinner.showProgress(10);
+            return originalFetch
+                .apply(this, args)
+                .then((response) => {
+                    LoadingSpinner.updateProgress(90);
+                    return response;
+                })
+                .finally(() => {
+                    LoadingSpinner.hideProgress();
+                });
+        };
+    }
+</script>
