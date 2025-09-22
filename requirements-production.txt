@@ -54,7 +54,7 @@ whitenoise==6.8.2
 # Database URL parsing
 dj-database-url==2.3.0
 
-pillow==10.0.0
+pillow==11.3.0
 
 # PostgreSQL adapter - try multiple options for compatibility
 # Install in order of preference
