@@ -1306,13 +1306,10 @@ class SymphilikaApp {
   }
 
   /**
-   * Exibe notificação
+   * Exibe notificação usando o sistema Toast global
    */
   showNotification(message, type = "info") {
-    // Implementar sistema de notificações
-    console.log(`[${type.toUpperCase()}] ${message}`);
-
-    // Usar toast personalizado se disponível
+    // Usar o sistema Toast global
     this.showToast(message, type);
   }
 
@@ -2044,75 +2041,20 @@ class SymphilikaApp {
   }
 
   /**
-   * Exibe notificação toast
+   * Exibe notificação toast usando o sistema global
    */
   showToast(message, type = "info", duration = 5000) {
-    const container = document.getElementById("toastContainer");
-    if (!container) {
-      // Fallback para console log apenas
-      console.log(`[${type.toUpperCase()}] ${message}`);
-      return;
+    // Usar o sistema global de Toast se disponível
+    if (window.Toast) {
+      return window.Toast.show({
+        type: type,
+        message: message,
+        duration: duration
+      });
     }
-
-    const toastId = Date.now().toString();
-    const typeClasses = {
-      success: "bg-green-500 text-white",
-      error: "bg-red-500 text-white",
-      warning: "bg-yellow-500 text-white",
-      info: "bg-blue-500 text-white",
-    };
-
-    const typeIcons = {
-      success: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>`,
-      error: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>`,
-      warning: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"/>`,
-      info: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>`,
-    };
-
-    const toast = document.createElement("div");
-    toast.id = `toast-${toastId}`;
-    toast.className = `${typeClasses[type] || typeClasses.info} rounded-lg shadow-lg p-4 transform transition-all duration-300 translate-x-full opacity-0`;
-
-    toast.innerHTML = `
-      <div class="flex items-center">
-        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          ${typeIcons[type] || typeIcons.info}
-        </svg>
-        <p class="flex-1 text-sm font-medium">${this.escapeHtml(message)}</p>
-        <button onclick="window.app.closeToast('${toastId}')" class="ml-3 text-white hover:text-gray-200">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-        </button>
-      </div>
-    `;
-
-    container.appendChild(toast);
-
-    // Animar entrada
-    setTimeout(() => {
-      toast.classList.remove("translate-x-full", "opacity-0");
-    }, 100);
-
-    // Auto remover
-    setTimeout(() => {
-      this.closeToast(toastId);
-    }, duration);
-  }
-
-  /**
-   * Fecha toast específico
-   */
-  closeToast(toastId) {
-    const toast = document.getElementById(`toast-${toastId}`);
-    if (toast) {
-      toast.classList.add("translate-x-full", "opacity-0");
-      setTimeout(() => {
-        if (toast.parentNode) {
-          toast.parentNode.removeChild(toast);
-        }
-      }, 300);
-    }
+    
+    // Fallback para console log
+    console.log(`[${type.toUpperCase()}] ${message}`);
   }
 
   /**

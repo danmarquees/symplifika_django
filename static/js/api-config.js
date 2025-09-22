@@ -129,29 +129,22 @@ class APIConfig {
     }
 
     /**
-     * Show notification to user
+     * Show notification to user using global Toast system
      * @param {string} message - Notification message
      * @param {string} type - Notification type (success, error, info, warning)
      */
     showNotification(message, type = 'info') {
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.innerHTML = `
-            <span class="notification-message">${message}</span>
-            <button class="notification-close" onclick="this.parentElement.remove()">×</button>
-        `;
-
-        // Add to page
-        const container = document.getElementById('notifications') || document.body;
-        container.appendChild(notification);
-
-        // Auto-remove after 5 seconds
-        setTimeout(() => {
-            if (notification.parentElement) {
-                notification.remove();
-            }
-        }, 5000);
+        // Use global Toast system if available
+        if (window.Toast) {
+            return window.Toast.show({
+                type: type,
+                message: message,
+                duration: type === 'error' ? 8000 : 5000
+            });
+        }
+        
+        // Fallback to console log
+        console.log(`[${type.toUpperCase()}] ${message}`);
     }
 
     /**

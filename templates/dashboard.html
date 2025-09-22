@@ -720,6 +720,26 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                             </button>
 
                             <button
+                                onclick="testToastNotifications()"
+                                class="w-full btn btn-outline border-symplifika-primary text-symplifika-primary hover:bg-symplifika-primary hover:text-white dark:border-symplifika-accent dark:text-symplifika-accent dark:hover:bg-symplifika-accent text-left flex items-center space-x-3"
+                            >
+                                <svg
+                                    class="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M15 17h5l-5 5v-5zM5 8a7 7 0 1114 0v6H5V8z"
+                                    />
+                                </svg>
+                                <span>Testar Notificações</span>
+                            </button>
+
+                            <button
                                 onclick="window.app && window.app.showPage('statistics')"
                                 class="w-full btn btn-outline border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 text-left flex items-center space-x-3"
                             >
@@ -3290,5 +3310,70 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
             }
         });
     });
+
+    // Função para testar o sistema de toast notifications
+    function testToastNotifications() {
+        if (!window.Toast) {
+            console.error('Sistema de Toast não encontrado!');
+            return;
+        }
+
+        // Teste sequencial de diferentes tipos de toast
+        let delay = 0;
+
+        // Toast de sucesso
+        setTimeout(() => {
+            Toast.success('Ação realizada com sucesso!', 'Sucesso');
+        }, delay);
+        delay += 1000;
+
+        // Toast de informação
+        setTimeout(() => {
+            Toast.info('Esta é uma informação importante para você.', 'Informação');
+        }, delay);
+        delay += 1000;
+
+        // Toast de aviso
+        setTimeout(() => {
+            Toast.warning('Atenção! Verifique suas configurações.', 'Aviso');
+        }, delay);
+        delay += 1000;
+
+        // Toast de erro
+        setTimeout(() => {
+            Toast.error('Ops! Algo deu errado. Tente novamente.', 'Erro');
+        }, delay);
+        delay += 1000;
+
+        // Toast do Symplifika
+        setTimeout(() => {
+            Toast.symplifika('Bem-vindo ao sistema de notificações do Symplifika!', 'Symplifika');
+        }, delay);
+        delay += 1000;
+
+        // Toast personalizado com opções avançadas
+        setTimeout(() => {
+            Toast.show({
+                type: 'info',
+                title: 'Notificação Personalizada',
+                message: 'Esta notificação tem configurações personalizadas e ficará visível por mais tempo.',
+                duration: 10000,
+                persistent: false,
+                closable: true,
+                onClick: function(id) {
+                    console.log('Toast clicado:', id);
+                    Toast.success('Você clicou na notificação!');
+                },
+                onClose: function(id) {
+                    console.log('Toast fechado:', id);
+                }
+            });
+        }, delay);
+
+        // Mostrar toast de confirmação do teste
+        setTimeout(() => {
+            Toast.symplifika('Teste de notificações concluído! 🎉', 'Teste Completo');
+        }, delay + 1000);
+    }
 </script>
 {% endblock %}

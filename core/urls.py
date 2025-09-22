@@ -25,10 +25,16 @@ urlpatterns = [
     path('api/payments/billing-history/', views.billing_history_api, name='billing-history-api'),
 
     # Settings API endpoints
-    path('api/profile/', views.api_profile_update, name='api-profile-update'),
-    path('api/account/', views.api_account_update, name='api-account-update'),
+    path('api/profile/', views.api_profile, name='api-profile'),
+    path('api/account/', views.api_account, name='api-account'),
     path('api/change-password/', views.api_change_password, name='api-change-password'),
     path('api/notifications-preferences/', views.api_notifications_preferences, name='api-notifications-preferences'),
+    path('api/settings/config/', views.api_settings_config, name='api-settings-config'),
+    
+    # Extended Profile Management APIs
+    path('api/profile/extended/', views.api_profile_extended, name='api-profile-extended'),
+    path('api/profile/avatar/upload/', views.api_upload_avatar, name='api-upload-avatar'),
+    path('api/profile/avatar/delete/', views.api_delete_avatar, name='api-delete-avatar'),
 
     # Authentication handled by users app
 

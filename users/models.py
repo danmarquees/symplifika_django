@@ -4,6 +4,16 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 from decimal import Decimal
+import os
+from PIL import Image
+from django.core.files.storage import default_storage
+
+
+def user_avatar_path(instance, filename):
+    """Gera o caminho para o upload do avatar do usuário"""
+    ext = filename.split('.')[-1]
+    filename = f'avatar_{instance.user.id}.{ext}'
+    return os.path.join('avatars', filename)
 
 
 class UserProfile(models.Model):
@@ -19,6 +29,52 @@ class UserProfile(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='profile'
+    )
+
+    # Informações pessoais
+    avatar = models.ImageField(
+        upload_to=user_avatar_path,
+        null=True,
+        blank=True,
+        verbose_name="Avatar",
+        help_text="Imagem do perfil (máx. 5MB)"
+    )
+    
+    bio = models.TextField(
+        max_length=500,
+        blank=True,
+        verbose_name="Biografia",
+        help_text="Conte um pouco sobre você (máx. 500 caracteres)"
+    )
+    
+    location = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name="Localização"
+    )
+    
+    website = models.URLField(
+        blank=True,
+        verbose_name="Website"
+    )
+    
+    birth_date = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name="Data de Nascimento"
+    )
+    
+    # Configurações de privacidade
+    public_profile = models.BooleanField(
+        default=True,
+        verbose_name="Perfil Público",
+        help_text="Permitir que outros usuários vejam seu perfil"
+    )
+    
+    show_email = models.BooleanField(
+        default=False,
+        verbose_name="Mostrar Email",
+        help_text="Exibir email no perfil público"
     )
 
     # Plano e limites
@@ -126,6 +182,93 @@ class UserProfile(models.Model):
         """Reseta contadores mensais (para ser executado todo mês)"""
         self.ai_requests_used = 0
         self.save(update_fields=['ai_requests_used'])
+
+    def get_avatar_url(self):
+        """Retorna a URL do avatar ou None se não existir"""
+        if self.avatar and hasattr(self.avatar, 'url'):
+            return self.avatar.url
+        return None
+
+    def get_avatar_or_initial(self):
+        """Retorna URL do avatar ou inicial do nome"""
+        avatar_url = self.get_avatar_url()
+        if avatar_url:
+            return avatar_url
+        
+        # Retorna inicial do nome
+        name = self.user.get_full_name() or self.user.username
+        return name[0].upper() if name else 'U'
+
+    def delete_avatar(self):
+        """Remove o avatar atual"""
+        if self.avatar:
+            # Remove o arquivo físico
+            if default_storage.exists(self.avatar.name):
+                default_storage.delete(self.avatar.name)
+            # Remove a referência do banco
+            self.avatar = None
+            self.save(update_fields=['avatar'])
+            return True
+        return False
+
+    def save(self, *args, **kwargs):
+        """Override do save para processar avatar"""
+        # Se há um novo avatar, processa a imagem
+        if self.avatar:
+            self._process_avatar()
+        super().save(*args, **kwargs)
+
+    def _process_avatar(self):
+        """Processa e redimensiona o avatar"""
+        if not self.avatar:
+            return
+
+        try:
+            # Abre a imagem
+            img = Image.open(self.avatar)
+            
+            # Converte para RGB se necessário
+            if img.mode in ('RGBA', 'LA', 'P'):
+                img = img.convert('RGB')
+            
+            # Redimensiona mantendo proporção
+            max_size = (400, 400)
+            img.thumbnail(max_size, Image.Resampling.LANCZOS)
+            
+            # Salva a imagem processada
+            from io import BytesIO
+            from django.core.files.base import ContentFile
+            
+            output = BytesIO()
+            img.save(output, format='JPEG', quality=85, optimize=True)
+            output.seek(0)
+            
+            # Substitui o arquivo original
+            self.avatar.save(
+                self.avatar.name,
+                ContentFile(output.read()),
+                save=False
+            )
+            
+        except Exception as e:
+            # Em caso de erro, mantém o arquivo original
+            print(f"Erro ao processar avatar: {e}")
+
+    @property
+    def age(self):
+        """Calcula a idade baseada na data de nascimento"""
+        if self.birth_date:
+            from datetime import date
+            today = date.today()
+            return today.year - self.birth_date.year - (
+                (today.month, today.day) < (self.birth_date.month, self.birth_date.day)
+            )
+        return None
+
+    @property
+    def full_location(self):
+        """Retorna localização formatada"""
+        return self.location if self.location else "Não informado"
 
 
 @receiver(post_save, sender=User)

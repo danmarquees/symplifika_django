@@ -207,6 +207,9 @@
             ></div>
         </div>
 
+        <!-- Toast Notifications -->
+        {% include 'includes/toast_notifications.html' %}
+
         <!-- API Configuration -->
         <script>
             window.apiConfig = JSON.parse("{{ api_config|escapejs }}");

@@ -78,12 +78,6 @@
                         >symplifika</span
                     >
                 </a>
-                <a
-                    href="{% url 'core:pricing' %}"
-                    class="hidden sm:block text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                >
-                    Preços
-                </a>
             </div>
 
             {% if user.is_authenticated %}
@@ -272,27 +266,8 @@
                     </div>
                 </div>
 
-                <div class="hidden lg:block">
-                    {% include 'includes/plan_status_widget.html' %}
-                </div>
-                {% if user.profile.plan == 'free' %}
-                <a
-                    href="{% url 'core:pricing' %}"
-                    class="text-symplifika-primary hover:text-symplifika-primary-dark px-3 py-2 rounded-md text-sm font-medium transition-colors border border-symplifika-primary bg-symplifika-primary/10 ml-2"
-                    title="Veja nossos planos e recursos premium"
-                >
-                    Planos
-                </a>
-                {% endif %} {% endif %}
+                {% endif %}
 
-                <button
-                    type="button"
-                    class="p-2 text-gray-400 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-symplifika-primary min-h-[44px] min-w-[44px]"
-                    data-theme-toggle
-                    title="Alternar tema"
-                >
-                    <span class="theme-icon text-lg">🌙</span>
-                </button>
 
                 {% if user.is_authenticated %}
 
@@ -433,7 +408,7 @@
                         <div class="py-2">
                             <div class="menu-section">
                                 <a
-                                    href="{% url 'users:profile' %}"
+                                    href="{% url 'core:profile' %}"
                                     class="menu-item flex items-center px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150"
                                     role="menuitem"
                                 >
@@ -612,44 +587,6 @@
                                 class="border-t border-gray-200 dark:border-gray-600 my-2"
                             ></div>
 
-                            <div class="menu-section">
-                                <button
-                                    type="button"
-                                    id="themeToggle"
-                                    class="menu-item flex items-center px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 w-full text-left"
-                                    role="menuitem"
-                                >
-                                    <svg
-                                        class="menu-icon w-5 h-5 mr-3 text-gray-400 group-hover:text-symplifika-primary transition-colors dark:hidden"
-                                        fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                    >
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
-                                    </svg>
-                                    <svg
-                                        class="menu-icon w-5 h-5 mr-3 text-gray-400 group-hover:text-symplifika-primary transition-colors hidden dark:block"
-                                        fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                    >
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
-                                    </svg>
-                                    <div>
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                            <span class="dark:hidden"
-                                                >Modo Escuro</span
-                                            >
-                                            <span class="hidden dark:inline"
-                                                >Modo Claro</span
-                                            >
-                                        </div>
-                                        <div class="text-xs text-gray-500 dark:text-gray-400">
-                                            Alterar aparência
-                                        </div>
-                                    </div>
-                                </button>
-                            </div>
-
-                            <div
-                                class="border-t border-gray-200 dark:border-gray-600 my-2"
-                            ></div>
 
                             <div class="menu-section">
                                 <form
@@ -690,12 +627,6 @@
 
                 {% else %}
                 <a
-                    href="{% url 'core:pricing' %}"
-                    class="hidden sm:block text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                >
-                    Preços
-                </a>
-                <a
                     href="{% url 'users:login' %}"
                     class="hidden sm:block text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
@@ -718,22 +649,16 @@
             class="px-4 pt-4 pb-4 space-y-1 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 max-h-[70vh] overflow-y-auto"
         >
             {% if user.is_authenticated %}
-            <a href="{% url 'core:dashboard' %}" class="...">Dashboard</a>
-            <a href="{% url 'core:shortcuts' %}" class="...">Atalhos</a>
-            <a href="{% url 'users:profile' %}" class="...">Perfil</a>
-            <a href="{% url 'core:pricing' %}" class="...">Preços</a>
+            <a href="{% url 'core:dashboard' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">Dashboard</a>
+            <a href="{% url 'core:shortcuts' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">Atalhos</a>
+            <a href="{% url 'users:profile' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">Perfil</a>
             {% else %}
-            <a href="{% url 'core:index' %}" class="...">Início</a>
-            <a href="{% url 'core:index' %}#features" class="...">Recursos</a>
-            <a href="{% url 'core:about' %}" class="...">Sobre</a>
-            <div
-                class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4"
-            >
-                <a href="{% url 'core:pricing' %}" class="...">Preços</a>
-                <a href="{% url 'users:login' %}" class="...">Entrar</a>
-                <a href="{% url 'users:register' %}" class="btn btn-primary ..."
-                    >Registrar</a
-                >
+            <a href="{% url 'core:index' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">Início</a>
+            <a href="{% url 'core:index' %}#features" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">Recursos</a>
+            <a href="{% url 'core:about' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">Sobre</a>
+            <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+                <a href="{% url 'users:login' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">Entrar</a>
+                <a href="{% url 'users:register' %}" class="btn btn-primary w-full mt-2">Registrar</a>
             </div>
             {% endif %}
         </div>
@@ -834,7 +759,6 @@
         constructor() {
             this.trigger = document.getElementById("userMenuTrigger");
             this.dropdown = document.getElementById("userMenuDropdown");
-            this.themeToggle = document.getElementById("themeToggle");
             this.isOpen = false;
 
             if (!this.trigger || !this.dropdown) {
@@ -847,7 +771,6 @@
 
         init() {
             this.bindEvents();
-            this.setupThemeToggle();
             this.setupKeyboardNavigation();
         }
 
@@ -911,25 +834,6 @@
             this.isOpen = false;
         }
 
-        setupThemeToggle() {
-            if (this.themeToggle) {
-                this.themeToggle.addEventListener("click", () => {
-                    this.toggleTheme();
-                });
-            }
-        }
-
-        toggleTheme() {
-            // This function is illustrative. Assumes theme logic is handled elsewhere.
-            // You can integrate your existing `data-theme-toggle` logic here.
-            const html = document.documentElement;
-            html.classList.toggle("dark");
-            localStorage.setItem(
-                "theme",
-                html.classList.contains("dark") ? "dark" : "light",
-            );
-            this.close();
-        }
 
         setupKeyboardNavigation() {
             this.trigger.addEventListener("keydown", (e) => {

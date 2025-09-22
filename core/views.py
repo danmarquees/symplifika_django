@@ -120,11 +120,12 @@ def shortcuts(request):
 
 
 @login_required
-def profile(request, user_id=None):
+def profile_view(request, user_id=None):
     """Profile view - shows user profile with stats and activity"""
     from django.shortcuts import get_object_or_404
     from django.contrib.auth.models import User
     from django.db.models import Sum, Count
+    from users.models import UserProfile
 
     # If user_id is provided, show that user's profile, otherwise show current user's profile
     if user_id:
@@ -132,10 +133,13 @@ def profile(request, user_id=None):
     else:
         profile_user = request.user
 
+    # Get or create profile
+    profile, created = UserProfile.objects.get_or_create(user=profile_user)
+
     # Calculate statistics
     shortcuts_count = profile_user.shortcuts.filter(is_active=True).count()
     total_usage = profile_user.shortcuts.aggregate(total=Sum('use_count'))['total'] or 0
-    time_saved = profile_user.userprofile.time_saved_minutes / 60 if hasattr(profile_user, 'userprofile') else 0
+    time_saved = profile.time_saved_minutes / 60 if profile.time_saved_minutes else 0
 
     context = {
         'profile_user': profile_user,
@@ -758,14 +762,33 @@ def profile_view(request, user_id=None):
     # Get user profile or create one
     profile, created = UserProfile.objects.get_or_create(user=profile_user)
 
-    # Simple context for testing
+    # Get real statistics
+    try:
+        from shortcuts.models import Shortcut, Category
+        
+        shortcuts_count = Shortcut.objects.filter(user=profile_user).count()
+        categories_count = Category.objects.filter(user=profile_user).count()
+        favorites_count = 0  # Placeholder - implementar sistema de favoritos
+        
+        # Get recent shortcuts
+        recent_shortcuts = Shortcut.objects.filter(
+            user=profile_user
+        ).order_by('-created_at')[:5]
+        
+    except ImportError:
+        # Fallback if shortcuts app not available
+        shortcuts_count = 0
+        categories_count = 0
+        favorites_count = 0
+        recent_shortcuts = []
+
     context = {
         'profile_user': profile_user,
         'profile': profile,
-        'shortcuts_count': 0,
-        'categories_count': 0,
-        'favorites_count': 0,
-        'recent_shortcuts': [],
+        'shortcuts_count': shortcuts_count,
+        'categories_count': categories_count,
+        'favorites_count': favorites_count,
+        'recent_shortcuts': recent_shortcuts,
         'breadcrumbs': [{'title': 'Perfil', 'url': None}],
         'is_own_profile': profile_user == request.user,
     }
@@ -812,7 +835,7 @@ def settings_view(request):
         'breadcrumbs': breadcrumbs,
     }
 
-    return render(request, 'users/settings.html', context)
+    return render(request, 'core/settings.html', context)
 
 
 # ================================
@@ -1152,3 +1175,568 @@ def handler500(request):
     })
 
     return render(request, '500.html', context, status=500)
+
+
+# ================================
+# SETTINGS API ENDPOINTS
+# ================================
+
+@api_view(['GET', 'PUT', 'PATCH'])
+@permission_classes([IsAuthenticated])
+def api_profile(request):
+    """API endpoint for user profile management"""
+    try:
+        from users.models import UserProfile
+        from django.contrib.auth.models import User
+        
+        profile, created = UserProfile.objects.get_or_create(user=request.user)
+        
+        if request.method == 'GET':
+            return Response({
+                'success': True,
+                'data': {
+                    'user': {
+                        'id': request.user.id,
+                        'username': request.user.username,
+                        'email': request.user.email,
+                        'first_name': request.user.first_name,
+                        'last_name': request.user.last_name,
+                        'date_joined': request.user.date_joined.isoformat(),
+                        'last_login': request.user.last_login.isoformat() if request.user.last_login else None,
+                    },
+                    'profile': {
+                        'theme': profile.theme,
+                        'email_notifications': profile.email_notifications,
+                        'ai_enabled': profile.ai_enabled,
+                        'ai_model_preference': profile.ai_model_preference,
+                        'plan': profile.plan,
+                        'max_shortcuts': profile.max_shortcuts,
+                        'max_ai_requests': profile.max_ai_requests,
+                        'ai_requests_used': profile.ai_requests_used,
+                        'total_shortcuts_used': profile.total_shortcuts_used,
+                        'time_saved_minutes': profile.time_saved_minutes,
+                    }
+                }
+            })
+        
+        elif request.method in ['PUT', 'PATCH']:
+            data = request.data
+            updated_fields = []
+            
+            # Update user fields
+            user_fields = ['first_name', 'last_name', 'email']
+            for field in user_fields:
+                if field in data:
+                    setattr(request.user, field, data[field])
+                    updated_fields.append(field)
+            
+            if updated_fields:
+                request.user.save()
+            
+            # Update profile fields
+            profile_fields = ['theme', 'email_notifications', 'ai_enabled', 'ai_model_preference']
+            profile_updated = []
+            for field in profile_fields:
+                if field in data:
+                    setattr(profile, field, data[field])
+                    profile_updated.append(field)
+            
+            if profile_updated:
+                profile.save()
+            
+            return Response({
+                'success': True,
+                'message': 'Perfil atualizado com sucesso!',
+                'updated_fields': updated_fields + profile_updated
+            })
+    
+    except Exception as e:
+        import traceback
+        return Response({
+            'success': False,
+            'error': str(e),
+            'traceback': traceback.format_exc()
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET', 'PUT', 'PATCH'])
+@permission_classes([IsAuthenticated])
+def api_account(request):
+    """API endpoint for account settings"""
+    try:
+        from users.models import UserProfile
+        
+        profile, created = UserProfile.objects.get_or_create(user=request.user)
+        
+        if request.method == 'GET':
+            return Response({
+                'success': True,
+                'data': {
+                    'email': request.user.email,
+                    'username': request.user.username,
+                    'plan': profile.plan,
+                    'date_joined': request.user.date_joined.isoformat(),
+                    'last_login': request.user.last_login.isoformat() if request.user.last_login else None,
+                    'is_active': request.user.is_active,
+                    'email_notifications': profile.email_notifications,
+                    'theme': profile.theme,
+                }
+            })
+        
+        elif request.method in ['PUT', 'PATCH']:
+            data = request.data
+            updated_fields = []
+            
+            # Update email if provided
+            if 'email' in data:
+                from django.contrib.auth.models import User
+                new_email = data['email']
+                
+                # Check if email is already in use
+                if User.objects.filter(email=new_email).exclude(id=request.user.id).exists():
+                    return Response({
+                        'success': False,
+                        'error': 'Este email já está em uso por outro usuário.'
+                    }, status=status.HTTP_400_BAD_REQUEST)
+                
+                request.user.email = new_email
+                request.user.save()
+                updated_fields.append('email')
+            
+            # Update profile settings
+            profile_fields = ['email_notifications', 'theme']
+            for field in profile_fields:
+                if field in data:
+                    setattr(profile, field, data[field])
+                    updated_fields.append(field)
+            
+            if any(field in profile_fields for field in updated_fields):
+                profile.save()
+            
+            return Response({
+                'success': True,
+                'message': 'Configurações da conta atualizadas com sucesso!',
+                'updated_fields': updated_fields
+            })
+    
+    except Exception as e:
+        import traceback
+        return Response({
+            'success': False,
+            'error': str(e),
+            'traceback': traceback.format_exc()
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def api_change_password(request):
+    """API endpoint for changing password"""
+    try:
+        data = request.data
+        current_password = data.get('current_password')
+        new_password = data.get('new_password')
+        confirm_password = data.get('confirm_password')
+        
+        if not all([current_password, new_password, confirm_password]):
+            return Response({
+                'success': False,
+                'error': 'Todos os campos são obrigatórios.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Check current password
+        if not request.user.check_password(current_password):
+            return Response({
+                'success': False,
+                'error': 'Senha atual incorreta.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Check if new passwords match
+        if new_password != confirm_password:
+            return Response({
+                'success': False,
+                'error': 'As novas senhas não coincidem.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Validate password strength
+        if len(new_password) < 8:
+            return Response({
+                'success': False,
+                'error': 'A nova senha deve ter pelo menos 8 caracteres.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Change password
+        request.user.set_password(new_password)
+        request.user.save()
+        
+        return Response({
+            'success': True,
+            'message': 'Senha alterada com sucesso!'
+        })
+    
+    except Exception as e:
+        import traceback
+        return Response({
+            'success': False,
+            'error': str(e),
+            'traceback': traceback.format_exc()
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET', 'PUT', 'PATCH'])
+@permission_classes([IsAuthenticated])
+def api_notifications_preferences(request):
+    """API endpoint for notification preferences"""
+    try:
+        from users.models import UserProfile
+        
+        profile, created = UserProfile.objects.get_or_create(user=request.user)
+        
+        if request.method == 'GET':
+            return Response({
+                'success': True,
+                'data': {
+                    'email_notifications': profile.email_notifications,
+                    'push_notifications': getattr(profile, 'push_notifications', True),
+                    'marketing_emails': getattr(profile, 'marketing_emails', False),
+                    'security_alerts': getattr(profile, 'security_alerts', True),
+                    'product_updates': getattr(profile, 'product_updates', True),
+                }
+            })
+        
+        elif request.method in ['PUT', 'PATCH']:
+            data = request.data
+            updated_fields = []
+            
+            # Update notification preferences
+            notification_fields = [
+                'email_notifications', 'push_notifications', 
+                'marketing_emails', 'security_alerts', 'product_updates'
+            ]
+            
+            for field in notification_fields:
+                if field in data:
+                    setattr(profile, field, data[field])
+                    updated_fields.append(field)
+            
+            if updated_fields:
+                profile.save()
+            
+            return Response({
+                'success': True,
+                'message': 'Preferências de notificação atualizadas com sucesso!',
+                'updated_fields': updated_fields
+            })
+    
+    except Exception as e:
+        import traceback
+        return Response({
+            'success': False,
+            'error': str(e),
+            'traceback': traceback.format_exc()
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def api_settings_config(request):
+    """API endpoint for settings configuration data"""
+    try:
+        from users.models import UserProfile
+        
+        profile, created = UserProfile.objects.get_or_create(user=request.user)
+        
+        # Get environment info
+        environment_info = {
+            'is_production': not django_settings.DEBUG,
+            'api_base_url': request.build_absolute_uri('/api/'),
+            'frontend_url': request.build_absolute_uri('/'),
+            'stripe': {
+                'configured': bool(getattr(django_settings, 'STRIPE_PUBLISHABLE_KEY', None))
+            }
+        }
+        
+        # API endpoints configuration
+        api_endpoints = {
+            'auth': {
+                'login': '/api/auth/login/',
+                'register': '/api/auth/register/',
+                'logout': '/api/auth/logout/',
+            },
+            'shortcuts': {
+                'list': '/shortcuts/api/shortcuts/',
+                'create': '/shortcuts/api/shortcuts/',
+                'categories': '/shortcuts/api/categories/',
+            },
+            'payments': {
+                'create_checkout': '/payments/create-checkout-session/',
+                'plans': '/api/profile/plan-pricing/',
+            },
+            'settings': {
+                'profile': '/api/profile/',
+                'account': '/api/account/',
+                'change_password': '/api/change-password/',
+                'notifications': '/api/notifications-preferences/',
+            }
+        }
+        
+        return Response({
+            'success': True,
+            'data': {
+                'environment': environment_info,
+                'endpoints': api_endpoints,
+                'user': {
+                    'plan': profile.plan,
+                    'theme': profile.theme,
+                    'email_notifications': profile.email_notifications,
+                    'ai_enabled': profile.ai_enabled,
+                }
+            }
+        })
+    
+    except Exception as e:
+        import traceback
+        return Response({
+            'success': False,
+            'error': str(e),
+            'traceback': traceback.format_exc()
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# ============================================================================
+# PROFILE MANAGEMENT APIs - Sistema completo de gerenciamento de perfil
+# ============================================================================
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def api_upload_avatar(request):
+    """API endpoint for avatar upload with image processing"""
+    try:
+        if 'avatar' not in request.FILES:
+            return Response({
+                'success': False,
+                'error': 'Nenhum arquivo de avatar fornecido'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        avatar_file = request.FILES['avatar']
+        
+        # Validações do arquivo
+        max_size = 5 * 1024 * 1024  # 5MB
+        if avatar_file.size > max_size:
+            return Response({
+                'success': False,
+                'error': 'Arquivo muito grande. Máximo permitido: 5MB'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Validar tipo de arquivo
+        allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+        if avatar_file.content_type not in allowed_types:
+            return Response({
+                'success': False,
+                'error': 'Tipo de arquivo não permitido. Use: JPEG, PNG, GIF ou WebP'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Get or create profile
+        from users.models import UserProfile
+        profile, created = UserProfile.objects.get_or_create(user=request.user)
+        
+        # Remove avatar anterior se existir
+        if profile.avatar:
+            profile.delete_avatar()
+        
+        # Salva o novo avatar
+        profile.avatar = avatar_file
+        profile.save()
+        
+        return Response({
+            'success': True,
+            'message': 'Avatar atualizado com sucesso!',
+            'avatar_url': profile.get_avatar_url(),
+            'data': {
+                'avatar_url': profile.get_avatar_url(),
+                'has_avatar': bool(profile.avatar)
+            }
+        })
+    
+    except Exception as e:
+        import traceback
+        return Response({
+            'success': False,
+            'error': str(e),
+            'traceback': traceback.format_exc()
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def api_delete_avatar(request):
+    """API endpoint for avatar deletion"""
+    try:
+        from users.models import UserProfile
+        profile, created = UserProfile.objects.get_or_create(user=request.user)
+        
+        if not profile.avatar:
+            return Response({
+                'success': False,
+                'error': 'Nenhum avatar para remover'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Remove o avatar
+        profile.delete_avatar()
+        
+        return Response({
+            'success': True,
+            'message': 'Avatar removido com sucesso!',
+            'data': {
+                'avatar_url': None,
+                'has_avatar': False,
+                'initial': profile.get_avatar_or_initial()
+            }
+        })
+    
+    except Exception as e:
+        import traceback
+        return Response({
+            'success': False,
+            'error': str(e),
+            'traceback': traceback.format_exc()
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET', 'PUT', 'PATCH'])
+@permission_classes([IsAuthenticated])
+def api_profile_extended(request):
+    """API endpoint for extended profile management"""
+    try:
+        from users.models import UserProfile
+        profile, created = UserProfile.objects.get_or_create(user=request.user)
+        
+        if request.method == 'GET':
+            return Response({
+                'success': True,
+                'data': {
+                    'user': {
+                        'id': request.user.id,
+                        'username': request.user.username,
+                        'email': request.user.email,
+                        'first_name': request.user.first_name,
+                        'last_name': request.user.last_name,
+                        'full_name': request.user.get_full_name(),
+                        'date_joined': request.user.date_joined.isoformat(),
+                        'last_login': request.user.last_login.isoformat() if request.user.last_login else None,
+                    },
+                    'profile': {
+                        'avatar_url': profile.get_avatar_url(),
+                        'has_avatar': bool(profile.avatar),
+                        'bio': profile.bio,
+                        'location': profile.location,
+                        'website': profile.website,
+                        'birth_date': profile.birth_date.isoformat() if profile.birth_date else None,
+                        'age': profile.age,
+                        'public_profile': profile.public_profile,
+                        'show_email': profile.show_email,
+                        'plan': profile.plan,
+                        'theme': profile.theme,
+                        'email_notifications': profile.email_notifications,
+                        'ai_enabled': profile.ai_enabled,
+                        'ai_model_preference': profile.ai_model_preference,
+                        'created_at': profile.created_at.isoformat(),
+                        'updated_at': profile.updated_at.isoformat(),
+                    },
+                    'stats': {
+                        'shortcuts_count': request.user.shortcuts.filter(is_active=True).count(),
+                        'total_usage': sum(s.use_count for s in request.user.shortcuts.all()),
+                        'time_saved_minutes': profile.time_saved_minutes,
+                        'time_saved_hours': round(profile.time_saved_minutes / 60, 1),
+                        'ai_requests_used': profile.ai_requests_used,
+                        'ai_requests_remaining': max(0, profile.max_ai_requests - profile.ai_requests_used) if profile.max_ai_requests > 0 else -1,
+                    }
+                }
+            })
+        
+        elif request.method in ['PUT', 'PATCH']:
+            data = request.data
+            updated_fields = []
+            
+            # Update user fields
+            user_fields = ['first_name', 'last_name', 'email']
+            for field in user_fields:
+                if field in data:
+                    # Validação especial para email
+                    if field == 'email':
+                        from django.contrib.auth.models import User
+                        if User.objects.filter(email=data[field]).exclude(id=request.user.id).exists():
+                            return Response({
+                                'success': False,
+                                'error': 'Este email já está em uso por outro usuário'
+                            }, status=status.HTTP_400_BAD_REQUEST)
+                    
+                    setattr(request.user, field, data[field])
+                    updated_fields.append(field)
+            
+            # Update profile fields
+            profile_fields = [
+                'bio', 'location', 'website', 'birth_date', 
+                'public_profile', 'show_email', 'theme', 
+                'email_notifications', 'ai_enabled', 'ai_model_preference'
+            ]
+            
+            for field in profile_fields:
+                if field in data:
+                    # Validação especial para bio
+                    if field == 'bio' and len(data[field]) > 500:
+                        return Response({
+                            'success': False,
+                            'error': 'Biografia deve ter no máximo 500 caracteres'
+                        }, status=status.HTTP_400_BAD_REQUEST)
+                    
+                    # Validação para birth_date
+                    if field == 'birth_date' and data[field]:
+                        from datetime import datetime
+                        try:
+                            birth_date = datetime.fromisoformat(data[field].replace('Z', '+00:00')).date()
+                            setattr(profile, field, birth_date)
+                        except ValueError:
+                            return Response({
+                                'success': False,
+                                'error': 'Formato de data inválido para data de nascimento'
+                            }, status=status.HTTP_400_BAD_REQUEST)
+                    else:
+                        setattr(profile, field, data[field])
+                    
+                    updated_fields.append(field)
+            
+            # Save changes
+            if any(field in user_fields for field in updated_fields):
+                request.user.save()
+            
+            if any(field in profile_fields for field in updated_fields):
+                profile.save()
+            
+            return Response({
+                'success': True,
+                'message': 'Perfil atualizado com sucesso!',
+                'updated_fields': updated_fields,
+                'data': {
+                    'user': {
+                        'full_name': request.user.get_full_name(),
+                        'email': request.user.email,
+                    },
+                    'profile': {
+                        'bio': profile.bio,
+                        'location': profile.location,
+                        'website': profile.website,
+                        'age': profile.age,
+                        'public_profile': profile.public_profile,
+                        'show_email': profile.show_email,
+                    }
+                }
+            })
+    
+    except Exception as e:
+        import traceback
+        return Response({
+            'success': False,
+            'error': str(e),
+            'traceback': traceback.format_exc()
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

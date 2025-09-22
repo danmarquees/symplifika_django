@@ -5,226 +5,809 @@
 
 {% block content %}
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-    <!-- Header -->
-    <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Configurações</h1>
-            <p class="text-gray-600 dark:text-gray-400 mt-1">Gerencie suas preferências e configurações da conta</p>
+    <!-- Modern Header with Breadcrumb -->
+    <div class="bg-gradient-to-r from-symplifika-primary to-symplifika-accent shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Breadcrumb -->
+            <nav class="flex mb-4" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="{% url 'core:dashboard' %}" class="text-white/70 hover:text-white transition-colors">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                            </svg>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <div class="flex items-center">
+                            <svg class="w-6 h-6 text-white/50" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-white font-medium ml-1 md:ml-2">Configurações</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+            
+            <!-- Header Content -->
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-white">⚙️ Configurações</h1>
+                    <p class="text-white/80 mt-2">Personalize sua experiência no Symplifika</p>
+                </div>
+                <div class="hidden md:flex items-center space-x-4">
+                    <div class="bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                            <span class="text-white text-sm">Todas as alterações são salvas automaticamente</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            <!-- Sidebar Navigation -->
+            <!-- Enhanced Sidebar Navigation -->
             <div class="lg:col-span-1">
-                <nav class="space-y-1">
-                    <a href="#profile" class="settings-nav-item active" data-section="profile">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                        </svg>
-                        Perfil
-                    </a>
-                    <a href="#account" class="settings-nav-item" data-section="account">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        </svg>
-                        Conta
-                    </a>
-                    <a href="#notifications" class="settings-nav-item" data-section="notifications">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM4.828 7l2.829 2.829A4 4 0 019.071 9H15a4 4 0 014 4v1a4 4 0 01-4 4H9.071a4 4 0 01-2.414-.586L4.828 15.828A2 2 0 014 14.414V8.586A2 2 0 014.828 7z"/>
-                        </svg>
-                        Notificações
-                    </a>
-                    <a href="#privacy" class="settings-nav-item" data-section="privacy">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                        </svg>
-                        Privacidade
-                    </a>
-                </nav>
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sticky top-8">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Navegação</h3>
+                    <nav class="space-y-2">
+                        <a href="#profile" class="settings-nav-item active" data-section="profile">
+                            <div class="flex items-center">
+                                <div class="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30 mr-3">
+                                    <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-medium">Perfil</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Informações pessoais</div>
+                                </div>
+                            </div>
+                        </a>
+                        
+                        <a href="#account" class="settings-nav-item" data-section="account">
+                            <div class="flex items-center">
+                                <div class="p-2 rounded-lg bg-green-100 dark:bg-green-900/30 mr-3">
+                                    <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-medium">Conta</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Email e segurança</div>
+                                </div>
+                            </div>
+                        </a>
+                        
+                        <a href="#notifications" class="settings-nav-item" data-section="notifications">
+                            <div class="flex items-center">
+                                <div class="p-2 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 mr-3">
+                                    <svg class="w-4 h-4 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM4.828 7l2.829 2.829A4 4 0 019.071 9H15a4 4 0 014 4v1a4 4 0 01-4 4H9.071a4 4 0 01-2.414-.586L4.828 15.828A2 2 0 014 14.414V8.586A2 2 0 014.828 7z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-medium">Notificações</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Preferências de alerta</div>
+                                </div>
+                            </div>
+                        </a>
+                        
+                        <a href="#privacy" class="settings-nav-item" data-section="privacy">
+                            <div class="flex items-center">
+                                <div class="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30 mr-3">
+                                    <svg class="w-4 h-4 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-medium">Privacidade</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Dados e segurança</div>
+                                </div>
+                            </div>
+                        </a>
+                        
+                        <a href="#appearance" class="settings-nav-item" data-section="appearance">
+                            <div class="flex items-center">
+                                <div class="p-2 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 mr-3">
+                                    <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-medium">Aparência</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Tema e interface</div>
+                                </div>
+                            </div>
+                        </a>
+                    </nav>
+                    
+                    <!-- Quick Stats -->
+                    <div class="mt-8 p-4 bg-gradient-to-r from-symplifika-primary/10 to-symplifika-accent/10 rounded-lg">
+                        <h4 class="font-medium text-gray-900 dark:text-white mb-2">Status da Conta</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Plano:</span>
+                                <span class="font-medium text-symplifika-primary">{{ user.profile.get_plan_display }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Atalhos:</span>
+                                <span class="font-medium">{{ user.shortcuts.count }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Content Area -->
-            <div class="lg:col-span-3">
+            <div class="lg:col-span-3 space-y-8">
                 <!-- Profile Section -->
                 <div id="profile-section" class="settings-section">
-                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Informações do Perfil</h2>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+                        <!-- Section Header -->
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
+                                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h2 class="text-xl font-bold text-gray-900 dark:text-white">Informações do Perfil</h2>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400">Gerencie suas informações pessoais e foto de perfil</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">Auto-save</span>
+                                </div>
+                            </div>
+                        </div>
                         
-                        <form id="profile-form" class="space-y-6">
-                            <div class="flex items-center space-x-6">
-                                <div class="shrink-0">
-                                    <img class="h-16 w-16 object-cover rounded-full" src="{{ user.userprofile.avatar.url|default:'/static/images/default-avatar.png' }}" alt="Avatar">
+                        <div class="p-6">
+                            <form id="profile-form" class="space-y-8">
+                                <!-- Avatar Section -->
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
+                                    <div class="relative group">
+                                        {% if user.profile.avatar %}
+                                            <img id="avatar-preview" class="h-20 w-20 object-cover rounded-full border-4 border-symplifika-primary shadow-lg" src="{{ user.profile.avatar.url }}" alt="Avatar">
+                                        {% else %}
+                                            <div id="avatar-preview" class="h-20 w-20 rounded-full bg-gradient-to-br from-symplifika-primary to-symplifika-accent flex items-center justify-center border-4 border-white dark:border-gray-700 shadow-lg">
+                                                <span class="text-white text-2xl font-bold">{{ user.get_full_name|default:user.username|first|upper }}</span>
+                                            </div>
+                                        {% endif %}
+                                        <div class="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1">
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            📸 Foto do perfil
+                                        </label>
+                                        <div class="flex items-center space-x-4">
+                                            <input type="file" id="avatar-input" accept="image/*" class="hidden">
+                                            <button type="button" onclick="document.getElementById('avatar-input').click()" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
+                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                                </svg>
+                                                Escolher arquivo
+                                            </button>
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG até 5MB</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Foto do perfil
+
+                                <!-- Personal Information -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="space-y-2">
+                                        <label for="first_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            👤 Nome
+                                        </label>
+                                        <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" 
+                                               class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-symplifika-primary focus:ring-symplifika-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label for="last_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            👤 Sobrenome
+                                        </label>
+                                        <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" 
+                                               class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-symplifika-primary focus:ring-symplifika-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="space-y-2">
+                                        <label for="location" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            📍 Localização
+                                        </label>
+                                        <input type="text" id="location" name="location" value="{{ user.profile.location|default:'' }}" 
+                                               placeholder="Ex: São Paulo, Brasil"
+                                               class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-symplifika-primary focus:ring-symplifika-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label for="website" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            🌐 Website
+                                        </label>
+                                        <input type="url" id="website" name="website" value="{{ user.profile.website|default:'' }}" 
+                                               placeholder="https://seusite.com"
+                                               class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-symplifika-primary focus:ring-symplifika-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors">
+                                    </div>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <label for="bio" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        📝 Bio
                                     </label>
-                                    <input type="file" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-symplifika-primary file:text-white hover:file:bg-symplifika-accent">
+                                    <textarea id="bio" name="bio" rows="4" 
+                                              placeholder="Conte um pouco sobre você..."
+                                              class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-symplifika-primary focus:ring-symplifika-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors resize-none">{{ user.profile.bio|default:'' }}</textarea>
+                                    <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                                        <span>Máximo 500 caracteres</span>
+                                        <span id="bio-counter">{{ user.profile.bio|length|default:0 }}/500</span>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label for="first_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nome</label>
-                                    <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-symplifika-primary focus:ring-symplifika-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                <!-- Action Buttons -->
+                                <div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0 pt-6 border-t border-gray-200 dark:border-gray-700">
+                                    <div class="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        <span>Última atualização: {{ user.profile.updated_at|date:"d/m/Y H:i"|default:"Nunca" }}</span>
+                                    </div>
+                                    <div class="flex space-x-3">
+                                        <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                                            Cancelar
+                                        </button>
+                                        <button type="submit" class="px-6 py-2 bg-gradient-to-r from-symplifika-primary to-symplifika-accent text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                                            💾 Salvar Alterações
+                                        </button>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label for="last_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sobrenome</label>
-                                    <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-symplifika-primary focus:ring-symplifika-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                                </div>
-                            </div>
-
-                            <div>
-                                <label for="bio" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Bio</label>
-                                <textarea id="bio" name="bio" rows="3" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-symplifika-primary focus:ring-symplifika-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-white">{{ user.userprofile.bio }}</textarea>
-                            </div>
-
-                            <div class="flex justify-end">
-                                <button type="submit" class="bg-symplifika-primary text-white px-4 py-2 rounded-md hover:bg-symplifika-accent transition-colors">
-                                    Salvar Alterações
-                                </button>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Account Section -->
                 <div id="account-section" class="settings-section hidden">
-                    <div class="space-y-6">
-                        <!-- Email Settings -->
-                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Configurações da Conta</h2>
+                    <div class="space-y-8">
+                        <!-- Email & Security Settings -->
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+                            <div class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                                <div class="flex items-center space-x-3">
+                                    <div class="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg">
+                                        <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h2 class="text-xl font-bold text-gray-900 dark:text-white">Configurações da Conta</h2>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400">Gerencie email, fuso horário e configurações básicas</p>
+                                    </div>
+                                </div>
+                            </div>
                             
-                            <form id="account-form" class="space-y-6">
-                                <div>
-                                    <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
-                                    <input type="email" id="email" name="email" value="{{ user.email }}" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-symplifika-primary focus:ring-symplifika-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                                </div>
+                            <div class="p-6">
+                                <form id="account-form" class="space-y-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div class="space-y-2">
+                                            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                📧 Email
+                                            </label>
+                                            <input type="email" id="email" name="email" value="{{ user.email }}" 
+                                                   class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-symplifika-primary focus:ring-symplifika-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors">
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Usado para login e notificações importantes</p>
+                                        </div>
 
-                                <div>
-                                    <label for="timezone" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fuso Horário</label>
-                                    <select id="timezone" name="timezone" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-symplifika-primary focus:ring-symplifika-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                                        <option value="America/Sao_Paulo">São Paulo (GMT-3)</option>
-                                        <option value="America/New_York">Nova York (GMT-5)</option>
-                                        <option value="Europe/London">Londres (GMT+0)</option>
-                                    </select>
-                                </div>
+                                        <div class="space-y-2">
+                                            <label for="timezone" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                🌍 Fuso Horário
+                                            </label>
+                                            <select id="timezone" name="timezone" 
+                                                    class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-symplifika-primary focus:ring-symplifika-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors">
+                                                <option value="America/Sao_Paulo">🇧🇷 São Paulo (GMT-3)</option>
+                                                <option value="America/New_York">🇺🇸 Nova York (GMT-5)</option>
+                                                <option value="Europe/London">🇬🇧 Londres (GMT+0)</option>
+                                                <option value="Europe/Paris">🇫🇷 Paris (GMT+1)</option>
+                                                <option value="Asia/Tokyo">🇯🇵 Tóquio (GMT+9)</option>
+                                            </select>
+                                        </div>
+                                    </div>
 
-                                <div class="flex justify-end">
-                                    <button type="submit" class="bg-symplifika-primary text-white px-4 py-2 rounded-md hover:bg-symplifika-accent transition-colors">
-                                        Salvar Alterações
-                                    </button>
-                                </div>
-                            </form>
+                                    <div class="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
+                                        <button type="submit" class="px-6 py-2 bg-gradient-to-r from-symplifika-primary to-symplifika-accent text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                                            💾 Salvar Configurações
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
 
                         <!-- Password Change -->
-                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Alterar Senha</h3>
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+                            <div class="bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                                <div class="flex items-center space-x-3">
+                                    <div class="p-2 bg-red-100 dark:bg-red-900/50 rounded-lg">
+                                        <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Alterar Senha</h3>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400">Mantenha sua conta segura com uma senha forte</p>
+                                    </div>
+                                </div>
+                            </div>
                             
-                            <form id="password-form" class="space-y-6">
-                                <div>
-                                    <label for="current_password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Senha Atual</label>
-                                    <input type="password" id="current_password" name="current_password" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-symplifika-primary focus:ring-symplifika-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                                </div>
+                            <div class="p-6">
+                                <form id="password-form" class="space-y-6">
+                                    <div class="space-y-2">
+                                        <label for="current_password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            🔐 Senha Atual
+                                        </label>
+                                        <input type="password" id="current_password" name="current_password" 
+                                               class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-symplifika-primary focus:ring-symplifika-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors">
+                                    </div>
 
-                                <div>
-                                    <label for="new_password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nova Senha</label>
-                                    <input type="password" id="new_password" name="new_password" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-symplifika-primary focus:ring-symplifika-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                                </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div class="space-y-2">
+                                            <label for="new_password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                🔑 Nova Senha
+                                            </label>
+                                            <input type="password" id="new_password" name="new_password" 
+                                                   class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-symplifika-primary focus:ring-symplifika-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors">
+                                            <div id="password-strength" class="mt-2 hidden">
+                                                <div class="flex space-x-1">
+                                                    <div class="h-2 w-1/4 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                                                    <div class="h-2 w-1/4 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                                                    <div class="h-2 w-1/4 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                                                    <div class="h-2 w-1/4 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                                                </div>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Força da senha</p>
+                                            </div>
+                                        </div>
 
-                                <div>
-                                    <label for="confirm_password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Confirmar Nova Senha</label>
-                                    <input type="password" id="confirm_password" name="confirm_password" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-symplifika-primary focus:ring-symplifika-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                                </div>
+                                        <div class="space-y-2">
+                                            <label for="confirm_password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                ✅ Confirmar Nova Senha
+                                            </label>
+                                            <input type="password" id="confirm_password" name="confirm_password" 
+                                                   class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-symplifika-primary focus:ring-symplifika-primary bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors">
+                                        </div>
+                                    </div>
 
-                                <div class="flex justify-end">
-                                    <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors">
-                                        Alterar Senha
-                                    </button>
-                                </div>
-                            </form>
+                                    <!-- Password Requirements -->
+                                    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                                        <h4 class="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">Requisitos da senha:</h4>
+                                        <ul class="text-xs text-blue-700 dark:text-blue-300 space-y-1">
+                                            <li class="flex items-center">
+                                                <svg class="w-3 h-3 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                </svg>
+                                                Mínimo 8 caracteres
+                                            </li>
+                                            <li class="flex items-center">
+                                                <svg class="w-3 h-3 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                </svg>
+                                                Pelo menos uma letra maiúscula e minúscula
+                                            </li>
+                                            <li class="flex items-center">
+                                                <svg class="w-3 h-3 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                </svg>
+                                                Pelo menos um número
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
+                                        <button type="submit" class="px-6 py-2 bg-gradient-to-r from-red-600 to-pink-600 text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                                            🔐 Alterar Senha
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Notifications Section -->
                 <div id="notifications-section" class="settings-section hidden">
-                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Preferências de Notificação</h2>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+                        <div class="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center space-x-3">
+                                <div class="p-2 bg-yellow-100 dark:bg-yellow-900/50 rounded-lg">
+                                    <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM4.828 7l2.829 2.829A4 4 0 019.071 9H15a4 4 0 014 4v1a4 4 0 01-4 4H9.071a4 4 0 01-2.414-.586L4.828 15.828A2 2 0 014 14.414V8.586A2 2 0 014.828 7z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-gray-900 dark:text-white">Preferências de Notificação</h2>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Controle como e quando você recebe notificações</p>
+                                </div>
+                            </div>
+                        </div>
                         
-                        <form id="notifications-form" class="space-y-6">
-                            <div class="space-y-4">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h4 class="text-sm font-medium text-gray-900 dark:text-white">Notificações por Email</h4>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">Receba atualizações importantes por email</p>
+                        <div class="p-6">
+                            <form id="notifications-form" class="space-y-8">
+                                <!-- Email Notifications -->
+                                <div class="space-y-6">
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white flex items-center">
+                                        📧 Notificações por Email
+                                    </h3>
+                                    
+                                    <div class="space-y-4">
+                                        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
+                                                    <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <h4 class="text-sm font-medium text-gray-900 dark:text-white">Atualizações Importantes</h4>
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400">Notificações sobre segurança, mudanças na conta e atualizações críticas</p>
+                                                </div>
+                                            </div>
+                                            <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" name="email_important" class="sr-only peer" checked>
+                                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-symplifika-primary/25 dark:peer-focus:ring-symplifika-primary/25 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-symplifika-primary"></div>
+                                            </label>
+                                        </div>
+
+                                        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg">
+                                                    <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <h4 class="text-sm font-medium text-gray-900 dark:text-white">Atividade dos Atalhos</h4>
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400">Resumos semanais de uso e estatísticas dos seus atalhos</p>
+                                                </div>
+                                            </div>
+                                            <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" name="email_activity" class="sr-only peer" checked>
+                                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-symplifika-primary/25 dark:peer-focus:ring-symplifika-primary/25 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-symplifika-primary"></div>
+                                            </label>
+                                        </div>
+
+                                        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="p-2 bg-purple-100 dark:bg-purple-900/50 rounded-lg">
+                                                    <svg class="w-4 h-4 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 4v10a2 2 0 002 2h6a2 2 0 002-2V8M7 8h10M9 12h6"/>
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <h4 class="text-sm font-medium text-gray-900 dark:text-white">Marketing e Ofertas</h4>
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400">Novidades, dicas de produtividade e ofertas especiais</p>
+                                                </div>
+                                            </div>
+                                            <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" name="email_marketing" class="sr-only peer">
+                                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-symplifika-primary/25 dark:peer-focus:ring-symplifika-primary/25 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-symplifika-primary"></div>
+                                            </label>
+                                        </div>
                                     </div>
-                                    <input type="checkbox" class="h-4 w-4 text-symplifika-primary focus:ring-symplifika-primary border-gray-300 rounded">
                                 </div>
 
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h4 class="text-sm font-medium text-gray-900 dark:text-white">Notificações Push</h4>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">Receba notificações no navegador</p>
+                                <!-- Browser Notifications -->
+                                <div class="space-y-6 border-t border-gray-200 dark:border-gray-700 pt-6">
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white flex items-center">
+                                        🔔 Notificações do Navegador
+                                    </h3>
+                                    
+                                    <div class="space-y-4">
+                                        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="p-2 bg-indigo-100 dark:bg-indigo-900/50 rounded-lg">
+                                                    <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM4.828 7l2.829 2.829A4 4 0 019.071 9H15a4 4 0 014 4v1a4 4 0 01-4 4H9.071a4 4 0 01-2.414-.586L4.828 15.828A2 2 0 014 14.414V8.586A2 2 0 014.828 7z"/>
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <h4 class="text-sm font-medium text-gray-900 dark:text-white">Push Notifications</h4>
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400">Notificações instantâneas no navegador quando o Symplifika estiver aberto</p>
+                                                </div>
+                                            </div>
+                                            <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" name="push_enabled" class="sr-only peer">
+                                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-symplifika-primary/25 dark:peer-focus:ring-symplifika-primary/25 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-symplifika-primary"></div>
+                                            </label>
+                                        </div>
+
+                                        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                                            <div class="flex items-center space-x-2">
+                                                <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                                <span class="text-sm font-medium text-blue-800 dark:text-blue-200">Permissão necessária</span>
+                                            </div>
+                                            <p class="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                                                Para receber notificações push, você precisa permitir notificações do navegador quando solicitado.
+                                            </p>
+                                        </div>
                                     </div>
-                                    <input type="checkbox" class="h-4 w-4 text-symplifika-primary focus:ring-symplifika-primary border-gray-300 rounded">
                                 </div>
 
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h4 class="text-sm font-medium text-gray-900 dark:text-white">Emails Promocionais</h4>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">Receba ofertas e novidades</p>
-                                    </div>
-                                    <input type="checkbox" class="h-4 w-4 text-symplifika-primary focus:ring-symplifika-primary border-gray-300 rounded">
+                                <div class="flex justify-end pt-6 border-t border-gray-200 dark:border-gray-700">
+                                    <button type="submit" class="px-6 py-2 bg-gradient-to-r from-symplifika-primary to-symplifika-accent text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                                        💾 Salvar Preferências
+                                    </button>
                                 </div>
-                            </div>
-
-                            <div class="flex justify-end">
-                                <button type="submit" class="bg-symplifika-primary text-white px-4 py-2 rounded-md hover:bg-symplifika-accent transition-colors">
-                                    Salvar Preferências
-                                </button>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Privacy Section -->
                 <div id="privacy-section" class="settings-section hidden">
-                    <div class="space-y-6">
-                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Configurações de Privacidade</h2>
+                    <div class="space-y-8">
+                        <!-- Privacy Settings -->
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+                            <div class="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                                <div class="flex items-center space-x-3">
+                                    <div class="p-2 bg-purple-100 dark:bg-purple-900/50 rounded-lg">
+                                        <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h2 class="text-xl font-bold text-gray-900 dark:text-white">Configurações de Privacidade</h2>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400">Controle quem pode ver suas informações e como seus dados são usados</p>
+                                    </div>
+                                </div>
+                            </div>
                             
-                            <div class="space-y-4">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h4 class="text-sm font-medium text-gray-900 dark:text-white">Perfil Público</h4>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">Permitir que outros vejam seu perfil</p>
-                                    </div>
-                                    <input type="checkbox" class="h-4 w-4 text-symplifika-primary focus:ring-symplifika-primary border-gray-300 rounded">
-                                </div>
+                            <div class="p-6">
+                                <form id="privacy-form" class="space-y-6">
+                                    <div class="space-y-4">
+                                        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
+                                                    <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <h4 class="text-sm font-medium text-gray-900 dark:text-white">Perfil Público</h4>
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400">Permitir que outros usuários vejam seu perfil e atalhos públicos</p>
+                                                </div>
+                                            </div>
+                                            <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" name="public_profile" class="sr-only peer" {% if user.profile.public_profile %}checked{% endif %}>
+                                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-symplifika-primary/25 dark:peer-focus:ring-symplifika-primary/25 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-symplifika-primary"></div>
+                                            </label>
+                                        </div>
 
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h4 class="text-sm font-medium text-gray-900 dark:text-white">Analytics</h4>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">Permitir coleta de dados para melhorias</p>
+                                        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg">
+                                                    <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <h4 class="text-sm font-medium text-gray-900 dark:text-white">Mostrar Email</h4>
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400">Exibir seu email no perfil público (não recomendado)</p>
+                                                </div>
+                                            </div>
+                                            <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" name="show_email" class="sr-only peer" {% if user.profile.show_email %}checked{% endif %}>
+                                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-symplifika-primary/25 dark:peer-focus:ring-symplifika-primary/25 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-symplifika-primary"></div>
+                                            </label>
+                                        </div>
+
+                                        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="p-2 bg-orange-100 dark:bg-orange-900/50 rounded-lg">
+                                                    <svg class="w-4 h-4 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <h4 class="text-sm font-medium text-gray-900 dark:text-white">Analytics e Melhorias</h4>
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400">Permitir coleta de dados anônimos para melhorar o Symplifika</p>
+                                                </div>
+                                            </div>
+                                            <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" name="analytics_enabled" class="sr-only peer" checked>
+                                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-symplifika-primary/25 dark:peer-focus:ring-symplifika-primary/25 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-symplifika-primary"></div>
+                                            </label>
+                                        </div>
                                     </div>
-                                    <input type="checkbox" class="h-4 w-4 text-symplifika-primary focus:ring-symplifika-primary border-gray-300 rounded">
-                                </div>
+
+                                    <div class="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
+                                        <button type="submit" class="px-6 py-2 bg-gradient-to-r from-symplifika-primary to-symplifika-accent text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                                            💾 Salvar Configurações
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
 
-                        <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6">
-                            <h3 class="text-lg font-semibold text-red-800 dark:text-red-200 mb-4">Zona de Perigo</h3>
-                            <p class="text-sm text-red-700 dark:text-red-300 mb-4">
-                                Estas ações são irreversíveis. Proceda com cuidado.
-                            </p>
-                            <button class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors">
-                                Excluir Conta
-                            </button>
+                        <!-- Danger Zone -->
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border-2 border-red-200 dark:border-red-800">
+                            <div class="bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 px-6 py-4 border-b border-red-200 dark:border-red-800">
+                                <div class="flex items-center space-x-3">
+                                    <div class="p-2 bg-red-100 dark:bg-red-900/50 rounded-lg">
+                                        <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-xl font-bold text-red-800 dark:text-red-200">⚠️ Zona de Perigo</h3>
+                                        <p class="text-sm text-red-700 dark:text-red-300">Ações irreversíveis que afetam permanentemente sua conta</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="p-6">
+                                <div class="space-y-6">
+                                    <!-- Export Data -->
+                                    <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                        <div>
+                                            <h4 class="text-sm font-medium text-gray-900 dark:text-white">📦 Exportar Dados</h4>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Baixe uma cópia de todos os seus dados e atalhos</p>
+                                        </div>
+                                        <button type="button" onclick="exportUserData()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                            Exportar
+                                        </button>
+                                    </div>
+
+                                    <!-- Delete Account -->
+                                    <div class="flex items-center justify-between p-4 border-2 border-red-200 dark:border-red-800 rounded-lg bg-red-50 dark:bg-red-900/10">
+                                        <div>
+                                            <h4 class="text-sm font-medium text-red-800 dark:text-red-200">🗑️ Excluir Conta</h4>
+                                            <p class="text-sm text-red-600 dark:text-red-400">Remover permanentemente sua conta e todos os dados associados</p>
+                                        </div>
+                                        <button type="button" onclick="confirmDeleteAccount()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium">
+                                            Excluir Conta
+                                        </button>
+                                    </div>
+
+                                    <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+                                        <div class="flex items-center space-x-2">
+                                            <svg class="w-4 h-4 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                            </svg>
+                                            <span class="text-sm font-medium text-yellow-800 dark:text-yellow-200">Aviso importante</span>
+                                        </div>
+                                        <p class="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+                                            A exclusão da conta é permanente e não pode ser desfeita. Todos os seus atalhos, configurações e dados serão perdidos para sempre.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Appearance Section -->
+                <div id="appearance-section" class="settings-section hidden">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+                        <div class="bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center space-x-3">
+                                <div class="p-2 bg-indigo-100 dark:bg-indigo-900/50 rounded-lg">
+                                    <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-gray-900 dark:text-white">Aparência e Interface</h2>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Personalize a aparência do Symplifika do seu jeito</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <form id="appearance-form" class="space-y-8">
+                                <!-- Theme Selection -->
+                                <div class="space-y-4">
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">🎨 Tema</h3>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <label class="relative cursor-pointer">
+                                            <input type="radio" name="theme" value="light" class="sr-only peer" {% if user.profile.theme == 'light' %}checked{% endif %}>
+                                            <div class="p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg peer-checked:border-symplifika-primary peer-checked:bg-symplifika-primary/5 hover:border-gray-300 dark:hover:border-gray-600 transition-colors">
+                                                <div class="flex items-center space-x-3">
+                                                    <div class="w-8 h-8 bg-white border border-gray-300 rounded-full flex items-center justify-center">
+                                                        <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <div class="font-medium text-gray-900 dark:text-white">Claro</div>
+                                                        <div class="text-sm text-gray-500 dark:text-gray-400">Tema claro e limpo</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </label>
+
+                                        <label class="relative cursor-pointer">
+                                            <input type="radio" name="theme" value="dark" class="sr-only peer" {% if user.profile.theme == 'dark' %}checked{% endif %}>
+                                            <div class="p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg peer-checked:border-symplifika-primary peer-checked:bg-symplifika-primary/5 hover:border-gray-300 dark:hover:border-gray-600 transition-colors">
+                                                <div class="flex items-center space-x-3">
+                                                    <div class="w-8 h-8 bg-gray-800 border border-gray-600 rounded-full flex items-center justify-center">
+                                                        <svg class="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <div class="font-medium text-gray-900 dark:text-white">Escuro</div>
+                                                        <div class="text-sm text-gray-500 dark:text-gray-400">Tema escuro e elegante</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </label>
+
+                                        <label class="relative cursor-pointer">
+                                            <input type="radio" name="theme" value="auto" class="sr-only peer" {% if user.profile.theme == 'auto' or not user.profile.theme %}checked{% endif %}>
+                                            <div class="p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg peer-checked:border-symplifika-primary peer-checked:bg-symplifika-primary/5 hover:border-gray-300 dark:hover:border-gray-600 transition-colors">
+                                                <div class="flex items-center space-x-3">
+                                                    <div class="w-8 h-8 bg-gradient-to-br from-yellow-400 to-blue-600 rounded-full flex items-center justify-center">
+                                                        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <div class="font-medium text-gray-900 dark:text-white">Automático</div>
+                                                        <div class="text-sm text-gray-500 dark:text-gray-400">Segue o sistema</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Interface Preferences -->
+                                <div class="space-y-4 border-t border-gray-200 dark:border-gray-700 pt-6">
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">⚙️ Preferências de Interface</h3>
+                                    
+                                    <div class="space-y-4">
+                                        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                            <div>
+                                                <h4 class="text-sm font-medium text-gray-900 dark:text-white">Animações</h4>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400">Ativar animações e transições suaves</p>
+                                            </div>
+                                            <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" name="animations_enabled" class="sr-only peer" checked>
+                                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-symplifika-primary/25 dark:peer-focus:ring-symplifika-primary/25 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-symplifika-primary"></div>
+                                            </label>
+                                        </div>
+
+                                        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                            <div>
+                                                <h4 class="text-sm font-medium text-gray-900 dark:text-white">Modo Compacto</h4>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400">Reduzir espaçamentos para mostrar mais conteúdo</p>
+                                            </div>
+                                            <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" name="compact_mode" class="sr-only peer">
+                                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-symplifika-primary/25 dark:peer-focus:ring-symplifika-primary/25 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-symplifika-primary"></div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-end pt-6 border-t border-gray-200 dark:border-gray-700">
+                                    <button type="submit" class="px-6 py-2 bg-gradient-to-r from-symplifika-primary to-symplifika-accent text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                                        💾 Salvar Aparência
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -237,7 +820,7 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Navigation handling
+    // Navigation handling with smooth transitions
     const navItems = document.querySelectorAll('.settings-nav-item');
     const sections = document.querySelectorAll('.settings-section');
 
@@ -246,21 +829,57 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const targetSection = this.getAttribute('data-section');
             
-            // Update active nav item
-            navItems.forEach(nav => nav.classList.remove('active'));
+            // Update active nav item with animation
+            navItems.forEach(nav => {
+                nav.classList.remove('active');
+                nav.style.transform = 'scale(1)';
+            });
             this.classList.add('active');
+            this.style.transform = 'scale(1.02)';
+            setTimeout(() => this.style.transform = 'scale(1)', 150);
             
-            // Show target section
-            sections.forEach(section => section.classList.add('hidden'));
-            document.getElementById(targetSection + '-section').classList.remove('hidden');
+            // Show target section with fade effect
+            sections.forEach(section => {
+                section.style.opacity = '0';
+                setTimeout(() => section.classList.add('hidden'), 150);
+            });
+            
+            setTimeout(() => {
+                const targetEl = document.getElementById(targetSection + '-section');
+                targetEl.classList.remove('hidden');
+                targetEl.style.opacity = '1';
+            }, 150);
+            
+            // Update URL hash
+            window.history.replaceState(null, null, `#${targetSection}`);
         });
     });
 
-    // Form submissions
+    // Handle initial hash navigation
+    const hash = window.location.hash.substring(1);
+    if (hash && document.querySelector(`[data-section="${hash}"]`)) {
+        document.querySelector(`[data-section="${hash}"]`).click();
+    }
+
+    // Form submissions with enhanced UX
     document.getElementById('profile-form').addEventListener('submit', handleProfileSubmit);
     document.getElementById('account-form').addEventListener('submit', handleAccountSubmit);
     document.getElementById('password-form').addEventListener('submit', handlePasswordSubmit);
     document.getElementById('notifications-form').addEventListener('submit', handleNotificationsSubmit);
+    document.getElementById('privacy-form').addEventListener('submit', handlePrivacySubmit);
+    document.getElementById('appearance-form').addEventListener('submit', handleAppearanceSubmit);
+
+    // Avatar upload functionality
+    setupAvatarUpload();
+    
+    // Bio character counter
+    setupBioCounter();
+    
+    // Password strength indicator
+    setupPasswordStrength();
+    
+    // Auto-save functionality
+    setupAutoSave();
 });
 
 async function handleProfileSubmit(e) {
@@ -273,11 +892,15 @@ async function handleProfileSubmit(e) {
             body: formData
         });
         
-        if (response.ok) {
-            window.apiConfig.showNotification('Perfil atualizado com sucesso!', 'success');
+        const result = await response.json();
+        if (result.success) {
+            Toast.success(result.message || 'Perfil atualizado com sucesso!');
+        } else {
+            Toast.error(result.error || 'Erro ao atualizar perfil');
         }
     } catch (error) {
-        window.apiConfig.handleError(error, 'Atualizar perfil');
+        Toast.error('Erro de conexão ao atualizar perfil');
+        console.error('Erro:', error);
     }
 }
 
@@ -291,11 +914,15 @@ async function handleAccountSubmit(e) {
             body: JSON.stringify(Object.fromEntries(formData))
         });
         
-        if (response.ok) {
-            window.apiConfig.showNotification('Configurações da conta atualizadas!', 'success');
+        const result = await response.json();
+        if (result.success) {
+            Toast.success(result.message || 'Configurações da conta atualizadas!');
+        } else {
+            Toast.error(result.error || 'Erro ao atualizar conta');
         }
     } catch (error) {
-        window.apiConfig.handleError(error, 'Atualizar conta');
+        Toast.error('Erro de conexão ao atualizar conta');
+        console.error('Erro:', error);
     }
 }
 
@@ -304,7 +931,7 @@ async function handlePasswordSubmit(e) {
     const formData = new FormData(e.target);
     
     if (formData.get('new_password') !== formData.get('confirm_password')) {
-        window.apiConfig.showNotification('As senhas não coincidem', 'error');
+        Toast.warning('As senhas não coincidem');
         return;
     }
     
@@ -314,12 +941,16 @@ async function handlePasswordSubmit(e) {
             body: JSON.stringify(Object.fromEntries(formData))
         });
         
-        if (response.ok) {
-            window.apiConfig.showNotification('Senha alterada com sucesso!', 'success');
+        const result = await response.json();
+        if (result.success) {
+            Toast.success(result.message || 'Senha alterada com sucesso!');
             e.target.reset();
+        } else {
+            Toast.error(result.error || 'Erro ao alterar senha');
         }
     } catch (error) {
-        window.apiConfig.handleError(error, 'Alterar senha');
+        Toast.error('Erro de conexão ao alterar senha');
+        console.error('Erro:', error);
     }
 }
 
@@ -333,22 +964,628 @@ async function handleNotificationsSubmit(e) {
             body: JSON.stringify(Object.fromEntries(formData))
         });
         
-        if (response.ok) {
-            window.apiConfig.showNotification('Preferências de notificação atualizadas!', 'success');
+        const result = await response.json();
+        if (result.success) {
+            Toast.success(result.message || 'Preferências de notificação atualizadas!');
+        } else {
+            Toast.error(result.error || 'Erro ao atualizar preferências');
         }
     } catch (error) {
-        window.apiConfig.handleError(error, 'Atualizar preferências');
+        Toast.error('Erro de conexão ao atualizar preferências');
+        console.error('Erro:', error);
+    }
+}
+
+async function handlePrivacySubmit(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    
+    try {
+        const response = await window.apiConfig.makeRequest('/api/profile/extended/', {
+            method: 'PATCH',
+            body: JSON.stringify(Object.fromEntries(formData))
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            Toast.success(result.message || 'Configurações de privacidade atualizadas!');
+        } else {
+            Toast.error(result.error || 'Erro ao atualizar configurações');
+        }
+    } catch (error) {
+        Toast.error('Erro de conexão ao atualizar configurações');
+        console.error('Erro:', error);
+    }
+}
+
+async function handleAppearanceSubmit(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData);
+    
+    try {
+        const response = await window.apiConfig.makeRequest('/api/profile/extended/', {
+            method: 'PATCH',
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            Toast.success(result.message || 'Aparência atualizada!');
+            
+            // Apply theme immediately
+            if (data.theme) {
+                applyTheme(data.theme);
+            }
+        } else {
+            Toast.error(result.error || 'Erro ao atualizar aparência');
+        }
+    } catch (error) {
+        Toast.error('Erro de conexão ao atualizar aparência');
+        console.error('Erro:', error);
+    }
+}
+
+// Avatar upload functionality
+function setupAvatarUpload() {
+    const avatarInput = document.getElementById('avatar-input');
+    const avatarPreview = document.getElementById('avatar-preview');
+    
+    if (avatarInput) {
+        avatarInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validate file
+                if (!file.type.startsWith('image/')) {
+                    Toast.error('Por favor, selecione apenas arquivos de imagem');
+                    return;
+                }
+                
+                if (file.size > 5 * 1024 * 1024) { // 5MB
+                    Toast.error('A imagem deve ter no máximo 5MB');
+                    return;
+                }
+                
+                // Preview image
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    if (avatarPreview) {
+                        avatarPreview.innerHTML = `<img src="${e.target.result}" alt="Preview" class="w-full h-full object-cover">`;
+                    }
+                };
+                reader.readAsDataURL(file);
+                
+                // Auto-upload
+                uploadAvatar(file);
+            }
+        });
+    }
+}
+
+async function uploadAvatar(file) {
+    const formData = new FormData();
+    formData.append('avatar', file);
+    
+    try {
+        const response = await fetch('/api/profile/avatar/upload/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+            }
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            Toast.success('Avatar atualizado com sucesso!');
+            
+            // Update navbar avatar if exists
+            const navbarAvatar = document.querySelector('.navbar-avatar');
+            if (navbarAvatar && result.data.avatar_url) {
+                navbarAvatar.src = result.data.avatar_url;
+            }
+        } else {
+            Toast.error(result.error || 'Erro ao fazer upload do avatar');
+        }
+    } catch (error) {
+        Toast.error('Erro ao fazer upload do avatar');
+        console.error('Erro:', error);
+    }
+}
+
+// Bio character counter
+function setupBioCounter() {
+    const bioTextarea = document.getElementById('bio');
+    const bioCounter = document.getElementById('bio-counter');
+    
+    if (bioTextarea && bioCounter) {
+        bioTextarea.addEventListener('input', function() {
+            const length = this.value.length;
+            const maxLength = 500;
+            
+            bioCounter.textContent = `${length}/${maxLength}`;
+            
+            // Color coding
+            if (length > maxLength * 0.9) {
+                bioCounter.className = 'text-red-500 dark:text-red-400';
+            } else if (length > maxLength * 0.7) {
+                bioCounter.className = 'text-yellow-500 dark:text-yellow-400';
+            } else {
+                bioCounter.className = 'text-gray-500 dark:text-gray-400';
+            }
+            
+            // Prevent exceeding limit
+            if (length > maxLength) {
+                this.value = this.value.substring(0, maxLength);
+                bioCounter.textContent = `${maxLength}/${maxLength}`;
+            }
+        });
+    }
+}
+
+// Password strength indicator
+function setupPasswordStrength() {
+    const passwordInput = document.getElementById('new_password');
+    const strengthIndicator = document.getElementById('password-strength');
+    
+    if (passwordInput && strengthIndicator) {
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            const strength = calculatePasswordStrength(password);
+            
+            if (password.length > 0) {
+                strengthIndicator.classList.remove('hidden');
+                updateStrengthIndicator(strengthIndicator, strength);
+            } else {
+                strengthIndicator.classList.add('hidden');
+            }
+        });
+    }
+}
+
+function calculatePasswordStrength(password) {
+    let score = 0;
+    
+    // Length check
+    if (password.length >= 8) score += 1;
+    if (password.length >= 12) score += 1;
+    
+    // Character variety
+    if (/[a-z]/.test(password)) score += 1;
+    if (/[A-Z]/.test(password)) score += 1;
+    if (/[0-9]/.test(password)) score += 1;
+    if (/[^A-Za-z0-9]/.test(password)) score += 1;
+    
+    return Math.min(score, 4);
+}
+
+function updateStrengthIndicator(indicator, strength) {
+    const bars = indicator.querySelectorAll('.h-2');
+    const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500'];
+    const labels = ['Muito fraca', 'Fraca', 'Média', 'Forte'];
+    
+    bars.forEach((bar, index) => {
+        bar.className = 'h-2 w-1/4 rounded';
+        if (index < strength) {
+            bar.classList.add(colors[strength - 1]);
+        } else {
+            bar.classList.add('bg-gray-200', 'dark:bg-gray-600');
+        }
+    });
+    
+    const label = indicator.querySelector('p');
+    if (label && strength > 0) {
+        label.textContent = labels[strength - 1];
+    }
+}
+
+// Auto-save functionality
+function setupAutoSave() {
+    const forms = document.querySelectorAll('form[id$="-form"]');
+    
+    forms.forEach(form => {
+        const inputs = form.querySelectorAll('input, textarea, select');
+        inputs.forEach(input => {
+            if (input.type !== 'password' && input.type !== 'file') {
+                input.addEventListener('change', () => {
+                    debounce(() => autoSaveForm(form), 1000)();
+                });
+            }
+        });
+    });
+}
+
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+async function autoSaveForm(form) {
+    if (form.id === 'password-form') return; // Don't auto-save passwords
+    
+    const formData = new FormData(form);
+    const endpoint = getEndpointForForm(form.id);
+    
+    if (!endpoint) return;
+    
+    try {
+        const response = await window.apiConfig.makeRequest(endpoint, {
+            method: 'PATCH',
+            body: JSON.stringify(Object.fromEntries(formData))
+        });
+        
+        if (response.ok) {
+            showAutoSaveIndicator(true);
+        }
+    } catch (error) {
+        showAutoSaveIndicator(false);
+        console.error('Auto-save error:', error);
+    }
+}
+
+function getEndpointForForm(formId) {
+    const endpoints = {
+        'profile-form': '/api/profile/extended/',
+        'account-form': '/api/account/',
+        'notifications-form': '/api/notifications-preferences/',
+        'privacy-form': '/api/profile/extended/',
+        'appearance-form': '/api/profile/extended/'
+    };
+    return endpoints[formId];
+}
+
+function showAutoSaveIndicator(success) {
+    const indicator = document.createElement('div');
+    indicator.className = `fixed top-4 right-4 px-4 py-2 rounded-lg text-white text-sm font-medium z-50 transition-all duration-300 ${
+        success ? 'bg-green-500' : 'bg-red-500'
+    }`;
+    indicator.textContent = success ? '✓ Salvo automaticamente' : '✗ Erro ao salvar';
+    
+    document.body.appendChild(indicator);
+    
+    setTimeout(() => {
+        indicator.style.opacity = '0';
+        setTimeout(() => indicator.remove(), 300);
+    }, 2000);
+}
+
+// Theme application
+function applyTheme(theme) {
+    const html = document.documentElement;
+    
+    if (theme === 'dark') {
+        html.classList.add('dark');
+    } else if (theme === 'light') {
+        html.classList.remove('dark');
+    } else if (theme === 'auto') {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (prefersDark) {
+            html.classList.add('dark');
+        } else {
+            html.classList.remove('dark');
+        }
+    }
+}
+
+// Danger zone functions
+async function exportUserData() {
+    try {
+        const response = await fetch('/api/profile/export/', {
+            method: 'GET',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+            }
+        });
+        
+        if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `symplifika-dados-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            Toast.success('Dados exportados com sucesso!');
+        } else {
+            Toast.error('Erro ao exportar dados');
+        }
+    } catch (error) {
+        Toast.error('Erro ao exportar dados');
+        console.error('Export error:', error);
+    }
+}
+
+function confirmDeleteAccount() {
+    if (confirm('⚠️ ATENÇÃO: Esta ação é irreversível!\n\nTodos os seus dados, atalhos e configurações serão permanentemente excluídos.\n\nTem certeza que deseja excluir sua conta?')) {
+        if (confirm('Digite "EXCLUIR" para confirmar:') === 'EXCLUIR') {
+            deleteAccount();
+        } else {
+            Toast.warning('Exclusão cancelada - confirmação incorreta');
+        }
+    }
+}
+
+async function deleteAccount() {
+    try {
+        const response = await fetch('/api/profile/delete/', {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '',
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            Toast.success('Conta excluída com sucesso. Redirecionando...');
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 2000);
+        } else {
+            Toast.error(result.error || 'Erro ao excluir conta');
+        }
+    } catch (error) {
+        Toast.error('Erro ao excluir conta');
+        console.error('Delete error:', error);
     }
 }
 </script>
 
 <style>
 .settings-nav-item {
-    @apply flex items-center px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 rounded-md hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors;
+    @apply flex items-center px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-400 rounded-xl hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 cursor-pointer;
+    border: 1px solid transparent;
+}
+
+.settings-nav-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .settings-nav-item.active {
-    @apply bg-symplifika-primary/10 text-symplifika-primary;
+    @apply bg-gradient-to-r from-symplifika-primary/10 to-symplifika-accent/10 text-symplifika-primary border-symplifika-primary/20;
+    box-shadow: 0 4px 20px rgba(124, 58, 237, 0.15);
+}
+
+.settings-section {
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Custom toggle switch styles */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: #7c3aed;
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+}
+
+/* Avatar hover effects */
+.avatar-container:hover .avatar-overlay {
+    opacity: 1;
+}
+
+.avatar-overlay {
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Form animations */
+.form-field {
+    transition: all 0.3s ease;
+}
+
+.form-field:focus-within {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(124, 58, 237, 0.15);
+}
+
+/* Button hover effects */
+.btn-primary {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-primary:hover::before {
+    left: 100%;
+}
+
+/* Gradient text */
+.gradient-text {
+    background: linear-gradient(135deg, #7c3aed, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Card hover effects */
+.settings-card {
+    transition: all 0.3s ease;
+}
+
+.settings-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Loading states */
+.loading {
+    position: relative;
+    overflow: hidden;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .settings-nav-item {
+        padding: 12px 16px;
+        margin-bottom: 4px;
+    }
+    
+    .settings-nav-item:hover {
+        transform: none;
+    }
+}
+
+/* Dark mode specific styles */
+.dark .settings-card {
+    background: rgba(31, 41, 55, 0.8);
+    backdrop-filter: blur(10px);
+}
+
+.dark .toggle-slider {
+    background-color: #374151;
+}
+
+.dark input:checked + .toggle-slider {
+    background-color: #7c3aed;
+}
+
+/* Success/Error states */
+.field-success {
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.field-error {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Custom scrollbar */
+.settings-sidebar {
+    scrollbar-width: thin;
+    scrollbar-color: #7c3aed #f1f5f9;
+}
+
+.settings-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.settings-sidebar::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+.settings-sidebar::-webkit-scrollbar-thumb {
+    background: #7c3aed;
+    border-radius: 3px;
+}
+
+.settings-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #6d28d9;
+}
+
+/* Accessibility improvements */
+.focus-visible {
+    outline: 2px solid #7c3aed;
+    outline-offset: 2px;
+}
+
+/* Animation classes */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+.slide-in {
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { 
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Print styles */
+@media print {
+    .settings-nav-item,
+    .btn-primary,
+    .toggle-switch {
+        display: none !important;
+    }
 }
 </style>
 {% endblock %}

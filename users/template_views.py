@@ -41,11 +41,8 @@ def profile_view(request, user_id=None):
         user=profile_user
     ).order_by('-created_at')[:5]
 
-    # Get favorite shortcuts count
-    favorites_count = Shortcut.objects.filter(
-        user=profile_user,
-        is_favorite=True
-    ).count()
+    # Get favorite shortcuts count (placeholder - implementar sistema de favoritos)
+    favorites_count = 0
 
     # Breadcrumbs
     breadcrumbs = build_breadcrumbs(
@@ -133,7 +130,7 @@ def settings_view(request):
         **get_user_context(request.user),
     }
 
-    return render(request, 'users/settings.html', context)
+    return render(request, 'core/settings.html', context)
 
 
 @login_required
@@ -188,18 +185,50 @@ def change_avatar_view(request):
     if request.method == 'POST':
         try:
             if 'avatar' in request.FILES:
-                profile.avatar = request.FILES['avatar']
+                avatar_file = request.FILES['avatar']
+                
+                # Validar tipo de arquivo
+                allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+                if avatar_file.content_type not in allowed_types:
+                    return JsonResponse({
+                        'success': False,
+                        'error': 'Tipo de arquivo não permitido. Use JPEG, PNG, GIF ou WebP.'
+                    }, status=400)
+                
+                # Validar tamanho do arquivo (máximo 5MB)
+                if avatar_file.size > 5 * 1024 * 1024:
+                    return JsonResponse({
+                        'success': False,
+                        'error': 'Arquivo muito grande. Tamanho máximo: 5MB.'
+                    }, status=400)
+                
+                # Remover avatar anterior se existir
+                if profile.avatar:
+                    profile.avatar.delete(save=False)
+                
+                profile.avatar = avatar_file
                 profile.save()
-                messages.success(request, 'Avatar atualizado com sucesso!')
+                
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Avatar atualizado com sucesso!',
+                    'avatar_url': profile.avatar.url if profile.avatar else None
+                })
             else:
-                messages.error(request, 'Nenhum arquivo de imagem foi enviado.')
-
-            return redirect('users:profile')
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Nenhum arquivo de imagem foi enviado.'
+                }, status=400)
 
         except Exception as e:
-            messages.error(request, f'Erro ao atualizar avatar: {str(e)}')
+            import traceback
+            return JsonResponse({
+                'success': False,
+                'error': f'Erro ao atualizar avatar: {str(e)}',
+                'traceback': traceback.format_exc()
+            }, status=500)
 
-    # Breadcrumbs
+    # GET request - render template
     breadcrumbs = build_breadcrumbs(
         ('Perfil', reverse('users:profile')),
         ('Alterar Avatar', None)
@@ -224,14 +253,24 @@ def delete_avatar_view(request):
         if profile.avatar:
             profile.avatar.delete()
             profile.save()
-            messages.success(request, 'Avatar removido com sucesso!')
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Avatar removido com sucesso!'
+            })
         else:
-            messages.info(request, 'Nenhum avatar para remover.')
+            return JsonResponse({
+                'success': False,
+                'error': 'Nenhum avatar para remover.'
+            }, status=400)
 
     except Exception as e:
-        messages.error(request, f'Erro ao remover avatar: {str(e)}')
-
-    return redirect('users:profile')
+        import traceback
+        return JsonResponse({
+            'success': False,
+            'error': f'Erro ao remover avatar: {str(e)}',
+            'traceback': traceback.format_exc()
+        }, status=500)
 
 
 # ================================
