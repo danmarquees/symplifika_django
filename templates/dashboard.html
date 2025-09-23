@@ -3463,14 +3463,8 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
 
         const createCategoryForm =
             document.getElementById("createCategoryForm");
-        if (createCategoryForm) {
-            createCategoryForm.addEventListener("submit", (e) => {
-                e.preventDefault();
-                if (window.app) {
-                    window.app.handleCategorySubmit(createCategoryForm);
-                }
-            });
-        }
+        // Category form event listener is now handled exclusively in app.js setupCategoryForm()
+        // Removed duplicate event listener to prevent multiple form submissions
 
         // Configurar modal de confirmação
         const confirmationModal = document.getElementById("confirmationModal");
@@ -3498,70 +3492,6 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
         });
     });
 
-    // Função para testar o sistema de toast notifications
-    function testToastNotifications() {
-        if (!window.Toast) {
-            console.error('Sistema de Toast não encontrado!');
-            return;
-        }
-
-        // Teste sequencial de diferentes tipos de toast
-        let delay = 0;
-
-        // Toast de sucesso
-        setTimeout(() => {
-            Toast.success('Ação realizada com sucesso!', 'Sucesso');
-        }, delay);
-        delay += 1000;
-
-        // Toast de informação
-        setTimeout(() => {
-            Toast.info('Esta é uma informação importante para você.', 'Informação');
-        }, delay);
-        delay += 1000;
-
-        // Toast de aviso
-        setTimeout(() => {
-            Toast.warning('Atenção! Verifique suas configurações.', 'Aviso');
-        }, delay);
-        delay += 1000;
-
-        // Toast de erro
-        setTimeout(() => {
-            Toast.error('Ops! Algo deu errado. Tente novamente.', 'Erro');
-        }, delay);
-        delay += 1000;
-
-        // Toast do Symplifika
-        setTimeout(() => {
-            Toast.symplifika('Bem-vindo ao sistema de notificações do Symplifika!', 'Symplifika');
-        }, delay);
-        delay += 1000;
-
-        // Toast personalizado com opções avançadas
-        setTimeout(() => {
-            Toast.show({
-                type: 'info',
-                title: 'Notificação Personalizada',
-                message: 'Esta notificação tem configurações personalizadas e ficará visível por mais tempo.',
-                duration: 10000,
-                persistent: false,
-                closable: true,
-                onClick: function(id) {
-                    console.log('Toast clicado:', id);
-                    Toast.success('Você clicou na notificação!');
-                },
-                onClose: function(id) {
-                    console.log('Toast fechado:', id);
-                }
-            });
-        }, delay);
-
-        // Mostrar toast de confirmação do teste
-        setTimeout(() => {
-            Toast.symplifika('Teste de notificações concluído! 🎉', 'Teste Completo');
-        }, delay + 1000);
-    }
 
     // Funcionalidades para URL Context
     document.addEventListener('DOMContentLoaded', function() {

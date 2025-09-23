@@ -10,6 +10,7 @@ class SymphilikaApp {
     this.currentUser = null;
     this.categories = [];
     this.shortcuts = [];
+    this.isSubmitting = false; // Flag to prevent multiple form submissions
 
     this.init();
   }
@@ -194,13 +195,17 @@ class SymphilikaApp {
     const form = document.getElementById("createShortcutForm");
     if (!form) return;
 
-    form.addEventListener("submit", async (e) => {
+    // Remove any existing listeners to prevent duplicates
+    const newForm = form.cloneNode(true);
+    form.parentNode.replaceChild(newForm, form);
+
+    newForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      await this.handleShortcutSubmit(form);
+      await this.handleShortcutSubmit(newForm);
     });
 
     // Configurar eventos de mudança de tipo de expansão
-    const expansionTypes = form.querySelectorAll(
+    const expansionTypes = newForm.querySelectorAll(
       'input[name="expansion_type"]',
     );
     expansionTypes.forEach((radio) => {
@@ -210,7 +215,7 @@ class SymphilikaApp {
     });
 
     // Configurar preview do gatilho
-    const triggerInput = form.querySelector("#shortcutTrigger");
+    const triggerInput = newForm.querySelector("#shortcutTrigger");
     if (triggerInput) {
       triggerInput.addEventListener("input", () => {
         this.updateTriggerPreview();
@@ -218,7 +223,7 @@ class SymphilikaApp {
     }
 
     // Configurar botão de adicionar variável
-    const addVariableBtn = form.querySelector("#addVariableBtn");
+    const addVariableBtn = newForm.querySelector("#addVariableBtn");
     if (addVariableBtn) {
       addVariableBtn.addEventListener("click", () => {
         this.addVariableField();
@@ -226,7 +231,7 @@ class SymphilikaApp {
     }
 
     // Configurar contador de caracteres para conteúdo
-    const contentTextarea = form.querySelector("#shortcutContent");
+    const contentTextarea = newForm.querySelector("#shortcutContent");
     if (contentTextarea) {
       contentTextarea.addEventListener("input", () => {
         this.updateCharacterCount(contentTextarea);
@@ -241,14 +246,18 @@ class SymphilikaApp {
     const form = document.getElementById("createCategoryForm");
     if (!form) return;
 
-    form.addEventListener("submit", async (e) => {
+    // Remove any existing listeners to prevent duplicates
+    const newForm = form.cloneNode(true);
+    form.parentNode.replaceChild(newForm, form);
+
+    newForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      await this.handleCategorySubmit(form);
+      await this.handleCategorySubmit(newForm);
     });
 
     // Sincronizar cor com campo de texto
-    const colorInput = form.querySelector("#categoryColor");
-    const colorTextInput = form.querySelector("#categoryColorText");
+    const colorInput = newForm.querySelector("#categoryColor");
+    const colorTextInput = newForm.querySelector("#categoryColorText");
 
     if (colorInput && colorTextInput) {
       colorInput.addEventListener("change", () => {
@@ -373,6 +382,12 @@ class SymphilikaApp {
     } finally {
       // Remover loading
       this.setLoadingState(submitBtn, loadingIcon, submitText, false);
+
+      // Re-enable form and reset submission flag
+      if (submitBtn) {
+        submitBtn.disabled = false;
+      }
+      this.isSubmitting = false;
     }
   }
 
@@ -380,13 +395,26 @@ class SymphilikaApp {
    * Manipula envio do formulário de categoria
    */
   async handleCategorySubmit(form) {
+    // Prevent multiple simultaneous submissions
+    if (this.isSubmitting) {
+      return;
+    }
+
     const submitBtn = form.querySelector("#submitCategoryBtn");
     const loadingIcon = form.querySelector("#submitCategoryLoading");
     const submitText = form.querySelector("#submitCategoryText");
 
     try {
+      // Set submission flag and disable form
+      this.isSubmitting = true;
+
       // Mostrar loading
       this.setLoadingState(submitBtn, loadingIcon, submitText, true);
+
+      // Disable the form to prevent additional clicks
+      if (submitBtn) {
+        submitBtn.disabled = true;
+      }
 
       const formData = new FormData(form);
       const data = this.formDataToObject(formData);
@@ -497,6 +525,12 @@ class SymphilikaApp {
     } finally {
       // Remover loading
       this.setLoadingState(submitBtn, loadingIcon, submitText, false);
+
+      // Re-enable form and reset submission flag
+      if (submitBtn) {
+        submitBtn.disabled = false;
+      }
+      this.isSubmitting = false;
     }
   }
 
