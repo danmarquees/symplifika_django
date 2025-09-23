@@ -228,7 +228,7 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                     >
                         <!-- prerttier-ignore -->
                         {{ user.profile.ai_requests_used|default:0 }}/
-                        {{user.profile.max_ai_requests|default:100 }}
+                        {{user.profile.max_ai_requests_free|default:50 }}
                     </span>
                     {% if user.profile.plan == 'free' %}
                     <span class="text-xs text-symplifika-primary font-medium"
@@ -2166,6 +2166,69 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                 </div>
             </div>
 
+            <!-- URL Context -->
+            <div>
+                <label
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
+                    <span class="flex items-center space-x-2">
+                        <span>URL de Contexto</span>
+                        <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                        </svg>
+                    </span>
+                </label>
+                <div class="relative">
+                    <input
+                        type="url"
+                        name="url_context"
+                        id="urlContext"
+                        class="form-input pr-12"
+                        placeholder="gmail.com, linkedin.com, whatsapp.com..."
+                    />
+                    <button
+                        type="button"
+                        id="suggestTriggerBtn"
+                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-blue-500 transition-colors"
+                        title="Sugerir gatilho baseado na URL"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="mt-2 flex flex-wrap gap-2" id="urlSuggestions">
+                    <!-- Popular services will be shown here -->
+                    <button type="button" class="url-suggestion-btn" data-url="gmail.com">
+                        <span class="flex items-center space-x-1">
+                            <span class="w-3 h-3 bg-red-500 rounded-full"></span>
+                            <span>Gmail</span>
+                        </span>
+                    </button>
+                    <button type="button" class="url-suggestion-btn" data-url="linkedin.com">
+                        <span class="flex items-center space-x-1">
+                            <span class="w-3 h-3 bg-blue-600 rounded-full"></span>
+                            <span>LinkedIn</span>
+                        </span>
+                    </button>
+                    <button type="button" class="url-suggestion-btn" data-url="web.whatsapp.com">
+                        <span class="flex items-center space-x-1">
+                            <span class="w-3 h-3 bg-green-500 rounded-full"></span>
+                            <span>WhatsApp</span>
+                        </span>
+                    </button>
+                    <button type="button" class="url-suggestion-btn" data-url="outlook.com">
+                        <span class="flex items-center space-x-1">
+                            <span class="w-3 h-3 bg-blue-500 rounded-full"></span>
+                            <span>Outlook</span>
+                        </span>
+                    </button>
+                </div>
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    Site ou serviço onde este atalho será mais útil. Ajuda a sugerir gatilhos adequados.
+                </p>
+            </div>
+
             <!-- Expansion Type -->
             <div>
                 <label
@@ -3375,5 +3438,132 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
             Toast.symplifika('Teste de notificações concluído! 🎉', 'Teste Completo');
         }, delay + 1000);
     }
+
+    // Funcionalidades para URL Context
+    document.addEventListener('DOMContentLoaded', function() {
+        // Botões de sugestão de URL
+        const urlSuggestionBtns = document.querySelectorAll('.url-suggestion-btn');
+        const urlContextInput = document.getElementById('urlContext');
+        const suggestTriggerBtn = document.getElementById('suggestTriggerBtn');
+        const triggerInput = document.getElementById('shortcutTrigger');
+
+        // Adicionar event listeners para botões de sugestão
+        urlSuggestionBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const url = this.dataset.url;
+                urlContextInput.value = url;
+                
+                // Remover classe ativa de outros botões
+                urlSuggestionBtns.forEach(b => b.classList.remove('active'));
+                // Adicionar classe ativa ao botão clicado
+                this.classList.add('active');
+                
+                // Sugerir gatilho automaticamente
+                suggestTriggerFromUrl(url);
+            });
+        });
+
+        // Sugerir gatilho baseado na URL
+        suggestTriggerBtn.addEventListener('click', function() {
+            const url = urlContextInput.value.trim();
+            if (url) {
+                suggestTriggerFromUrl(url);
+            } else {
+                Toast.warning('Digite uma URL primeiro para gerar sugestões de gatilho.');
+            }
+        });
+
+        // Sugerir gatilho quando URL é digitada
+        urlContextInput.addEventListener('blur', function() {
+            const url = this.value.trim();
+            if (url && !triggerInput.value.replace('//', '').trim()) {
+                suggestTriggerFromUrl(url);
+            }
+        });
+
+        function suggestTriggerFromUrl(url) {
+            try {
+                // Remover protocolo e www
+                let domain = url.replace(/^https?:\/\//, '').replace(/^www\./, '');
+                
+                // Pegar apenas o domínio principal
+                domain = domain.split('/')[0].split('?')[0];
+                
+                // Mapear domínios conhecidos para gatilhos sugeridos
+                const domainMap = {
+                    'gmail.com': 'email',
+                    'outlook.com': 'outlook',
+                    'linkedin.com': 'linkedin',
+                    'web.whatsapp.com': 'whatsapp',
+                    'whatsapp.com': 'whatsapp',
+                    'facebook.com': 'facebook',
+                    'twitter.com': 'twitter',
+                    'instagram.com': 'instagram',
+                    'slack.com': 'slack',
+                    'discord.com': 'discord',
+                    'teams.microsoft.com': 'teams',
+                    'zoom.us': 'zoom',
+                    'github.com': 'github',
+                    'stackoverflow.com': 'stack',
+                    'reddit.com': 'reddit'
+                };
+
+                let suggestedTrigger = domainMap[domain];
+                
+                if (!suggestedTrigger) {
+                    // Se não estiver no mapa, usar primeira parte do domínio
+                    suggestedTrigger = domain.split('.')[0];
+                }
+
+                // Limpar e formatar o gatilho
+                suggestedTrigger = suggestedTrigger.toLowerCase()
+                    .replace(/[^a-z0-9]/g, '')
+                    .substring(0, 15); // Limitar tamanho
+
+                if (suggestedTrigger) {
+                    const currentTrigger = triggerInput.value.replace('//', '').trim();
+                    if (!currentTrigger) {
+                        triggerInput.value = '//' + suggestedTrigger;
+                        Toast.success(`Gatilho sugerido: //${suggestedTrigger}`, 'Sugestão');
+                    } else {
+                        // Perguntar se quer substituir
+                        if (confirm(`Substituir gatilho atual por "//${suggestedTrigger}"?`)) {
+                            triggerInput.value = '//' + suggestedTrigger;
+                            Toast.success(`Gatilho atualizado para: //${suggestedTrigger}`, 'Atualizado');
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao sugerir gatilho:', error);
+                Toast.error('Erro ao processar URL para sugestão de gatilho.');
+            }
+        }
+    });
 </script>
+
+<style>
+    /* Estilos para botões de sugestão de URL */
+    .url-suggestion-btn {
+        @apply px-3 py-2 text-xs font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200 cursor-pointer;
+    }
+    
+    .url-suggestion-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .url-suggestion-btn.active {
+        @apply bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300;
+    }
+    
+    .url-suggestion-btn.active:hover {
+        @apply bg-blue-100 dark:bg-blue-900/30;
+    }
+
+    /* Animação para o botão de sugerir gatilho */
+    #suggestTriggerBtn:hover svg {
+        transform: rotate(15deg) scale(1.1);
+        transition: transform 0.2s ease;
+    }
+</style>
 {% endblock %}

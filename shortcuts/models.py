@@ -86,6 +86,14 @@ class Shortcut(models.Model):
         help_text="Variáveis dinâmicas no formato JSON"
     )
 
+    # URL context for better trigger suggestions
+    url_context = models.URLField(
+        blank=True,
+        null=True,
+        verbose_name="URL de Contexto",
+        help_text="URL do site/serviço onde este atalho é mais útil (ex: gmail.com, linkedin.com)"
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

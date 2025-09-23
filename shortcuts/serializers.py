@@ -72,7 +72,7 @@ class ShortcutSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'trigger', 'title', 'content', 'expanded_content',
             'expansion_type', 'category', 'category_name', 'is_active',
-            'use_count', 'last_used', 'ai_prompt', 'variables',
+            'use_count', 'last_used', 'ai_prompt', 'variables', 'url_context',
             'usage_stats', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'use_count', 'last_used', 'created_at', 'updated_at']
@@ -121,6 +121,25 @@ class ShortcutSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Categoria não encontrada")
         return value
 
+    def validate_url_context(self, value):
+        """Valida o formato da URL de contexto"""
+        if not value:
+            return value
+        
+        # Remove protocolo se presente para validação mais flexível
+        if value.startswith(('http://', 'https://')):
+            # URL completa está OK
+            return value
+        elif '.' in value and not value.startswith(('/', '\\')):
+            # Adiciona https:// se parece ser um domínio
+            return f"https://{value}"
+        else:
+            raise serializers.ValidationError(
+                "URL deve ser um domínio válido (ex: gmail.com) ou URL completa"
+            )
+        
+        return value
+
 
 class ShortcutCreateSerializer(ShortcutSerializer):
     """Serializer específico para criação de atalhos"""
@@ -128,7 +147,7 @@ class ShortcutCreateSerializer(ShortcutSerializer):
     class Meta(ShortcutSerializer.Meta):
         fields = [
             'trigger', 'title', 'content', 'expansion_type',
-            'category', 'ai_prompt', 'variables'
+            'category', 'ai_prompt', 'variables', 'url_context'
         ]
 
     def validate(self, attrs):
@@ -154,7 +173,7 @@ class ShortcutUpdateSerializer(ShortcutSerializer):
     class Meta(ShortcutSerializer.Meta):
         fields = [
             'title', 'content', 'expansion_type', 'category',
-            'is_active', 'ai_prompt', 'variables'
+            'is_active', 'ai_prompt', 'variables', 'url_context'
         ]
 
 

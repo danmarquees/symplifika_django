@@ -71,32 +71,32 @@ def dashboard(request):
 def dashboard_stats(request):
     """API endpoint for dashboard statistics"""
     user = request.user
-    
+
     # Get or create user profile
     profile, created = UserProfile.objects.get_or_create(user=user)
-    
+
     # Get shortcuts statistics
     shortcuts = Shortcut.objects.filter(user=user)
     total_shortcuts = shortcuts.count()
     active_shortcuts = shortcuts.filter(is_active=True).count()
-    
+
     # Get categories count
     categories_count = Category.objects.filter(
         shortcuts__user=user
     ).distinct().count()
-    
+
     # Calculate monthly usage (last 30 days)
     from datetime import timedelta
     thirty_days_ago = timezone.now() - timedelta(days=30)
     monthly_usage = shortcuts.filter(
         last_used__gte=thirty_days_ago
     ).count()
-    
+
     # Calculate time saved (estimate: 30 seconds per shortcut use)
     total_uses = sum(shortcut.use_count for shortcut in shortcuts)
     time_saved_minutes = total_uses * 0.5  # 30 seconds = 0.5 minutes
     time_saved_hours = round(time_saved_minutes / 60, 1)
-    
+
     return Response({
         'total_shortcuts': total_shortcuts,
         'active_shortcuts': active_shortcuts,
@@ -223,7 +223,7 @@ def feedback(request):
     """Feedback view"""
     if request.method == 'POST':
         # Process feedback form data
-        messages.success(request, 'Thank you for your feedback!')
+        messages.success(request, 'Obrigado pelo seu feedback!')
         return redirect('core:feedback')
     return render(request, 'feedback.html')
 
@@ -765,16 +765,16 @@ def profile_view(request, user_id=None):
     # Get real statistics
     try:
         from shortcuts.models import Shortcut, Category
-        
+
         shortcuts_count = Shortcut.objects.filter(user=profile_user).count()
         categories_count = Category.objects.filter(user=profile_user).count()
         favorites_count = 0  # Placeholder - implementar sistema de favoritos
-        
+
         # Get recent shortcuts
         recent_shortcuts = Shortcut.objects.filter(
             user=profile_user
         ).order_by('-created_at')[:5]
-        
+
     except ImportError:
         # Fallback if shortcuts app not available
         shortcuts_count = 0
@@ -895,7 +895,7 @@ def shortcuts_list_view(request):
 
 @login_required
 def shortcuts_favorites_view(request):
-    """List user's favorite shortcuts"""
+    #"""List users favorite shortcuts"""
     # Get favorites (assuming there's a favorites relationship or field)
     favorites = Shortcut.objects.filter(
         user=request.user,
@@ -1188,9 +1188,9 @@ def api_profile(request):
     try:
         from users.models import UserProfile
         from django.contrib.auth.models import User
-        
+
         profile, created = UserProfile.objects.get_or_create(user=request.user)
-        
+
         if request.method == 'GET':
             return Response({
                 'success': True,
@@ -1218,21 +1218,21 @@ def api_profile(request):
                     }
                 }
             })
-        
+
         elif request.method in ['PUT', 'PATCH']:
             data = request.data
             updated_fields = []
-            
+
             # Update user fields
             user_fields = ['first_name', 'last_name', 'email']
             for field in user_fields:
                 if field in data:
                     setattr(request.user, field, data[field])
                     updated_fields.append(field)
-            
+
             if updated_fields:
                 request.user.save()
-            
+
             # Update profile fields
             profile_fields = ['theme', 'email_notifications', 'ai_enabled', 'ai_model_preference']
             profile_updated = []
@@ -1240,16 +1240,16 @@ def api_profile(request):
                 if field in data:
                     setattr(profile, field, data[field])
                     profile_updated.append(field)
-            
+
             if profile_updated:
                 profile.save()
-            
+
             return Response({
                 'success': True,
                 'message': 'Perfil atualizado com sucesso!',
                 'updated_fields': updated_fields + profile_updated
             })
-    
+
     except Exception as e:
         import traceback
         return Response({
@@ -1265,9 +1265,9 @@ def api_account(request):
     """API endpoint for account settings"""
     try:
         from users.models import UserProfile
-        
+
         profile, created = UserProfile.objects.get_or_create(user=request.user)
-        
+
         if request.method == 'GET':
             return Response({
                 'success': True,
@@ -1282,43 +1282,43 @@ def api_account(request):
                     'theme': profile.theme,
                 }
             })
-        
+
         elif request.method in ['PUT', 'PATCH']:
             data = request.data
             updated_fields = []
-            
+
             # Update email if provided
             if 'email' in data:
                 from django.contrib.auth.models import User
                 new_email = data['email']
-                
+
                 # Check if email is already in use
                 if User.objects.filter(email=new_email).exclude(id=request.user.id).exists():
                     return Response({
                         'success': False,
                         'error': 'Este email já está em uso por outro usuário.'
                     }, status=status.HTTP_400_BAD_REQUEST)
-                
+
                 request.user.email = new_email
                 request.user.save()
                 updated_fields.append('email')
-            
+
             # Update profile settings
             profile_fields = ['email_notifications', 'theme']
             for field in profile_fields:
                 if field in data:
                     setattr(profile, field, data[field])
                     updated_fields.append(field)
-            
+
             if any(field in profile_fields for field in updated_fields):
                 profile.save()
-            
+
             return Response({
                 'success': True,
                 'message': 'Configurações da conta atualizadas com sucesso!',
                 'updated_fields': updated_fields
             })
-    
+
     except Exception as e:
         import traceback
         return Response({
@@ -1337,43 +1337,43 @@ def api_change_password(request):
         current_password = data.get('current_password')
         new_password = data.get('new_password')
         confirm_password = data.get('confirm_password')
-        
+
         if not all([current_password, new_password, confirm_password]):
             return Response({
                 'success': False,
                 'error': 'Todos os campos são obrigatórios.'
             }, status=status.HTTP_400_BAD_REQUEST)
-        
+
         # Check current password
         if not request.user.check_password(current_password):
             return Response({
                 'success': False,
                 'error': 'Senha atual incorreta.'
             }, status=status.HTTP_400_BAD_REQUEST)
-        
+
         # Check if new passwords match
         if new_password != confirm_password:
             return Response({
                 'success': False,
                 'error': 'As novas senhas não coincidem.'
             }, status=status.HTTP_400_BAD_REQUEST)
-        
+
         # Validate password strength
         if len(new_password) < 8:
             return Response({
                 'success': False,
                 'error': 'A nova senha deve ter pelo menos 8 caracteres.'
             }, status=status.HTTP_400_BAD_REQUEST)
-        
+
         # Change password
         request.user.set_password(new_password)
         request.user.save()
-        
+
         return Response({
             'success': True,
             'message': 'Senha alterada com sucesso!'
         })
-    
+
     except Exception as e:
         import traceback
         return Response({
@@ -1389,9 +1389,9 @@ def api_notifications_preferences(request):
     """API endpoint for notification preferences"""
     try:
         from users.models import UserProfile
-        
+
         profile, created = UserProfile.objects.get_or_create(user=request.user)
-        
+
         if request.method == 'GET':
             return Response({
                 'success': True,
@@ -1403,31 +1403,31 @@ def api_notifications_preferences(request):
                     'product_updates': getattr(profile, 'product_updates', True),
                 }
             })
-        
+
         elif request.method in ['PUT', 'PATCH']:
             data = request.data
             updated_fields = []
-            
+
             # Update notification preferences
             notification_fields = [
-                'email_notifications', 'push_notifications', 
+                'email_notifications', 'push_notifications',
                 'marketing_emails', 'security_alerts', 'product_updates'
             ]
-            
+
             for field in notification_fields:
                 if field in data:
                     setattr(profile, field, data[field])
                     updated_fields.append(field)
-            
+
             if updated_fields:
                 profile.save()
-            
+
             return Response({
                 'success': True,
                 'message': 'Preferências de notificação atualizadas com sucesso!',
                 'updated_fields': updated_fields
             })
-    
+
     except Exception as e:
         import traceback
         return Response({
@@ -1443,9 +1443,9 @@ def api_settings_config(request):
     """API endpoint for settings configuration data"""
     try:
         from users.models import UserProfile
-        
+
         profile, created = UserProfile.objects.get_or_create(user=request.user)
-        
+
         # Get environment info
         environment_info = {
             'is_production': not django_settings.DEBUG,
@@ -1455,7 +1455,7 @@ def api_settings_config(request):
                 'configured': bool(getattr(django_settings, 'STRIPE_PUBLISHABLE_KEY', None))
             }
         }
-        
+
         # API endpoints configuration
         api_endpoints = {
             'auth': {
@@ -1479,7 +1479,7 @@ def api_settings_config(request):
                 'notifications': '/api/notifications-preferences/',
             }
         }
-        
+
         return Response({
             'success': True,
             'data': {
@@ -1493,7 +1493,7 @@ def api_settings_config(request):
                 }
             }
         })
-    
+
     except Exception as e:
         import traceback
         return Response({
@@ -1517,9 +1517,9 @@ def api_upload_avatar(request):
                 'success': False,
                 'error': 'Nenhum arquivo de avatar fornecido'
             }, status=status.HTTP_400_BAD_REQUEST)
-        
+
         avatar_file = request.FILES['avatar']
-        
+
         # Validações do arquivo
         max_size = 5 * 1024 * 1024  # 5MB
         if avatar_file.size > max_size:
@@ -1527,7 +1527,7 @@ def api_upload_avatar(request):
                 'success': False,
                 'error': 'Arquivo muito grande. Máximo permitido: 5MB'
             }, status=status.HTTP_400_BAD_REQUEST)
-        
+
         # Validar tipo de arquivo
         allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
         if avatar_file.content_type not in allowed_types:
@@ -1535,19 +1535,19 @@ def api_upload_avatar(request):
                 'success': False,
                 'error': 'Tipo de arquivo não permitido. Use: JPEG, PNG, GIF ou WebP'
             }, status=status.HTTP_400_BAD_REQUEST)
-        
+
         # Get or create profile
         from users.models import UserProfile
         profile, created = UserProfile.objects.get_or_create(user=request.user)
-        
+
         # Remove avatar anterior se existir
         if profile.avatar:
             profile.delete_avatar()
-        
+
         # Salva o novo avatar
         profile.avatar = avatar_file
         profile.save()
-        
+
         return Response({
             'success': True,
             'message': 'Avatar atualizado com sucesso!',
@@ -1557,7 +1557,7 @@ def api_upload_avatar(request):
                 'has_avatar': bool(profile.avatar)
             }
         })
-    
+
     except Exception as e:
         import traceback
         return Response({
@@ -1574,16 +1574,16 @@ def api_delete_avatar(request):
     try:
         from users.models import UserProfile
         profile, created = UserProfile.objects.get_or_create(user=request.user)
-        
+
         if not profile.avatar:
             return Response({
                 'success': False,
                 'error': 'Nenhum avatar para remover'
             }, status=status.HTTP_400_BAD_REQUEST)
-        
+
         # Remove o avatar
         profile.delete_avatar()
-        
+
         return Response({
             'success': True,
             'message': 'Avatar removido com sucesso!',
@@ -1593,7 +1593,7 @@ def api_delete_avatar(request):
                 'initial': profile.get_avatar_or_initial()
             }
         })
-    
+
     except Exception as e:
         import traceback
         return Response({
@@ -1610,7 +1610,7 @@ def api_profile_extended(request):
     try:
         from users.models import UserProfile
         profile, created = UserProfile.objects.get_or_create(user=request.user)
-        
+
         if request.method == 'GET':
             return Response({
                 'success': True,
@@ -1653,11 +1653,11 @@ def api_profile_extended(request):
                     }
                 }
             })
-        
+
         elif request.method in ['PUT', 'PATCH']:
             data = request.data
             updated_fields = []
-            
+
             # Update user fields
             user_fields = ['first_name', 'last_name', 'email']
             for field in user_fields:
@@ -1670,17 +1670,17 @@ def api_profile_extended(request):
                                 'success': False,
                                 'error': 'Este email já está em uso por outro usuário'
                             }, status=status.HTTP_400_BAD_REQUEST)
-                    
+
                     setattr(request.user, field, data[field])
                     updated_fields.append(field)
-            
+
             # Update profile fields
             profile_fields = [
-                'bio', 'location', 'website', 'birth_date', 
-                'public_profile', 'show_email', 'theme', 
+                'bio', 'location', 'website', 'birth_date',
+                'public_profile', 'show_email', 'theme',
                 'email_notifications', 'ai_enabled', 'ai_model_preference'
             ]
-            
+
             for field in profile_fields:
                 if field in data:
                     # Validação especial para bio
@@ -1689,7 +1689,7 @@ def api_profile_extended(request):
                             'success': False,
                             'error': 'Biografia deve ter no máximo 500 caracteres'
                         }, status=status.HTTP_400_BAD_REQUEST)
-                    
+
                     # Validação para birth_date
                     if field == 'birth_date' and data[field]:
                         from datetime import datetime
@@ -1703,16 +1703,16 @@ def api_profile_extended(request):
                             }, status=status.HTTP_400_BAD_REQUEST)
                     else:
                         setattr(profile, field, data[field])
-                    
+
                     updated_fields.append(field)
-            
+
             # Save changes
             if any(field in user_fields for field in updated_fields):
                 request.user.save()
-            
+
             if any(field in profile_fields for field in updated_fields):
                 profile.save()
-            
+
             return Response({
                 'success': True,
                 'message': 'Perfil atualizado com sucesso!',
@@ -1732,7 +1732,7 @@ def api_profile_extended(request):
                     }
                 }
             })
-    
+
     except Exception as e:
         import traceback
         return Response({

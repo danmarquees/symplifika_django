@@ -32,6 +32,11 @@ class SymphilikaContentScript {
 
     // Criar interface de feedback
     this.createFeedbackUI();
+
+    // Inicializar sistema de ícone de acesso rápido
+    if (typeof QuickAccessIcon !== 'undefined') {
+      new QuickAccessIcon(this);
+    }
   }
 
   async loadSettings() {
@@ -614,6 +619,21 @@ class SymphilikaContentScript {
       const range = selection.getRangeAt(0);
       range.deleteContents();
       range.insertNode(document.createTextNode(shortcut.content));
+    }
+  }
+
+  // Método para marcar atalho como usado
+  async markShortcutAsUsed(trigger) {
+    try {
+      const shortcut = this.shortcuts.find(s => s.trigger === trigger);
+      if (shortcut) {
+        await chrome.runtime.sendMessage({
+          action: "useShortcut",
+          shortcutId: shortcut.id
+        });
+      }
+    } catch (error) {
+      console.error("Erro ao marcar atalho como usado:", error);
     }
   }
 }

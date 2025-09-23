@@ -473,3 +473,179 @@
     transition: none;
   }
 }
+
+/* === ÍCONE DE ACESSO RÁPIDO === */
+
+/* Ícone principal */
+.symplifika-icon {
+  position: fixed;
+  z-index: 999999;
+  width: 24px;
+  height: 24px;
+  background: #00c853; /* Cor primária do novo design system */
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+  color: white;
+}
+
+.symplifika-icon:hover {
+  background: #00a746; /* Tom mais escuro para hover */
+  transform: scale(1.15);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.symplifika-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Tooltip de Atalhos Rápidos */
+.symplifika-tooltip {
+  position: fixed;
+  z-index: 1000000;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  border: 1px solid #e5e7eb;
+  display: none;
+  min-width: 280px;
+  max-width: 320px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+  opacity: 0;
+  transform: translateX(10px);
+  pointer-events: none;
+}
+
+.symplifika-tooltip.visible {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.symplifika-tooltip-header {
+  padding: 12px 16px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e5e7eb;
+  border-radius: 8px 8px 0 0;
+  font-weight: 600;
+  color: #374151;
+  font-size: 13px;
+  text-align: center;
+}
+
+.symplifika-tooltip-shortcuts {
+  padding: 8px 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.shortcut-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.shortcut-item:last-child {
+  border-bottom: none;
+}
+
+.shortcut-item:hover {
+  background-color: #f8fafc;
+}
+
+.shortcut-item .trigger {
+  background: #e6f9ee; /* Fundo mais claro para o trigger */
+  color: #00a746;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Menlo', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  margin-right: 12px;
+  min-width: 60px;
+  text-align: center;
+}
+
+.shortcut-item .title {
+  color: #374151;
+  font-weight: 500;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Scrollbar customizada para o tooltip */
+.symplifika-tooltip-shortcuts::-webkit-scrollbar {
+  width: 4px;
+}
+
+.symplifika-tooltip-shortcuts::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.symplifika-tooltip-shortcuts::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+
+.symplifika-tooltip-shortcuts::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Dark mode para ícone de acesso rápido */
+@media (prefers-color-scheme: dark) {
+  .symplifika-tooltip {
+    background: #1f2937;
+    border-color: #374151;
+    color: #f9fafb;
+  }
+
+  .symplifika-tooltip-header {
+    background: #111827;
+    border-bottom-color: #374151;
+    color: #f9fafb;
+  }
+
+  .shortcut-item {
+    border-bottom-color: #374151;
+  }
+
+  .shortcut-item:hover {
+    background-color: #374151;
+  }
+
+  .shortcut-item .title {
+    color: #f9fafb;
+  }
+}
+
+/* Responsividade para mobile */
+@media (max-width: 768px) {
+  .symplifika-tooltip {
+    min-width: 260px;
+    max-width: 90vw;
+  }
+  
+  .symplifika-icon {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .symplifika-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+}

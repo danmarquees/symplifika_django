@@ -657,6 +657,7 @@ class SymphilikaApp {
       "category",
       "expansion_type",
       "ai_prompt",
+      "url_context",
     ];
     fields.forEach((field) => {
       const input = form.querySelector(`[name="${field}"], #${field}`);
