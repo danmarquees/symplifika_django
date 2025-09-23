@@ -149,7 +149,7 @@ class ShortcutCreateSerializer(ShortcutSerializer):
 
     class Meta(ShortcutSerializer.Meta):
         fields = [
-            'trigger', 'title', 'content', 'expansion_type',
+            'id', 'trigger', 'title', 'content', 'expansion_type',
             'category', 'ai_prompt', 'variables', 'url_context'
         ]
 
@@ -175,7 +175,7 @@ class ShortcutUpdateSerializer(ShortcutSerializer):
 
     class Meta(ShortcutSerializer.Meta):
         fields = [
-            'title', 'content', 'expansion_type', 'category',
+            'id', 'trigger', 'title', 'content', 'expansion_type', 'category',
             'is_active', 'ai_prompt', 'variables', 'url_context'
         ]
 

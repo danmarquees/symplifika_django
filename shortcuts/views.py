@@ -111,11 +111,14 @@ class ShortcutViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         """Sobrescreve create para tratar erros de integridade"""
+        logger.info("ShortcutViewSet.create called with data: %s", request.data)
         try:
             serializer = self.get_serializer(data=request.data)
             if serializer.is_valid():
+                logger.info("Serializer is valid, creating shortcut")
                 return super().create(request, *args, **kwargs)
             else:
+                logger.warning("Serializer validation failed: %s", serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except IntegrityError as e:
             logger.error("IntegrityError in shortcut creation: %s", e)
@@ -132,11 +135,14 @@ class ShortcutViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         """Sobrescreve update para tratar erros de integridade"""
+        logger.info("ShortcutViewSet.update called with data: %s", request.data)
         try:
             serializer = self.get_serializer(instance=self.get_object(), data=request.data, partial=kwargs.get('partial', False))
             if serializer.is_valid():
+                logger.info("Serializer is valid, updating shortcut")
                 return super().update(request, *args, **kwargs)
             else:
+                logger.warning("Serializer validation failed: %s", serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except IntegrityError as e:
             logger.error("IntegrityError in shortcut update: %s", e)

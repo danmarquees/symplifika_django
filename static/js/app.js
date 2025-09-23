@@ -276,18 +276,26 @@ class SymphilikaApp {
    * Manipula envio do formulário de atalho
    */
   async handleShortcutSubmit(form) {
+    // Prevent multiple simultaneous submissions
+    if (this.isSubmitting) {
+      return;
+    }
+
     const submitBtn = form.querySelector("#submitShortcutBtn");
     const loadingIcon = form.querySelector("#submitShortcutLoading");
     const submitText = form.querySelector("#submitShortcutText");
 
-    // Prevenir múltiplas submissões simultâneas
-    if (submitBtn.disabled) {
-      return;
-    }
-
     try {
+      // Set submission flag and disable form
+      this.isSubmitting = true;
+
       // Mostrar loading
       this.setLoadingState(submitBtn, loadingIcon, submitText, true);
+
+      // Disable the form to prevent additional clicks
+      if (submitBtn) {
+        submitBtn.disabled = true;
+      }
 
       const formData = new FormData(form);
       const data = this.formDataToObject(formData);
@@ -319,14 +327,29 @@ class SymphilikaApp {
         }
       }
 
-      const shortcutId = data.shortcut_id;
-      const isEdit = shortcutId && shortcutId !== "";
+      // Get shortcut_id more robustly - check both form data and hidden input
+      let shortcutId = data.shortcut_id;
+      if (!shortcutId) {
+        const hiddenInput = form.querySelector('input[name="shortcut_id"]');
+        shortcutId = hiddenInput ? hiddenInput.value : null;
+      }
+
+      const isEdit =
+        shortcutId &&
+        shortcutId !== "" &&
+        shortcutId !== "null" &&
+        shortcutId !== "undefined";
 
       const url = isEdit
         ? `${this.apiBaseUrl}shortcuts/${shortcutId}/`
         : `${this.apiBaseUrl}shortcuts/`;
 
       const method = isEdit ? "PUT" : "POST";
+
+      // Remove shortcut_id from data sent to server (it should only be in URL for edits)
+      if (data.shortcut_id) {
+        delete data.shortcut_id;
+      }
 
       const response = await fetch(url, {
         method: method,
@@ -584,10 +607,34 @@ class SymphilikaApp {
       button.disabled = false;
       loadingIcon?.classList.add("hidden");
       if (textSpan) {
-        const isEdit = button
-          .closest("form")
-          .querySelector('[name="shortcut_id"], [name="category_id"]')?.value;
-        textSpan.textContent = isEdit ? "Atualizar" : "Criar";
+        const form = button.closest("form");
+        const shortcutIdInput = form?.querySelector('[name="shortcut_id"]');
+        const categoryIdInput = form?.querySelector('[name="category_id"]');
+
+        const shortcutId = shortcutIdInput?.value;
+        const categoryId = categoryIdInput?.value;
+
+        const isShortcutEdit =
+          shortcutId &&
+          shortcutId !== "" &&
+          shortcutId !== "null" &&
+          shortcutId !== "undefined";
+        const isCategoryEdit =
+          categoryId &&
+          categoryId !== "" &&
+          categoryId !== "null" &&
+          categoryId !== "undefined";
+
+        if (isShortcutEdit) {
+          textSpan.textContent = "Atualizar Atalho";
+        } else if (isCategoryEdit) {
+          textSpan.textContent = "Atualizar Categoria";
+        } else {
+          textSpan.textContent =
+            form?.id === "createShortcutForm"
+              ? "Criar Atalho"
+              : "Criar Categoria";
+        }
       }
     }
   }
@@ -603,6 +650,13 @@ class SymphilikaApp {
 
     // Reset do formulário
     form.reset();
+
+    // Explicitly clear shortcut_id to ensure create mode
+    const shortcutIdInput = form.querySelector('input[name="shortcut_id"]');
+    if (shortcutIdInput) {
+      shortcutIdInput.value = "";
+      shortcutIdInput.removeAttribute("value");
+    }
 
     if (shortcut) {
       // Modo de edição
@@ -703,7 +757,6 @@ class SymphilikaApp {
 
     // Preencher campos
     const fields = [
-      "shortcut_id",
       "trigger",
       "title",
       "content",
@@ -712,6 +765,17 @@ class SymphilikaApp {
       "ai_prompt",
       "url_context",
     ];
+
+    // Set shortcut_id separately since API returns 'id' but form expects 'shortcut_id'
+    const shortcutIdInput = form.querySelector(
+      `[name="shortcut_id"], #shortcutId`,
+    );
+    if (shortcutIdInput && shortcut.id) {
+      shortcutIdInput.value = shortcut.id;
+      // Also set as attribute for extra reliability
+      shortcutIdInput.setAttribute("value", shortcut.id);
+    }
+
     fields.forEach((field) => {
       const input = form.querySelector(`[name="${field}"], #${field}`);
       if (input && shortcut[field] !== undefined) {
