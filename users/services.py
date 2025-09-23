@@ -440,3 +440,169 @@ class PaymentGatewayService:
             'due_date': (timezone.now() + timedelta(days=3)).date(),
             'message': 'Boleto gerado com sucesso'
         }
+
+
+class ReferralService:
+    """Serviço para gerenciar sistema de indicação"""
+
+    @staticmethod
+    def create_referral_by_code(user, referral_code):
+        """Cria uma indicação usando código de referência"""
+        try:
+            # Buscar usuário pelo código de indicação
+            referrer_profile = UserProfile.objects.filter(referral_code=referral_code).first()
+
+            if not referrer_profile:
+                return {
+                    'success': False,
+                    'error': 'Código de indicação inválido'
+                }
+
+            # Verificar se o usuário não está tentando se indicar
+            if referrer_profile.user == user:
+                return {
+                    'success': False,
+                    'error': 'Você não pode usar seu próprio código de indicação'
+                }
+
+            # Verificar se o usuário já foi indicado
+            if user.profile.referred_by:
+                return {
+                    'success': False,
+                    'error': 'Este usuário já foi indicado por outra pessoa'
+                }
+
+            # Criar a indicação
+            success = referrer_profile.add_referral(user)
+
+            if success:
+                return {
+                    'success': True,
+                    'message': f'Indicação criada com sucesso! Você foi indicado por {referrer_profile.user.first_name or referrer_profile.user.username}'
+                }
+            else:
+                return {
+                    'success': False,
+                    'error': 'Erro ao processar indicação'
+                }
+
+        except Exception as e:
+            logger.error(f"Erro ao criar indicação: {e}")
+            return {
+                'success': False,
+                'error': 'Erro interno do servidor'
+            }
+
+    @staticmethod
+    def get_referral_dashboard_data(user):
+        """Obtém dados do dashboard de indicações"""
+        try:
+            profile = user.profile
+
+            # Garantir que o usuário tem um código de indicação
+            if not profile.referral_code:
+                profile.generate_referral_code()
+
+            # Obter usuários indicados
+            referred_users = User.objects.filter(
+                profile__referred_by=user
+            ).select_related('profile')
+
+            referred_users_data = []
+            for referred_user in referred_users:
+                referred_users_data.append({
+                    'id': referred_user.id,
+                    'name': referred_user.first_name or referred_user.username,
+                    'email': referred_user.email,
+                    'plan': referred_user.profile.plan,
+                    'joined_date': referred_user.date_joined,
+                    'has_upgraded': referred_user.profile.plan != 'free'
+                })
+
+            return {
+                'success': True,
+                'data': {
+                    'referral_code': profile.referral_code,
+                    'stats': profile.get_referral_stats(),
+                    'referred_users': referred_users_data,
+                    'referral_link': f"{settings.SITE_URL}/register?ref={profile.referral_code}" if hasattr(settings, 'SITE_URL') else f"/register?ref={profile.referral_code}"
+                }
+            }
+
+        except Exception as e:
+            logger.error(f"Erro ao obter dados do dashboard de indicações: {e}")
+            return {
+                'success': False,
+                'error': 'Erro ao carregar dados'
+            }
+
+    @staticmethod
+    def calculate_referral_bonus(plan_type):
+        """Calcula o bônus de indicação baseado no tipo de plano"""
+        bonus_mapping = {
+            'premium': 10.00,
+            'enterprise': 25.00,
+            'free': 0.00
+        }
+        return bonus_mapping.get(plan_type, 0.00)
+
+    @staticmethod
+    def process_plan_upgrade_bonus(user, new_plan):
+        """Processa bônus quando um usuário indicado faz upgrade"""
+        try:
+            profile = user.profile
+
+            # Verificar se o usuário foi indicado e está saindo do plano gratuito
+            if not profile.referred_by or profile.plan != 'free':
+                return {'success': False, 'message': 'Usuário não elegível para bônus'}
+
+            # Calcular bônus
+            bonus_amount = ReferralService.calculate_referral_bonus(new_plan)
+
+            if bonus_amount > 0:
+                # Processar bônus para o indicador
+                referrer_profile = profile.referred_by.profile
+                success = referrer_profile.process_referral_upgrade(user, bonus_amount)
+
+                if success:
+                    return {
+                        'success': True,
+                        'message': f'Bônus de R$ {bonus_amount:.2f} processado para o indicador'
+                    }
+
+            return {'success': False, 'message': 'Nenhum bônus aplicável'}
+
+        except Exception as e:
+            logger.error(f"Erro ao processar bônus de upgrade: {e}")
+            return {'success': False, 'error': str(e)}
+
+    @staticmethod
+    def get_referral_leaderboard(limit=10):
+        """Obtém ranking dos usuários com mais indicações"""
+        try:
+            top_referrers = UserProfile.objects.filter(
+                total_referrals__gt=0
+            ).order_by('-total_referrals', '-referral_plan_upgrades').select_related('user')[:limit]
+
+            leaderboard = []
+            for i, profile in enumerate(top_referrers, 1):
+                leaderboard.append({
+                    'rank': i,
+                    'user': profile.user.first_name or profile.user.username,
+                    'total_referrals': profile.total_referrals,
+                    'plan_upgrades': profile.referral_plan_upgrades,
+                    'bonus_earned': float(profile.referral_bonus_earned),
+                    'conversion_rate': (profile.referral_plan_upgrades / profile.total_referrals * 100) if profile.total_referrals > 0 else 0
+                })
+
+            return {
+                'success': True,
+                'data': leaderboard
+            }
+
+        except Exception as e:
+            logger.error(f"Erro ao obter leaderboard: {e}")
+            return {
+                'success': False,
+                'error': 'Erro ao carregar ranking'
+            }

@@ -19,6 +19,7 @@ urlpatterns = [
     path('api/health/', views.health_check, name='health-check'),
     path('api/statistics/', views.statistics_view, name='api-statistics'),
     path('api/dashboard/stats/', views.dashboard_stats, name='api-dashboard-stats'),
+    path('api/plan/status/', views.plan_status, name='api-plan-status'),
     path('api/users/<int:user_id>/activity/', views.user_activity_api, name='user-activity-api'),
     path('api/users/<int:user_id>/categories/', views.user_categories_api, name='user-categories-api'),
     path('api/users/usage-stats/', views.usage_stats_api, name='usage-stats-api'),
@@ -30,7 +31,7 @@ urlpatterns = [
     path('api/change-password/', views.api_change_password, name='api-change-password'),
     path('api/notifications-preferences/', views.api_notifications_preferences, name='api-notifications-preferences'),
     path('api/settings/config/', views.api_settings_config, name='api-settings-config'),
-    
+
     # Extended Profile Management APIs
     path('api/profile/extended/', views.api_profile_extended, name='api-profile-extended'),
     path('api/profile/avatar/upload/', views.api_upload_avatar, name='api-upload-avatar'),

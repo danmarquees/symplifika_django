@@ -87,7 +87,8 @@ class Shortcut(models.Model):
     )
 
     # URL context for better trigger suggestions
-    url_context = models.URLField(
+    url_context = models.CharField(
+        max_length=500,
         blank=True,
         null=True,
         verbose_name="URL de Contexto",

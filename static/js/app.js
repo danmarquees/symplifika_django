@@ -22,6 +22,12 @@ class SymphilikaApp {
     this.loadInitialData();
     this.setupFormHandlers();
     this.loadSettings();
+
+    // Configurar monitoramento do status do plano
+    this.setupPeriodicPlanCheck();
+
+    // Verificar se voltou do checkout
+    this.setupCheckoutReturnListener();
   }
 
   /**
@@ -264,6 +270,11 @@ class SymphilikaApp {
     const submitBtn = form.querySelector("#submitShortcutBtn");
     const loadingIcon = form.querySelector("#submitShortcutLoading");
     const submitText = form.querySelector("#submitShortcutText");
+
+    // Prevenir múltiplas submissões simultâneas
+    if (submitBtn.disabled) {
+      return;
+    }
 
     try {
       // Mostrar loading
@@ -562,16 +573,24 @@ class SymphilikaApp {
     if (shortcut) {
       // Modo de edição
       this.populateShortcutForm(shortcut);
-      document.getElementById("shortcutModalTitle").textContent =
-        "Editar Atalho";
-      document.getElementById("submitShortcutText").textContent =
-        "Atualizar Atalho";
+      const titleElement = document.getElementById("shortcutModalTitle");
+      if (titleElement) {
+        titleElement.textContent = "Editar Atalho";
+      }
+      const submitTextElement = document.getElementById("submitShortcutText");
+      if (submitTextElement) {
+        submitTextElement.textContent = "Atualizar Atalho";
+      }
     } else {
       // Modo de criação
-      document.getElementById("shortcutModalTitle").textContent =
-        "Criar Novo Atalho";
-      document.getElementById("submitShortcutText").textContent =
-        "Criar Atalho";
+      const titleElement = document.getElementById("shortcutModalTitle");
+      if (titleElement) {
+        titleElement.textContent = "Criar Novo Atalho";
+      }
+      const submitTextElement = document.getElementById("submitShortcutText");
+      if (submitTextElement) {
+        submitTextElement.textContent = "Criar Atalho";
+      }
     }
 
     // Abrir modal
@@ -1043,6 +1062,19 @@ class SymphilikaApp {
       totalCategories.textContent = stats.total_categories || 0;
     if (totalUsages) totalUsages.textContent = stats.total_usages || 0;
 
+    // Atualizar status do plano se fornecido
+    if (stats.plan) {
+      this.updatePlanStatus(stats);
+    }
+
+    // Atualizar uso de IA
+    if (
+      stats.ai_requests_used !== undefined &&
+      stats.max_ai_requests !== undefined
+    ) {
+      this.updateAIUsageStats(stats.ai_requests_used, stats.max_ai_requests);
+    }
+
     // --- Gráfico de atividades dos últimos 7 dias ---
     if (window.dashboardWeeklyChartInstance) {
       window.dashboardWeeklyChartInstance.destroy();
@@ -1393,128 +1425,67 @@ class SymphilikaApp {
    * Abre modal de upgrade
    */
   showUpgradeModal() {
-    // Verificar se já existe um modal de upgrade
-    let modal = document.getElementById("upgradeModal");
+    const modal = document.getElementById("upgradeModal");
+    if (modal) {
+      modal.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
 
-    if (!modal) {
-      // Criar modal de upgrade
-      modal = document.createElement("div");
-      modal.id = "upgradeModal";
-      modal.className =
-        "modal fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden";
-
-      modal.innerHTML = `
-           <div class="modal-content bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-             <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-               <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                 Planos Premium
-               </h3>
-               <button
-                 type="button"
-                 onclick="window.app.closeUpgradeModal()"
-                 class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-               >
-                 <svg class="w-6 h-6" fill="none" stroke="currentColor">
-                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                 </svg>
-               </button>
-             </div>
-
-             <div class="p-6">
-               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                 <!-- Plano Premium -->
-                 <div class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-6 border border-blue-200 dark:border-blue-700">
-                   <div class="text-center mb-4">
-                     <h4 class="text-xl font-bold text-gray-900 dark:text-white">Premium</h4>
-                     <p class="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">R$ 19<span class="text-lg">/mês</span></p>
-                   </div>
-                   <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-300">
-                     <li class="flex items-center">
-                       <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
-                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                       </svg>
-                       500 atalhos
-                     </li>
-                     <li class="flex items-center">
-                       <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
-                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                       </svg>
-                       1.000 expansões IA/mês
-                     </li>
-                     <li class="flex items-center">
-                       <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
-                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                       </svg>
-                       Estatísticas avançadas
-                     </li>
-                     <li class="flex items-center">
-                       <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
-                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                       </svg>
-                       Suporte prioritário
-                     </li>
-                   </ul>
-                   <button class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                     Escolher Premium
-                   </button>
-                 </div>
-
-                 <!-- Plano Enterprise -->
-                 <div class="bg-gradient-to-br from-purple-50 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg p-6 border border-purple-200 dark:border-purple-700 relative">
-                   <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                     <span class="bg-purple-600 text-white text-xs px-3 py-1 rounded-full">Mais Popular</span>
-                   </div>
-                   <div class="text-center mb-4">
-                     <h4 class="text-xl font-bold text-gray-900 dark:text-white">Enterprise</h4>
-                     <p class="text-3xl font-bold text-purple-600 dark:text-purple-400 mt-2">R$ 49<span class="text-lg">/mês</span></p>
-                   </div>
-                   <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-300">
-                     <li class="flex items-center">
-                       <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
-                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                       </svg>
-                       Atalhos ilimitados
-                     </li>
-                     <li class="flex items-center">
-                       <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
-                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                       </svg>
-                       10.000 expansões IA/mês
-                     </li>
-                     <li class="flex items-center">
-                       <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
-                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                       </svg>
-                       API personalizada
-                     </li>
-                     <li class="flex items-center">
-                       <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
-                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                       </svg>
-                       Suporte dedicado
-                     </li>
-                   </ul>
-                   <button class="w-full mt-6 bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                     Escolher Enterprise
-                   </button>
-                 </div>
-               </div>
-
-               <div class="text-center mt-8 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                 <p class="text-sm text-gray-600 dark:text-gray-300">
-                   🔒 Pagamento seguro • 💸 7 dias grátis • ❌ Cancele quando quiser
-                 </p>
-               </div>
-             </div>
-           </div>
-         `;
-
-      document.body.appendChild(modal);
+      // Inicializar com plano mensal
+      this.currentBilling = "monthly";
+      this.setBilling("monthly");
     }
+  }
 
-    // Mostrar modal
-    modal.classList.remove("hidden");
-    document.body.style.overflow = "hidden";
+  /**
+   * Define o tipo de cobrança (mensal/anual)
+   */
+  setBilling(billingType) {
+    this.currentBilling = billingType;
+
+    const monthlyBtn = document.getElementById("monthlyBtn");
+    const yearlyBtn = document.getElementById("yearlyBtn");
+    const premiumPrice = document.getElementById("premiumPrice");
+    const enterprisePrice = document.getElementById("enterprisePrice");
+
+    if (billingType === "monthly") {
+      // Ativar botão mensal
+      monthlyBtn.className =
+        "px-4 py-2 rounded-md text-sm font-medium bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm";
+      yearlyBtn.className =
+        "px-4 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white";
+
+      // Atualizar preços mensais
+      premiumPrice.innerHTML = `
+        <p class="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">R$ 29,90<span class="text-lg">/mês</span></p>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Cobrado mensalmente</p>
+      `;
+      enterprisePrice.innerHTML = `
+        <p class="text-3xl font-bold text-purple-600 dark:text-purple-400 mt-2">R$ 99,90<span class="text-lg">/mês</span></p>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Cobrado mensalmente</p>
+      `;
+    } else {
+      // Ativar botão anual
+      yearlyBtn.className =
+        "px-4 py-2 rounded-md text-sm font-medium bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm";
+      monthlyBtn.className =
+        "px-4 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white";
+
+      // Atualizar preços anuais
+      premiumPrice.innerHTML = `
+        <div class="space-y-1">
+          <p class="text-3xl font-bold text-blue-600 dark:text-blue-400">R$ 299,00<span class="text-lg">/ano</span></p>
+          <p class="text-sm text-green-600 font-medium">Economize R$ 60,00</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400">R$ 24,92/mês</p>
+        </div>
+      `;
+      enterprisePrice.innerHTML = `
+        <div class="space-y-1">
+          <p class="text-3xl font-bold text-purple-600 dark:text-purple-400">R$ 999,00<span class="text-lg">/ano</span></p>
+          <p class="text-sm text-green-600 font-medium">Economize R$ 200,00</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400">R$ 83,25/mês</p>
+        </div>
+      `;
+    }
   }
 
   /**
@@ -1525,6 +1496,102 @@ class SymphilikaApp {
     if (modal) {
       modal.classList.add("hidden");
       document.body.style.overflow = "";
+    }
+  }
+
+  /**
+   * Inicia processo de checkout com Stripe
+   */
+  async startCheckout(plan, billingCycle = "monthly") {
+    try {
+      // Mostrar loading
+      this.showLoadingOverlay("Preparando checkout...");
+
+      // Fazer requisição para criar sessão de checkout
+      const response = await fetch("/payments/create-checkout-session/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": this.getCSRFToken(),
+        },
+        body: JSON.stringify({
+          plan: plan,
+          billing_cycle: billingCycle === "yearly" ? "year" : "month",
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.checkout_url) {
+        // Adicionar listener para quando a página voltar do checkout
+        this.setupCheckoutReturnListener();
+
+        // Redirecionar para o Stripe Checkout
+        window.location.href = data.checkout_url;
+      } else {
+        this.hideLoadingOverlay();
+        this.showErrorToast(data.error || "Erro ao iniciar checkout");
+      }
+    } catch (error) {
+      this.hideLoadingOverlay();
+      this.showErrorToast("Erro de conexão. Tente novamente.");
+      console.error("Erro no checkout:", error);
+    }
+  }
+
+  /**
+   * Configura listener para detectar retorno do checkout
+   */
+  setupCheckoutReturnListener() {
+    // Verificar se há parâmetros de sucesso na URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (
+      urlParams.get("checkout") === "success" ||
+      urlParams.get("session_id")
+    ) {
+      // Aguardar um pouco para o webhook processar
+      setTimeout(() => {
+        this.refreshPlanStatus();
+      }, 3000);
+
+      // Limpar parâmetros da URL
+      const newUrl =
+        window.location.protocol +
+        "//" +
+        window.location.host +
+        window.location.pathname;
+      window.history.replaceState({ path: newUrl }, "", newUrl);
+    }
+  }
+
+  /**
+   * Mostra overlay de loading
+   */
+  showLoadingOverlay(message = "Carregando...") {
+    // Remover overlay existente se houver
+    this.hideLoadingOverlay();
+
+    const overlay = document.createElement("div");
+    overlay.id = "loadingOverlay";
+    overlay.className =
+      "fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50";
+    overlay.innerHTML = `
+      <div class="bg-white dark:bg-gray-800 rounded-lg p-6 flex items-center space-x-4">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <span class="text-gray-900 dark:text-white font-medium">${message}</span>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+  }
+
+  /**
+   * Esconde overlay de loading
+   */
+  hideLoadingOverlay() {
+    const overlay = document.getElementById("loadingOverlay");
+    if (overlay) {
+      overlay.remove();
     }
   }
 
@@ -1549,6 +1616,279 @@ class SymphilikaApp {
       } else {
         usageBar.classList.add("bg-symplifika-primary");
       }
+    }
+  }
+
+  /**
+   * Atualiza o status do plano na interface
+   */
+  updatePlanStatus(stats) {
+    const plan = stats.plan;
+    const planDisplay = stats.plan_display || plan;
+
+    // Atualizar badge principal do plano
+    this.updatePlanBadge(plan, planDisplay);
+
+    // Atualizar badge do plano de IA
+    this.updateAIPlanBadge(plan, planDisplay);
+
+    // Atualizar label do plano na seção de uso de IA
+    this.updateAIUsagePlanLabel(plan, planDisplay);
+
+    // Mostrar/ocultar card de upgrade
+    this.toggleUpgradeCard(plan);
+
+    // Atualizar texto de uso de IA
+    if (stats.ai_requests_used !== undefined && stats.max_ai_requests_free) {
+      const aiUsageText = document.getElementById("aiUsageText");
+      if (aiUsageText) {
+        aiUsageText.textContent = `${stats.ai_requests_used}/${stats.max_ai_requests_free}`;
+      }
+    }
+  }
+
+  /**
+   * Atualiza o badge principal do plano
+   */
+  updatePlanBadge(plan, planDisplay) {
+    const badge = document.getElementById("userPlanBadge");
+    if (!badge) return;
+
+    let badgeHTML = "";
+
+    if (plan === "free") {
+      badgeHTML = `
+        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+        </svg>
+        Gratuito
+      `;
+      badge.className =
+        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
+    } else if (plan === "premium") {
+      badgeHTML = `
+        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+        </svg>
+        Premium
+      `;
+      badge.className =
+        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-symplifika-primary/20 text-symplifika-primary";
+    } else {
+      badgeHTML = `
+        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 002 2H4a2 2 0 01-2-2V5zm3 1h6v4H5V6zm6 6H5v2h6v-2z" clip-rule="evenodd"></path>
+        </svg>
+        Enterprise
+      `;
+      badge.className =
+        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300";
+    }
+
+    badge.innerHTML = badgeHTML;
+  }
+
+  /**
+   * Atualiza o badge do plano na seção de IA
+   */
+  updateAIPlanBadge(plan, planDisplay) {
+    const aiBadge = document.getElementById("aiPlanBadge");
+    if (!aiBadge) return;
+
+    let badgeHTML = "";
+
+    if (plan === "free") {
+      badgeHTML = `
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+          <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+          </svg>
+          Gratuito
+        </span>
+      `;
+    } else if (plan === "premium") {
+      badgeHTML = `
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-symplifika-primary/20 text-symplifika-primary">
+          <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+          </svg>
+          Premium
+        </span>
+      `;
+    } else {
+      badgeHTML = `
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300">
+          <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 002 2H4a2 2 0 01-2-2V5zm3 1h6v4H5V6zm6 6H5v2h6v-2z" clip-rule="evenodd"></path>
+          </svg>
+          Enterprise
+        </span>
+      `;
+    }
+
+    aiBadge.innerHTML = badgeHTML;
+  }
+
+  /**
+   * Atualiza o label do plano na seção de uso de IA
+   */
+  updateAIUsagePlanLabel(plan, planDisplay) {
+    const label = document.getElementById("aiUsagePlanLabel");
+    if (!label) return;
+
+    let labelHTML = "";
+
+    if (plan === "free") {
+      labelHTML =
+        '<span class="text-xs text-symplifika-primary font-medium">Free</span>';
+    } else if (plan === "premium") {
+      labelHTML =
+        '<span class="text-xs text-blue-600 font-medium">Premium</span>';
+    } else {
+      labelHTML =
+        '<span class="text-xs text-purple-600 font-medium">Enterprise</span>';
+    }
+
+    label.innerHTML = labelHTML;
+  }
+
+  /**
+   * Mostra/oculta o card de upgrade baseado no plano
+   */
+  toggleUpgradeCard(plan) {
+    const upgradeCardContainer = document.getElementById(
+      "upgradeCardContainer",
+    );
+    if (!upgradeCardContainer) return;
+
+    if (plan === "free") {
+      upgradeCardContainer.classList.remove("hidden");
+    } else {
+      upgradeCardContainer.classList.add("hidden");
+    }
+  }
+
+  /**
+   * Força atualização do status do plano
+   */
+  async refreshPlanStatus() {
+    try {
+      await this.loadDashboardStats();
+      this.showToast("Status do plano atualizado!", "success");
+    } catch (error) {
+      console.error("Erro ao atualizar status do plano:", error);
+      this.showToast("Erro ao atualizar status do plano", "error");
+    }
+  }
+
+  /**
+   * Configura verificação periódica do status do plano
+   */
+  setupPeriodicPlanCheck() {
+    // Verificar a cada 30 segundos se houve mudança no plano
+    this.planCheckInterval = setInterval(() => {
+      this.checkPlanStatusChange();
+    }, 30000);
+
+    // Também verificar quando a janela ganha foco (usuário volta da página de pagamento)
+    window.addEventListener("focus", () => {
+      setTimeout(() => {
+        this.checkPlanStatusChange();
+      }, 2000);
+    });
+  }
+
+  /**
+   * Verifica se houve mudança no status do plano
+   */
+  async checkPlanStatusChange() {
+    try {
+      const response = await fetch("/api/plan/status/", {
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": this.getCSRFToken(),
+        },
+      });
+
+      if (!response.ok) return;
+
+      const stats = await response.json();
+
+      // Verificar se o plano mudou
+      const currentPlanBadge = document.getElementById("userPlanBadge");
+      if (currentPlanBadge && stats.plan) {
+        const currentPlanText = currentPlanBadge.textContent
+          .trim()
+          .toLowerCase();
+        const newPlan = stats.plan.toLowerCase();
+
+        // Mapear os textos para comparação
+        const planTextMap = {
+          free: "gratuito",
+          premium: "premium",
+          enterprise: "enterprise",
+        };
+
+        if (planTextMap[newPlan] && planTextMap[newPlan] !== currentPlanText) {
+          // O plano mudou! Atualizar toda a interface
+          this.updatePlanStatus(stats);
+          this.updateAIUsageStats(
+            stats.ai_requests_used,
+            stats.max_ai_requests,
+          );
+
+          // Mostrar notificação de sucesso aprimorada
+          this.showPlanUpgradeNotification(stats.plan, stats.plan_display);
+
+          // Recarregar dados completos do dashboard
+          await this.loadDashboardStats();
+
+          // Fechar modal de upgrade se estiver aberto
+          this.closeUpgradeModal();
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao verificar mudança do plano:", error);
+    }
+  }
+
+  /**
+   * Mostra notificação aprimorada de upgrade do plano
+   */
+  showPlanUpgradeNotification(plan, planDisplay) {
+    const planEmojis = {
+      premium: "⭐",
+      enterprise: "🚀",
+      free: "💰",
+    };
+
+    const planColors = {
+      premium: "#2563eb",
+      enterprise: "#7c3aed",
+      free: "#059669",
+    };
+
+    const emoji = planEmojis[plan] || "🎉";
+    const message = `${emoji} Parabéns! Seu plano foi atualizado para ${planDisplay}!`;
+
+    // Mostrar toast customizado
+    this.showToast(message, "success", 5000);
+
+    // Se disponível, mostrar também uma notificação do browser
+    if ("Notification" in window && Notification.permission === "granted") {
+      new Notification("Symplifika - Plano Atualizado", {
+        body: `Seu plano foi atualizado para ${planDisplay}. Aproveite os novos recursos!`,
+        icon: "/static/img/logo-small.png",
+      });
+    }
+  }
+
+  /**
+   * Para a verificação periódica (para evitar vazamentos de memória)
+   */
+  stopPeriodicPlanCheck() {
+    if (this.planCheckInterval) {
+      clearInterval(this.planCheckInterval);
     }
   }
 
@@ -2050,10 +2390,10 @@ class SymphilikaApp {
       return window.Toast.show({
         type: type,
         message: message,
-        duration: duration
+        duration: duration,
       });
     }
-    
+
     // Fallback para console log
     console.log(`[${type.toUpperCase()}] ${message}`);
   }

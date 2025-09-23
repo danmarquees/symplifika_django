@@ -199,4 +199,4 @@ class Command(BaseCommand):
             for price in prices:
                 self.stdout.write(
                     f'  * {price.get_interval_display()}: R$ {price.amount_in_reais:.2f}'
-                ) 
+                )

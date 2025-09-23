@@ -77,4 +77,14 @@ urlpatterns = [
     path('api/profile/cancel-subscription/', views.UserProfileViewSet.as_view({'post': 'cancel_subscription'}), name='profile-cancel-subscription'),
     path('api/profile/process-payment/', views.UserProfileViewSet.as_view({'post': 'process_payment'}), name='profile-process-payment'),
     path('api/profile/reset-monthly-counters/', views.UserProfileViewSet.as_view({'post': 'reset_monthly_counters'}), name='profile-reset-counters'),
+
+    # Sistema de Indicação (API)
+    path('api/referral/create/', views.create_referral, name='api-create-referral'),
+    path('api/referral/dashboard/', views.referral_dashboard, name='api-referral-dashboard'),
+    path('api/referral/generate-code/', views.generate_referral_code, name='api-generate-referral-code'),
+    path('api/referral/leaderboard/', views.referral_leaderboard, name='api-referral-leaderboard'),
+    path('api/auth/register-with-referral/', views.register_with_referral, name='api-register-with-referral'),
+
+    # Sistema de Indicação (HTML Templates)
+    path('referral/', views.referral_template_view, name='referral'),
 ]

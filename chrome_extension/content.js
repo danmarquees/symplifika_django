@@ -11,6 +11,7 @@ class SymphilikaContentScript {
     this.triggerPattern = /\/\/[\w\-]+$/; // Padrão para //palavra-chave
     this.debounceTimer = null;
     this.isAuthenticated = false;
+    this.quickAccessIcon = null;
 
     this.init();
   }
@@ -34,9 +35,10 @@ class SymphilikaContentScript {
     this.createFeedbackUI();
 
     // Inicializar sistema de ícone de acesso rápido
-    if (typeof QuickAccessIcon !== 'undefined') {
-      new QuickAccessIcon(this);
-    }
+    this.initQuickAccessIcon();
+
+    // Auto-inicialização com múltiplas tentativas
+    this.setupAutoInitialization();
   }
 
   async loadSettings() {
@@ -623,28 +625,232 @@ class SymphilikaContentScript {
   }
 
   // Método para marcar atalho como usado
-  async markShortcutAsUsed(trigger) {
+  async markShortcutAsUsed(shortcut) {
     try {
-      const shortcut = this.shortcuts.find(s => s.trigger === trigger);
-      if (shortcut) {
-        await chrome.runtime.sendMessage({
+      if (shortcut && shortcut.id) {
+        chrome.runtime.sendMessage({
           action: "useShortcut",
-          shortcutId: shortcut.id
+          shortcutId: shortcut.id,
         });
       }
     } catch (error) {
       console.error("Erro ao marcar atalho como usado:", error);
     }
   }
+
+  // Inicializar ícone de acesso rápido com retry mechanism
+  initQuickAccessIcon() {
+    const tryInit = (attempt = 1) => {
+      try {
+        if (typeof QuickAccessIcon !== "undefined") {
+          // Destruir instância anterior se existir
+          if (this.quickAccessIcon) {
+            this.quickAccessIcon.destroy();
+          }
+
+          // Criar nova instância
+          this.quickAccessIcon = new QuickAccessIcon(this);
+          console.log("[Symplifika] QuickAccessIcon initialized successfully");
+          return true;
+        } else {
+          console.log(
+            `[Symplifika] QuickAccessIcon not available, attempt ${attempt}/5`,
+          );
+          if (attempt < 5) {
+            setTimeout(() => tryInit(attempt + 1), 500 * attempt); // Backoff: 500ms, 1s, 1.5s, 2s
+            return false;
+          } else {
+            console.error(
+              "[Symplifika] Failed to initialize QuickAccessIcon after 5 attempts",
+            );
+            return false;
+          }
+        }
+      } catch (error) {
+        console.error(
+          `[Symplifika] Error initializing QuickAccessIcon (attempt ${attempt}):`,
+          error,
+        );
+        if (attempt < 5) {
+          setTimeout(() => tryInit(attempt + 1), 500 * attempt);
+          return false;
+        }
+        return false;
+      }
+    };
+
+    tryInit();
+  }
+
+  // Método para recarregar o ícone de acesso rápido
+  refreshQuickAccessIcon() {
+    if (
+      this.quickAccessIcon &&
+      typeof this.quickAccessIcon.refresh === "function"
+    ) {
+      this.quickAccessIcon.refresh();
+    }
+  }
+
+  // Método para habilitar/desabilitar ícone de acesso rápido
+  toggleQuickAccessIcon(enabled) {
+    if (this.quickAccessIcon) {
+      if (enabled && typeof this.quickAccessIcon.enable === "function") {
+        this.quickAccessIcon.enable();
+      } else if (
+        !enabled &&
+        typeof this.quickAccessIcon.disable === "function"
+      ) {
+        this.quickAccessIcon.disable();
+      }
+    }
+  }
+
+  // Método para destruir instância do ícone de acesso rápido
+  destroyQuickAccessIcon() {
+    if (
+      this.quickAccessIcon &&
+      typeof this.quickAccessIcon.destroy === "function"
+    ) {
+      this.quickAccessIcon.destroy();
+      this.quickAccessIcon = null;
+    }
+  }
+
+  setupAutoInitialization() {
+    // Múltiplas tentativas de inicialização para garantir que os ícones apareçam
+    const initTimes = [100, 500, 1000, 2000, 5000];
+
+    initTimes.forEach((delay, index) => {
+      setTimeout(() => {
+        if (this.quickAccessIcon && !this.quickAccessIcon.isDestroyed) {
+          console.log(
+            `[Symplifika] Tentativa ${index + 1} de inicialização automática`,
+          );
+          this.quickAccessIcon.forceInitialScan();
+
+          // Forçar exibição de ícones em campos focados
+          const activeElement = document.activeElement;
+          if (activeElement && this.isTextInput(activeElement)) {
+            const icon = this.quickAccessIcon.activeIcons.get(activeElement);
+            if (icon) {
+              this.quickAccessIcon.showIcon(activeElement, icon);
+            }
+          }
+        }
+      }, delay);
+    });
+
+    // Observar mudanças de foco para mostrar ícones imediatamente
+    document.addEventListener("focusin", (e) => {
+      if (this.isTextInput(e.target) && this.quickAccessIcon) {
+        setTimeout(() => {
+          const icon = this.quickAccessIcon.activeIcons.get(e.target);
+          if (icon) {
+            this.quickAccessIcon.showIcon(e.target, icon);
+          }
+        }, 50);
+      }
+    });
+
+    // Observar mudanças no DOM que possam adicionar novos campos
+    const observer = new MutationObserver((mutations) => {
+      let hasNewTextFields = false;
+
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            if (this.isTextInput(node)) {
+              hasNewTextFields = true;
+            } else if (node.querySelectorAll) {
+              const textFields = node.querySelectorAll(
+                'input[type="text"], input[type="email"], textarea, [contenteditable="true"]',
+              );
+              if (textFields.length > 0) {
+                hasNewTextFields = true;
+              }
+            }
+          }
+        });
+      });
+
+      if (hasNewTextFields && this.quickAccessIcon) {
+        setTimeout(() => {
+          this.quickAccessIcon.forceInitialScan();
+        }, 100);
+      }
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+  }
+
+  isTextInput(element) {
+    if (!element) return false;
+
+    const tagName = element.tagName.toLowerCase();
+    const type = element.type?.toLowerCase();
+
+    return (
+      tagName === "textarea" ||
+      (tagName === "input" &&
+        (!type || ["text", "email", "search", "url", "tel"].includes(type))) ||
+      element.contentEditable === "true" ||
+      element.getAttribute("contenteditable") === "true"
+    );
+  }
+
+  // Debugging functions
+  testIcons() {
+    if (this.quickAccessIcon) {
+      return this.quickAccessIcon.showAllIcons();
+    }
+    return 0;
+  }
+
+  forceShowIconOnFocused() {
+    const focused = document.activeElement;
+    if (focused && this.isTextInput(focused) && this.quickAccessIcon) {
+      this.quickAccessIcon.forceShowIcon(focused);
+      return true;
+    }
+    return false;
+  }
+
+  getIconStats() {
+    if (!this.quickAccessIcon) {
+      return { error: "QuickAccessIcon não inicializado" };
+    }
+
+    return {
+      activeIcons: this.quickAccessIcon.activeIcons.size,
+      isDestroyed: this.quickAccessIcon.isDestroyed,
+      isAuthenticated: this.isAuthenticated,
+      isEnabled: this.isEnabled,
+      tooltipVisible:
+        this.quickAccessIcon.tooltipElement?.classList.contains("visible"),
+    };
+  }
 }
 
-// Inicializar quando o DOM estiver pronto
+// Inicializar quando o DOM estiver pronto com retry para scripts
+const initializeContentScript = () => {
+  try {
+    console.log("[Symplifika] Initializing content script...");
+    window.symphilikaContentScript = new SymphilikaContentScript();
+  } catch (error) {
+    console.error("[Symplifika] Error initializing content script:", error);
+    // Retry após 1 segundo se houver erro
+    setTimeout(initializeContentScript, 1000);
+  }
+};
+
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", () => {
-    new SymphilikaContentScript();
-  });
+  document.addEventListener("DOMContentLoaded", initializeContentScript);
 } else {
-  new SymphilikaContentScript();
+  initializeContentScript();
 }
 
 /**

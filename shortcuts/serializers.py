@@ -1,6 +1,9 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Category, Shortcut, ShortcutUsage, AIEnhancementLog
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -125,7 +128,7 @@ class ShortcutSerializer(serializers.ModelSerializer):
         """Valida o formato da URL de contexto"""
         if not value:
             return value
-        
+
         # Remove protocolo se presente para validação mais flexível
         if value.startswith(('http://', 'https://')):
             # URL completa está OK
@@ -137,7 +140,7 @@ class ShortcutSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "URL deve ser um domínio válido (ex: gmail.com) ou URL completa"
             )
-        
+
         return value
 
 

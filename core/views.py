@@ -97,16 +97,60 @@ def dashboard_stats(request):
     time_saved_minutes = total_uses * 0.5  # 30 seconds = 0.5 minutes
     time_saved_hours = round(time_saved_minutes / 60, 1)
 
+    # Calculate today's usage for the usage counter
+    today = timezone.now().date()
+    usages_today = shortcuts.filter(
+        last_used__date=today
+    ).count()
+
+    # Weekly usage for chart
+    weekly_usage = []
+    for i in range(7):
+        day = today - timedelta(days=i)
+        day_usage = shortcuts.filter(last_used__date=day).count()
+        weekly_usage.append({
+            'day': day.strftime('%a'),
+            'count': day_usage
+        })
+    weekly_usage.reverse()
+
     return Response({
         'total_shortcuts': total_shortcuts,
         'active_shortcuts': active_shortcuts,
+        'total_categories': categories_count,
         'categories_count': categories_count,
         'monthly_usage': monthly_usage,
+        'usages_today': usages_today,
+        'total_usages': total_uses,
         'time_saved': f"{time_saved_hours}h",
         'time_saved_minutes': time_saved_minutes,
         'ai_requests_used': profile.ai_requests_used,
         'ai_requests_remaining': max(0, profile.max_ai_requests - profile.ai_requests_used),
-        'plan': profile.get_plan_display(),
+        'max_ai_requests': profile.max_ai_requests,
+        'max_ai_requests_free': profile.max_ai_requests_free if hasattr(profile, 'max_ai_requests_free') else 50,
+        'plan': profile.plan,
+        'plan_display': profile.get_plan_display(),
+        'max_shortcuts': profile.max_shortcuts,
+        'weekly_usage': weekly_usage,
+        'user_full_name': user.get_full_name() or user.username,
+    })
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def plan_status(request):
+    """API endpoint for quick plan status check"""
+    user = request.user
+    profile, created = UserProfile.objects.get_or_create(user=user)
+
+    return Response({
+        'plan': profile.plan,
+        'plan_display': profile.get_plan_display(),
+        'ai_requests_used': profile.ai_requests_used,
+        'max_ai_requests': profile.max_ai_requests,
+        'max_ai_requests_free': profile.max_ai_requests_free if hasattr(profile, 'max_ai_requests_free') else 50,
+        'max_shortcuts': profile.max_shortcuts,
+        'last_updated': timezone.now().isoformat(),
     })
 
 

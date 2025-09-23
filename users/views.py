@@ -367,9 +367,19 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 @permission_classes([AllowAny])
 def register(request):
     """Registra um novo usuário"""
+    from .services import ReferralService
+
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
+
+        # Processar indicação se código fornecido
+        referral_code = request.data.get('referral_code')
+        if referral_code:
+            referral_result = ReferralService.create_referral_by_code(user, referral_code)
+            if not referral_result['success']:
+                # Log do erro mas não falha o registro
+                logger.warning(f"Falha ao processar indicação para usuário {user.username}: {referral_result.get('error')}")
 
         # Cria token de autenticação
         token, created = Token.objects.get_or_create(user=user)
@@ -380,10 +390,10 @@ def register(request):
         return Response({
             'user': UserSerializer(user).data,
             'token': token.key,
-            'message': 'Usuário criado com sucesso'
+            'message': 'Usuário registrado com sucesso'
         }, status=status.HTTP_201_CREATED)
-
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
@@ -586,13 +596,25 @@ def register_template_view(request):
         return redirect('core:dashboard')
 
     from django.contrib.auth.forms import UserCreationForm
+    from .services import ReferralService
+
+    referral_code = request.GET.get('ref')  # Código de indicação via URL
 
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # Criar perfil do usuário
-            UserProfile.objects.get_or_create(user=user)
+
+            # Processar indicação se código fornecido
+            ref_code = request.POST.get('referral_code') or referral_code
+            if ref_code:
+                referral_result = ReferralService.create_referral_by_code(user, ref_code)
+                if referral_result['success']:
+                    messages.success(request, referral_result['message'])
+                else:
+                    messages.warning(request, f"Aviso: {referral_result['error']}")
+
+            # Criar perfil do usuário (já criado automaticamente pelo signal)
             username = form.cleaned_data.get('username')
             messages.success(request, f'Conta criada para {username}!')
             return redirect('users:login')
@@ -601,7 +623,12 @@ def register_template_view(request):
     else:
         form = UserCreationForm()
 
-    return render(request, 'auth/register.html', {'form': form})
+    context = {
+        'form': form,
+        'referral_code': referral_code
+    }
+
+    return render(request, 'auth/register.html', context)
 
 
 def logout_template_view(request):
@@ -853,3 +880,129 @@ def password_reset_template_view(request):
         form = PasswordResetForm()
 
     return render(request, 'auth/password_reset.html', {'form': form})
+
+
+# ============================================================================
+# Referral System Views
+# ============================================================================
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_referral(request):
+    """Cria uma indicação usando código de referência"""
+    from .services import ReferralService
+
+    referral_code = request.data.get('referral_code')
+    if not referral_code:
+        return Response({
+            'success': False,
+            'error': 'Código de indicação é obrigatório'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    result = ReferralService.create_referral_by_code(request.user, referral_code)
+
+    if result['success']:
+        return Response(result, status=status.HTTP_201_CREATED)
+    else:
+        return Response(result, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def referral_dashboard(request):
+    """Obtém dados do dashboard de indicações"""
+    from .services import ReferralService
+
+    result = ReferralService.get_referral_dashboard_data(request.user)
+
+    if result['success']:
+        return Response(result['data'])
+    else:
+        return Response({
+            'error': result['error']
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def generate_referral_code(request):
+    """Gera ou obtém o código de indicação do usuário"""
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+    if not profile.referral_code:
+        code = profile.generate_referral_code()
+    else:
+        code = profile.referral_code
+
+    return Response({
+        'referral_code': code,
+        'referral_link': f"{request.build_absolute_uri('/register')}?ref={code}"
+    })
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def referral_leaderboard(request):
+    """Obtém ranking dos usuários com mais indicações"""
+    from .services import ReferralService
+
+    result = ReferralService.get_referral_leaderboard()
+
+    if result['success']:
+        return Response(result['data'])
+    else:
+        return Response({
+            'error': result['error']
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register_with_referral(request):
+    """Registra um novo usuário com código de indicação"""
+    from .services import ReferralService
+
+    # Registrar usuário normalmente
+    serializer = UserSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+
+        # Processar indicação se código fornecido
+        referral_code = request.data.get('referral_code')
+        if referral_code:
+            referral_result = ReferralService.create_referral_by_code(user, referral_code)
+            if not referral_result['success']:
+                # Log do erro mas não falha o registro
+                logger.warning(f"Falha ao processar indicação para usuário {user.username}: {referral_result.get('error')}")
+
+        # Cria token de autenticação
+        token, created = Token.objects.get_or_create(user=user)
+
+        # Faz login automático
+        login(request, user)
+
+        return Response({
+            'user': UserSerializer(user).data,
+            'token': token.key,
+            'message': 'Usuário registrado com sucesso'
+        }, status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@login_required
+def referral_template_view(request):
+    """Renderiza o template do sistema de indicações"""
+    from .services import ReferralService
+
+    # Obter dados do dashboard
+    dashboard_data = ReferralService.get_referral_dashboard_data(request.user)
+    leaderboard_data = ReferralService.get_referral_leaderboard(limit=5)
+
+    context = {
+        'dashboard_data': dashboard_data.get('data', {}),
+        'leaderboard': leaderboard_data.get('data', []),
+        'user': request.user
+    }
+
+    return render(request, 'users/referral.html', context)

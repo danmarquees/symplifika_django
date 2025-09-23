@@ -74,9 +74,10 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                     >
                         {{ user.get_full_name|default:user.username }}
                     </p>
-                    <p class="text-xs lg:text-sm mt-1">
+                    <p class="text-xs lg:text-sm mt-1" id="userPlanBadgeContainer">
                         {% if user.profile.plan == 'free' %}
                         <span
+                            id="userPlanBadge"
                             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
                         >
                             <svg
@@ -94,6 +95,7 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                         </span>
                         {% elif user.profile.plan == 'premium' %}
                         <span
+                            id="userPlanBadge"
                             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-symplifika-primary/20 text-symplifika-primary"
                         >
                             <svg
@@ -109,6 +111,7 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                         </span>
                         {% else %}
                         <span
+                            id="userPlanBadge"
                             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300"
                         >
                             <svg
@@ -118,11 +121,8 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                             >
                                 <path
                                     fill-rule="evenodd"
-                                    d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z"
+                                    d="M2 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 002 2H4a2 2 0 01-2-2V5zm3 1h6v4H5V6zm6 6H5v2h6v-2z"
                                     clip-rule="evenodd"
-                                ></path>
-                                <path
-                                    d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"
                                 ></path>
                             </svg>
                             Enterprise
@@ -142,6 +142,7 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                             class="text-xs font-medium text-gray-600 dark:text-gray-300"
                             >Prompts IA</span
                         >
+                        <span id="aiPlanBadge">
                         {% if user.profile.plan == 'free' %}
                         <span
                             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
@@ -185,16 +186,14 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                             >
                                 <path
                                     fill-rule="evenodd"
-                                    d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z"
+                                    d="M2 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 002 2H4a2 2 0 01-2-2V5zm3 1h6v4H5V6zm6 6H5v2h6v-2z"
                                     clip-rule="evenodd"
-                                ></path>
-                                <path
-                                    d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"
                                 ></path>
                             </svg>
                             Enterprise
                         </span>
                         {% endif %}
+                        </span>
                     </div>
                     <svg
                         class="w-4 h-4 text-symplifika-primary"
@@ -230,6 +229,7 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                         {{ user.profile.ai_requests_used|default:0 }}/
                         {{user.profile.max_ai_requests_free|default:50 }}
                     </span>
+                    <span id="aiUsagePlanLabel">
                     {% if user.profile.plan == 'free' %}
                     <span class="text-xs text-symplifika-primary font-medium"
                         >Free</span
@@ -243,6 +243,7 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                         >Enterprise</span
                     >
                     {% endif %}
+                    </span>
                 </div>
             </div>
         </div>
@@ -383,6 +384,7 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
         </nav>
 
         <!-- Upgrade Card (Only for Free Plan) -->
+        <div id="upgradeCardContainer" class="{% if user.profile.plan != 'free' %}hidden{% endif %}">
         {% if user.profile.plan == 'free' %}
         <div class="p-4 border-t border-gray-200 dark:border-gray-700">
             <div
@@ -420,6 +422,7 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
             </div>
         </div>
         {% endif %}
+        </div>
 
         <!-- Sidebar Footer -->
         <div
@@ -2081,6 +2084,134 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
     </div>
 </div>
 
+<!-- Upgrade Modal -->
+<div
+    id="upgradeModal"
+    class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden"
+>
+    <div class="modal-content bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                Escolha seu plano
+            </h3>
+            <button
+                type="button"
+                onclick="window.app.closeUpgradeModal()"
+                class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="p-6">
+            <!-- Billing Toggle -->
+            <div class="flex justify-center mb-8">
+                <div class="bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
+                    <button id="monthlyBtn" onclick="window.app.setBilling('monthly')" class="px-4 py-2 rounded-md text-sm font-medium bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm">
+                        Mensal
+                    </button>
+                    <button id="yearlyBtn" onclick="window.app.setBilling('yearly')" class="px-4 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                        Anual <span class="ml-1 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">-20%</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Plano Premium -->
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-6 border border-blue-200 dark:border-blue-700">
+                    <div class="text-center mb-4">
+                        <h4 class="text-xl font-bold text-gray-900 dark:text-white">Premium</h4>
+                        <div id="premiumPrice">
+                            <p class="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">R$ 29,90<span class="text-lg">/mês</span></p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Cobrado mensalmente</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-300">
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            500 atalhos
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            1.000 expansões IA/mês
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Estatísticas avançadas
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Suporte prioritário
+                        </li>
+                    </ul>
+                    <button id="premiumBtn" onclick="window.app.startCheckout('premium', window.app.currentBilling || 'monthly')" class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                        Escolher Premium
+                    </button>
+                </div>
+
+                <!-- Plano Enterprise -->
+                <div class="bg-gradient-to-br from-purple-50 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg p-6 border border-purple-200 dark:border-purple-700 relative">
+                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                        <span class="bg-purple-600 text-white text-xs px-3 py-1 rounded-full">Mais Popular</span>
+                    </div>
+                    <div class="text-center mb-4">
+                        <h4 class="text-xl font-bold text-gray-900 dark:text-white">Enterprise</h4>
+                        <div id="enterprisePrice">
+                            <p class="text-3xl font-bold text-purple-600 dark:text-purple-400 mt-2">R$ 99,90<span class="text-lg">/mês</span></p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Cobrado mensalmente</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-300">
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Atalhos ilimitados
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            10.000 expansões IA/mês
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            API personalizada
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Suporte dedicado
+                        </li>
+                    </ul>
+                    <button id="enterpriseBtn" onclick="window.app.startCheckout('enterprise', window.app.currentBilling || 'monthly')" class="w-full mt-6 bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                        Escolher Enterprise
+                    </button>
+                </div>
+            </div>
+
+            <div class="text-center mt-8 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <p class="text-sm text-gray-600 dark:text-gray-300">
+                    🔒 Pagamento seguro com Stripe • 💸 7 dias grátis • ❌ Cancele quando quiser
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Create Shortcut Modal -->
 <div
     id="createShortcutModal"
@@ -3328,14 +3459,7 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
         // Configurar eventos de formulários
         const createShortcutForm =
             document.getElementById("createShortcutForm");
-        if (createShortcutForm) {
-            createShortcutForm.addEventListener("submit", (e) => {
-                e.preventDefault();
-                if (window.app) {
-                    window.app.handleShortcutSubmit(createShortcutForm);
-                }
-            });
-        }
+        // Event listener for shortcut form is handled in app.js setupShortcutForm()
 
         const createCategoryForm =
             document.getElementById("createCategoryForm");
@@ -3452,12 +3576,12 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
             btn.addEventListener('click', function() {
                 const url = this.dataset.url;
                 urlContextInput.value = url;
-                
+
                 // Remover classe ativa de outros botões
                 urlSuggestionBtns.forEach(b => b.classList.remove('active'));
                 // Adicionar classe ativa ao botão clicado
                 this.classList.add('active');
-                
+
                 // Sugerir gatilho automaticamente
                 suggestTriggerFromUrl(url);
             });
@@ -3485,10 +3609,10 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
             try {
                 // Remover protocolo e www
                 let domain = url.replace(/^https?:\/\//, '').replace(/^www\./, '');
-                
+
                 // Pegar apenas o domínio principal
                 domain = domain.split('/')[0].split('?')[0];
-                
+
                 // Mapear domínios conhecidos para gatilhos sugeridos
                 const domainMap = {
                     'gmail.com': 'email',
@@ -3509,7 +3633,7 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
                 };
 
                 let suggestedTrigger = domainMap[domain];
-                
+
                 if (!suggestedTrigger) {
                     // Se não estiver no mapa, usar primeira parte do domínio
                     suggestedTrigger = domain.split('.')[0];
@@ -3546,16 +3670,16 @@ automações no dashboard do Symplifika{% endblock %} {% block html_class %}dark
     .url-suggestion-btn {
         @apply px-3 py-2 text-xs font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200 cursor-pointer;
     }
-    
+
     .url-suggestion-btn:hover {
         transform: translateY(-1px);
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
-    
+
     .url-suggestion-btn.active {
         @apply bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300;
     }
-    
+
     .url-suggestion-btn.active:hover {
         @apply bg-blue-100 dark:bg-blue-900/30;
     }

@@ -22,12 +22,15 @@ class UserProfileInline(admin.StackedInline):
         ('Interface', {
             'fields': ('theme', 'email_notifications')
         }),
+        ('Sistema de Indicação', {
+            'fields': ('referred_by', 'referral_code', 'total_referrals', 'referral_plan_upgrades', 'referral_bonus_earned')
+        }),
         ('Estatísticas', {
             'fields': ('total_shortcuts_used', 'time_saved_minutes')
         }),
     )
 
-    readonly_fields = ['total_shortcuts_used', 'time_saved_minutes', 'ai_requests_used']
+    readonly_fields = ['total_shortcuts_used', 'time_saved_minutes', 'ai_requests_used', 'total_referrals', 'referral_plan_upgrades', 'referral_bonus_earned']
 
 
 class UserAdmin(BaseUserAdmin):
@@ -70,12 +73,13 @@ class UserAdmin(BaseUserAdmin):
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = [
         'user', 'plan_display', 'shortcuts_count', 'ai_requests_used',
-        'max_ai_requests', 'total_shortcuts_used', 'created_at'
+        'max_ai_requests', 'total_shortcuts_used', 'referral_stats_display', 'created_at'
     ]
-    list_filter = ['plan', 'ai_enabled', 'theme', 'created_at']
-    search_fields = ['user__username', 'user__email', 'user__first_name', 'user__last_name']
+    list_filter = ['plan', 'ai_enabled', 'theme', 'created_at', 'referred_by']
+    search_fields = ['user__username', 'user__email', 'user__first_name', 'user__last_name', 'referral_code']
     readonly_fields = [
         'total_shortcuts_used', 'time_saved_minutes', 'ai_requests_used',
+        'total_referrals', 'referral_plan_upgrades', 'referral_bonus_earned',
         'created_at', 'updated_at', 'last_login'
     ]
 
@@ -91,6 +95,13 @@ class UserProfileAdmin(admin.ModelAdmin):
         }),
         ('Interface', {
             'fields': ('theme', 'email_notifications')
+        }),
+        ('Sistema de Indicação', {
+            'fields': (
+                'referred_by', 'referral_code', 'total_referrals',
+                'referral_plan_upgrades', 'referral_bonus_earned'
+            ),
+            'classes': ('collapse',)
         }),
         ('Estatísticas', {
             'fields': ('total_shortcuts_used', 'time_saved_minutes'),
@@ -116,6 +127,20 @@ class UserProfileAdmin(admin.ModelAdmin):
             obj.get_plan_display()
         )
 
+    @admin.display(description='Indicações')
+    def referral_stats_display(self, obj):
+        if obj.total_referrals > 0:
+            return format_html(
+                '<span title="Total: {} | Upgrades: {} | Bônus: R$ {:.2f}">'
+                '👥 {} ({}↗)</span>',
+                obj.total_referrals,
+                obj.referral_plan_upgrades,
+                obj.referral_bonus_earned,
+                obj.total_referrals,
+                obj.referral_plan_upgrades
+            )
+        return '—'
+
     @admin.display(description='Atalhos Ativos')
     def shortcuts_count(self, obj):
         count = obj.user.shortcuts.filter(is_active=True).count()
@@ -127,7 +152,7 @@ class UserProfileAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('user')
 
-    actions = ['reset_ai_counters', 'upgrade_to_premium']
+    actions = ['reset_ai_counters', 'upgrade_to_premium', 'generate_referral_codes', 'reset_referral_stats']
 
     @admin.action(description='Resetar contadores mensais de IA')
     def reset_ai_counters(self, request, queryset):
@@ -146,6 +171,26 @@ class UserProfileAdmin(admin.ModelAdmin):
                 profile.save()
                 updated += 1
         self.message_user(request, f'{updated} usuários foram promovidos para Premium.')
+
+    @admin.action(description='Gerar códigos de indicação')
+    def generate_referral_codes(self, request, queryset):
+        generated = 0
+        for profile in queryset:
+            if not profile.referral_code:
+                profile.generate_referral_code()
+                generated += 1
+        self.message_user(request, f'Códigos de indicação gerados para {generated} usuários.')
+
+    @admin.action(description='Resetar estatísticas de indicação')
+    def reset_referral_stats(self, request, queryset):
+        updated = 0
+        for profile in queryset:
+            profile.total_referrals = 0
+            profile.referral_plan_upgrades = 0
+            profile.referral_bonus_earned = 0
+            profile.save(update_fields=['total_referrals', 'referral_plan_upgrades', 'referral_bonus_earned'])
+            updated += 1
+        self.message_user(request, f'Estatísticas de indicação resetadas para {updated} usuários.')
 
 
 @admin.register(PlanPricing)

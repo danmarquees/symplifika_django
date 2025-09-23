@@ -117,10 +117,17 @@ class ShortcutViewSet(viewsets.ModelViewSet):
                 return super().create(request, *args, **kwargs)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except IntegrityError:
+        except IntegrityError as e:
+            logger.error("IntegrityError in shortcut creation: %s", e)
             return Response(
                 {'trigger': ['Já existe um atalho com este gatilho.']},
                 status=status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            logger.error("Unexpected error in shortcut creation: %s", e)
+            return Response(
+                {'error': 'Erro interno do servidor'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
     def update(self, request, *args, **kwargs):
@@ -131,10 +138,17 @@ class ShortcutViewSet(viewsets.ModelViewSet):
                 return super().update(request, *args, **kwargs)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except IntegrityError:
+        except IntegrityError as e:
+            logger.error("IntegrityError in shortcut update: %s", e)
             return Response(
                 {'trigger': ['Já existe um atalho com este gatilho.']},
                 status=status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            logger.error("Unexpected error in shortcut update: %s", e)
+            return Response(
+                {'error': 'Erro interno do servidor'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
     @action(detail=False, methods=['post'])

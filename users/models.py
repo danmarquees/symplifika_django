@@ -39,38 +39,38 @@ class UserProfile(models.Model):
         verbose_name="Avatar",
         help_text="Imagem do perfil (máx. 5MB)"
     )
-    
+
     bio = models.TextField(
         max_length=500,
         blank=True,
         verbose_name="Biografia",
         help_text="Conte um pouco sobre você (máx. 500 caracteres)"
     )
-    
+
     location = models.CharField(
         max_length=100,
         blank=True,
         verbose_name="Localização"
     )
-    
+
     website = models.URLField(
         blank=True,
         verbose_name="Website"
     )
-    
+
     birth_date = models.DateField(
         null=True,
         blank=True,
         verbose_name="Data de Nascimento"
     )
-    
+
     # Configurações de privacidade
     public_profile = models.BooleanField(
         default=True,
         verbose_name="Perfil Público",
         help_text="Permitir que outros usuários vejam seu perfil"
     )
-    
+
     show_email = models.BooleanField(
         default=False,
         verbose_name="Mostrar Email",
@@ -143,6 +143,46 @@ class UserProfile(models.Model):
         verbose_name="Tempo Economizado (minutos)"
     )
 
+    # Sistema de Indicação
+    referred_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='referred_users',
+        verbose_name="Indicado por",
+        help_text="Usuário que fez a indicação"
+    )
+
+    referral_code = models.CharField(
+        max_length=20,
+        unique=True,
+        blank=True,
+        null=True,
+        verbose_name="Código de Indicação",
+        help_text="Código único para indicar outros usuários"
+    )
+
+    total_referrals = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Total de Indicações",
+        help_text="Número total de usuários indicados"
+    )
+
+    referral_plan_upgrades = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Upgrades de Indicados",
+        help_text="Número de indicados que fizeram upgrade de plano"
+    )
+
+    referral_bonus_earned = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        verbose_name="Bônus Ganho por Indicação",
+        help_text="Valor total ganho em bônus por indicações"
+    )
+
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -194,10 +234,20 @@ class UserProfile(models.Model):
         avatar_url = self.get_avatar_url()
         if avatar_url:
             return avatar_url
-        
+
         # Retorna inicial do nome
         name = self.user.get_full_name() or self.user.username
         return name[0].upper() if name else 'U'
+
+    @property
+    def max_ai_requests_free(self):
+        """Retorna o limite de requisições IA para planos gratuitos"""
+        from core.models import AppSettings
+        try:
+            setting = AppSettings.objects.get(key='max_ai_requests_free')
+            return int(setting.value)
+        except (AppSettings.DoesNotExist, ValueError):
+            return 50  # Valor padrão
 
     def delete_avatar(self):
         """Remove o avatar atual"""
@@ -226,30 +276,30 @@ class UserProfile(models.Model):
         try:
             # Abre a imagem
             img = Image.open(self.avatar)
-            
+
             # Converte para RGB se necessário
             if img.mode in ('RGBA', 'LA', 'P'):
                 img = img.convert('RGB')
-            
+
             # Redimensiona mantendo proporção
             max_size = (400, 400)
             img.thumbnail(max_size, Image.Resampling.LANCZOS)
-            
+
             # Salva a imagem processada
             from io import BytesIO
             from django.core.files.base import ContentFile
-            
+
             output = BytesIO()
             img.save(output, format='JPEG', quality=85, optimize=True)
             output.seek(0)
-            
+
             # Substitui o arquivo original
             self.avatar.save(
                 self.avatar.name,
                 ContentFile(output.read()),
                 save=False
             )
-            
+
         except Exception as e:
             # Em caso de erro, mantém o arquivo original
             print(f"Erro ao processar avatar: {e}")
@@ -270,12 +320,106 @@ class UserProfile(models.Model):
         """Retorna localização formatada"""
         return self.location if self.location else "Não informado"
 
+    def generate_referral_code(self):
+        """Gera um código único de indicação"""
+        import string
+        import random
+
+        if self.referral_code:
+            return self.referral_code
+
+        # Gera código baseado no ID do usuário e caracteres aleatórios
+        base_code = f"{self.user.username[:3].upper()}{self.user.id}"
+        random_chars = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
+        self.referral_code = f"{base_code}{random_chars}"
+
+        # Verifica se o código já existe e gera um novo se necessário
+        while UserProfile.objects.filter(referral_code=self.referral_code).exclude(id=self.id).exists():
+            random_chars = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
+            self.referral_code = f"{base_code}{random_chars}"
+
+        self.save()
+        return self.referral_code
+
+    def process_referral_upgrade(self, referred_user, bonus_amount=0):
+        """Processa o upgrade de um usuário indicado"""
+        try:
+            from decimal import Decimal
+
+            # Incrementa o contador de upgrades de indicados
+            self.referral_plan_upgrades += 1
+
+            # Adiciona o bônus se especificado
+            if bonus_amount > 0:
+                # Garantir que o valor é Decimal
+                if isinstance(bonus_amount, (int, float)):
+                    bonus_amount = Decimal(str(bonus_amount))
+                self.referral_bonus_earned = self.referral_bonus_earned + bonus_amount
+
+            self.save()
+
+            # Log da ação
+            from django.utils import timezone
+            print(f"[{timezone.now()}] Usuário {self.user.username} ganhou bônus de R$ {bonus_amount} pela indicação de {referred_user.username}")
+
+            # Criar notificação para o indicador (se existir sistema de notificações)
+            self._create_referral_notification(referred_user, float(bonus_amount))
+
+            return True
+        except Exception as e:
+            print(f"Erro ao processar upgrade de indicação: {e}")
+            return False
+
+    def _create_referral_notification(self, referred_user, bonus_amount):
+        """Cria notificação para o indicador"""
+        try:
+            # Importa aqui para evitar import circular
+            from notifications.models import Notification
+
+            message = f"Parabéns! {referred_user.first_name or referred_user.username} fez upgrade para plano pago"
+            if bonus_amount > 0:
+                message += f" e você ganhou R$ {bonus_amount:.2f} de bônus!"
+
+            Notification.objects.create(
+                user=self.user,
+                title="Indicação realizada com sucesso!",
+                message=message,
+                notification_type='referral_bonus'
+            )
+        except (ImportError, Exception) as e:
+            # Sistema de notificações não existe ou outro erro
+            print(f"Sistema de notificações não disponível: {e}")
+
+    def get_referral_stats(self):
+        """Retorna estatísticas de indicação do usuário"""
+        return {
+            'total_referrals': self.total_referrals,
+            'plan_upgrades': self.referral_plan_upgrades,
+            'bonus_earned': float(self.referral_bonus_earned),
+            'conversion_rate': (self.referral_plan_upgrades / self.total_referrals * 100) if self.total_referrals > 0 else 0,
+            'referral_code': self.referral_code or self.generate_referral_code()
+        }
+
+    def add_referral(self, referred_user):
+        """Adiciona um novo usuário indicado"""
+        if referred_user.profile.referred_by is None:
+            referred_user.profile.referred_by = self.user
+            referred_user.profile.save()
+
+            self.total_referrals += 1
+            self.save()
+
+            return True
+        return False
+
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     """Cria automaticamente um perfil quando um usuário é criado"""
     if created:
-        UserProfile.objects.create(user=instance)
+        profile = UserProfile.objects.create(user=instance)
+        # Gera código de indicação automaticamente
+        profile.generate_referral_code()
 
 
 @receiver(post_save, sender=User)
@@ -586,6 +730,7 @@ class PlanUpgradeRequest(models.Model):
 
         # Atualiza o plano do usuário
         profile = self.user.profile
+        old_plan = profile.plan
         profile.plan = self.requested_plan
 
         # Atualiza limites baseado no plano
@@ -597,6 +742,20 @@ class PlanUpgradeRequest(models.Model):
             profile.max_ai_requests = -1
 
         profile.save()
+
+        # Processar bônus de indicação se o usuário foi indicado
+        if profile.referred_by and old_plan == 'free':
+            referrer_profile = profile.referred_by.profile
+
+            # Definir bônus baseado no plano
+            bonus_amount = 0
+            if self.requested_plan == 'premium':
+                bonus_amount = 10.00  # R$ 10 de bônus
+            elif self.requested_plan == 'enterprise':
+                bonus_amount = 25.00  # R$ 25 de bônus
+
+            # Processar o bônus de indicação
+            referrer_profile.process_referral_upgrade(self.user, bonus_amount)
 
     def reject(self, processed_by=None, notes=""):
         """Rejeita a solicitação de upgrade"""

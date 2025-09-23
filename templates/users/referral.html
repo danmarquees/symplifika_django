@@ -1,0 +1,449 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Sistema de Indicação - Symplifika{% endblock %}
+
+{% block extra_css %}
+<style>
+    .referral-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        color: white;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .stats-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--symplifika-primary);
+    }
+
+    .referral-code-box {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        padding: 1rem;
+        margin: 1rem 0;
+        border: 2px dashed rgba(255, 255, 255, 0.5);
+    }
+
+    .copy-button {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        color: white;
+        border-radius: 5px;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .copy-button:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .leaderboard-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .leaderboard-item:last-child {
+        border-bottom: none;
+    }
+
+    .rank-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        font-weight: bold;
+        color: white;
+        margin-right: 0.75rem;
+    }
+
+    .rank-1 { background: #ffd700; }
+    .rank-2 { background: #c0c0c0; }
+    .rank-3 { background: #cd7f32; }
+    .rank-default { background: #6b7280; }
+
+    .referred-user-card {
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        border-left: 3px solid #10b981;
+    }
+
+    .upgrade-badge {
+        background: #10b981;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: bold;
+    }
+
+    .free-badge {
+        background: #6b7280;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            Sistema de Indicação
+        </h1>
+        <p class="text-gray-600 dark:text-gray-300">
+            Indique amigos e ganhe recompensas incríveis!
+        </p>
+    </div>
+
+    <!-- Cartão Principal de Indicação -->
+    <div class="referral-card">
+        <div class="text-center">
+            <h2 class="text-2xl font-bold mb-4">
+                <i class="fas fa-gift mr-2"></i>
+                Ganhe R$ 10-25 por indicação!
+            </h2>
+            <p class="text-lg mb-6 opacity-90">
+                Para cada amigo que se cadastrar e fizer upgrade para um plano pago,
+                você ganha um bônus em dinheiro!
+            </p>
+
+            <div class="referral-code-box">
+                <p class="text-sm opacity-80 mb-2">Seu código de indicação:</p>
+                <div class="flex items-center justify-center space-x-4">
+                    <span class="text-2xl font-mono font-bold" id="referral-code">
+                        {{ dashboard_data.referral_code|default:"Gerando..." }}
+                    </span>
+                    <button class="copy-button" onclick="copyReferralCode()">
+                        <i class="fas fa-copy mr-1"></i> Copiar
+                    </button>
+                </div>
+            </div>
+
+            <div class="referral-code-box">
+                <p class="text-sm opacity-80 mb-2">Link de indicação:</p>
+                <div class="flex items-center justify-center space-x-4">
+                    <input type="text"
+                           class="bg-transparent border-none text-white placeholder-white opacity-80 text-center flex-1"
+                           id="referral-link"
+                           value="{{ dashboard_data.referral_link|default:'Gerando...' }}"
+                           readonly>
+                    <button class="copy-button" onclick="copyReferralLink()">
+                        <i class="fas fa-copy mr-1"></i> Copiar Link
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Estatísticas -->
+        <div class="lg:col-span-2">
+            <h3 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+                <i class="fas fa-chart-bar mr-2"></i>
+                Suas Estatísticas
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="stats-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Total de Indicações</p>
+                            <p class="text-2xl font-bold text-symplifika-primary">
+                                {{ dashboard_data.stats.total_referrals|default:0 }}
+                            </p>
+                        </div>
+                        <div class="text-symplifika-primary text-3xl">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Upgrades Realizados</p>
+                            <p class="text-2xl font-bold text-green-600">
+                                {{ dashboard_data.stats.plan_upgrades|default:0 }}
+                            </p>
+                        </div>
+                        <div class="text-green-600 text-3xl">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Taxa de Conversão</p>
+                            <p class="text-2xl font-bold text-blue-600">
+                                {{ dashboard_data.stats.conversion_rate|default:0|floatformat:1 }}%
+                            </p>
+                        </div>
+                        <div class="text-blue-600 text-3xl">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Bônus Ganho</p>
+                            <p class="text-2xl font-bold text-purple-600">
+                                R$ {{ dashboard_data.stats.bonus_earned|default:0|floatformat:2 }}
+                            </p>
+                        </div>
+                        <div class="text-purple-600 text-3xl">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de Usuários Indicados -->
+            <div class="mt-8">
+                <h4 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+                    <i class="fas fa-user-friends mr-2"></i>
+                    Seus Indicados ({{ dashboard_data.referred_users|length|default:0 }})
+                </h4>
+
+                {% if dashboard_data.referred_users %}
+                    <div class="space-y-3">
+                        {% for user in dashboard_data.referred_users %}
+                        <div class="referred-user-card">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h5 class="font-semibold text-gray-900">{{ user.name }}</h5>
+                                    <p class="text-sm text-gray-600">
+                                        Cadastrado em {{ user.joined_date|date:"d/m/Y" }}
+                                    </p>
+                                </div>
+                                <div class="text-right">
+                                    {% if user.has_upgraded %}
+                                        <span class="upgrade-badge">{{ user.plan|upper }}</span>
+                                        <p class="text-xs text-green-600 mt-1">
+                                            <i class="fas fa-check-circle mr-1"></i>
+                                            Upgrade realizado
+                                        </p>
+                                    {% else %}
+                                        <span class="free-badge">GRATUITO</span>
+                                        <p class="text-xs text-gray-500 mt-1">
+                                            <i class="fas fa-clock mr-1"></i>
+                                            Aguardando upgrade
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-8 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <div class="text-gray-400 text-4xl mb-4">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-300">
+                            Você ainda não indicou nenhum usuário.
+                        </p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                            Compartilhe seu código e comece a ganhar!
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Ranking e Como Funciona -->
+        <div class="space-y-6">
+            <!-- Ranking -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <h4 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+                    <i class="fas fa-trophy mr-2"></i>
+                    Top Indicadores
+                </h4>
+
+                {% if leaderboard %}
+                    <div class="space-y-2">
+                        {% for user in leaderboard %}
+                        <div class="leaderboard-item">
+                            <div class="flex items-center">
+                                <span class="rank-badge rank-{% if user.rank <= 3 %}{{ user.rank }}{% else %}default{% endif %}">
+                                    {{ user.rank }}
+                                </span>
+                                <div>
+                                    <p class="font-medium text-gray-900 dark:text-white">{{ user.user }}</p>
+                                    <p class="text-xs text-gray-500">{{ user.total_referrals }} indicações</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-green-600">R$ {{ user.bonus_earned|floatformat:2 }}</p>
+                                <p class="text-xs text-gray-500">{{ user.conversion_rate|floatformat:1 }}% conversão</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-gray-500 text-center py-4">Nenhum indicador ainda</p>
+                {% endif %}
+            </div>
+
+            <!-- Como Funciona -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <h4 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+                    <i class="fas fa-question-circle mr-2"></i>
+                    Como Funciona
+                </h4>
+
+                <div class="space-y-4">
+                    <div class="flex items-start space-x-3">
+                        <div class="bg-symplifika-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
+                            1
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-700 dark:text-gray-300">
+                                Compartilhe seu código ou link de indicação
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3">
+                        <div class="bg-symplifika-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
+                            2
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-700 dark:text-gray-300">
+                                Seus amigos se cadastram usando seu código
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3">
+                        <div class="bg-symplifika-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
+                            3
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-700 dark:text-gray-300">
+                                Quando fazem upgrade, você ganha:
+                            </p>
+                            <ul class="text-xs text-gray-600 dark:text-gray-400 mt-1 ml-4">
+                                <li>• R$ 10 por upgrade Premium</li>
+                                <li>• R$ 25 por upgrade Enterprise</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botões de Compartilhamento -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <h4 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+                    <i class="fas fa-share-alt mr-2"></i>
+                    Compartilhar
+                </h4>
+
+                <div class="space-y-2">
+                    <button onclick="shareWhatsApp()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition">
+                        <i class="fab fa-whatsapp mr-2"></i>
+                        WhatsApp
+                    </button>
+
+                    <button onclick="shareTelegram()" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition">
+                        <i class="fab fa-telegram mr-2"></i>
+                        Telegram
+                    </button>
+
+                    <button onclick="shareEmail()" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition">
+                        <i class="fas fa-envelope mr-2"></i>
+                        Email
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast para feedback -->
+<div id="toast" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 z-50">
+    <i class="fas fa-check mr-2"></i>
+    <span id="toast-message">Copiado!</span>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-message');
+    toastMessage.textContent = message;
+
+    toast.classList.remove('translate-x-full');
+    setTimeout(() => {
+        toast.classList.add('translate-x-full');
+    }, 3000);
+}
+
+function copyReferralCode() {
+    const code = document.getElementById('referral-code').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+        showToast('Código copiado!');
+    });
+}
+
+function copyReferralLink() {
+    const link = document.getElementById('referral-link').value;
+    navigator.clipboard.writeText(link).then(() => {
+        showToast('Link copiado!');
+    });
+}
+
+function shareWhatsApp() {
+    const code = document.getElementById('referral-code').textContent;
+    const link = document.getElementById('referral-link').value;
+    const message = `🎉 Venha conhecer o Symplifika! Use meu código de indicação "${code}" e ganhe acesso a incríveis ferramentas de produtividade! ${link}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+}
+
+function shareTelegram() {
+    const code = document.getElementById('referral-code').textContent;
+    const link = document.getElementById('referral-link').value;
+    const message = `🎉 Venha conhecer o Symplifika! Use meu código de indicação "${code}" e ganhe acesso a incríveis ferramentas de produtividade! ${link}`;
+    window.open(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(message)}`, '_blank');
+}
+
+function shareEmail() {
+    const code = document.getElementById('referral-code').textContent;
+    const link = document.getElementById('referral-link').value;
+    const subject = 'Convite para conhecer o Symplifika';
+    const body = `Olá!
+
+Gostaria de te convidar para conhecer o Symplifika, uma plataforma incrível para aumentar sua produtividade!
+
+Use meu código de indicação: ${code}
+Ou acesse diretamente: ${link}
+
+Você vai adorar as ferramentas disponíveis!
+
+Abraços!`;
+
+    window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
+}
+</script>
+{% endblock %}

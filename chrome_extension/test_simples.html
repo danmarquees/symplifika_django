@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Teste Simples - Symplifika Extension</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                padding: 20px;
+                max-width: 600px;
+                margin: 0 auto;
+            }
+
+            .status-box {
+                background: #f0f0f0;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                padding: 15px;
+                margin: 20px 0;
+            }
+
+            .success {
+                background: #d4edda;
+                border-color: #c3e6cb;
+            }
+            .error {
+                background: #f8d7da;
+                border-color: #f5c6cb;
+            }
+
+            input,
+            textarea {
+                width: 100%;
+                padding: 10px;
+                margin: 10px 0;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 16px;
+            }
+
+            button {
+                background: #007bff;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 4px;
+                cursor: pointer;
+                margin: 5px;
+            }
+
+            button:hover {
+                background: #0056b3;
+            }
+
+            .console-output {
+                background: #1e1e1e;
+                color: #ffffff;
+                padding: 15px;
+                border-radius: 4px;
+                font-family: "Courier New", monospace;
+                font-size: 12px;
+                max-height: 300px;
+                overflow-y: auto;
+                white-space: pre-wrap;
+                margin: 20px 0;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>🧪 Teste Simples - Symplifika Extension</h1>
+
+        <div id="loading-status" class="status-box">
+            ⏳ Verificando carregamento da extensão...
+        </div>
+
+        <div class="status-box">
+            <h3>📋 Instruções:</h3>
+            <ol>
+                <li>Abra o Console do navegador (F12 → Console)</li>
+                <li>Aguarde 5 segundos para a extensão carregar</li>
+                <li>Passe o mouse sobre os campos abaixo</li>
+                <li>Procure por um ícone ⚡ que deve aparecer</li>
+            </ol>
+        </div>
+
+        <div class="status-box">
+            <h3>🎯 Campos de Teste:</h3>
+            <input
+                type="text"
+                id="test1"
+                placeholder="Campo 1 - Passe o mouse aqui"
+            />
+            <input type="email" id="test2" placeholder="Campo 2 - E-mail" />
+            <textarea
+                id="test3"
+                placeholder="Campo 3 - Área de texto"
+                rows="3"
+            ></textarea>
+            <div
+                contenteditable="true"
+                style="border: 1px solid #ddd; padding: 10px; background: white"
+            >
+                Campo 4 - Div editável
+            </div>
+        </div>
+
+        <div class="status-box">
+            <h3>🔧 Controles:</h3>
+            <button onclick="checkStatus()">Verificar Status</button>
+            <button onclick="manualTest()">Teste Manual</button>
+            <button onclick="clearOutput()">Limpar Console</button>
+        </div>
+
+        <div class="status-box">
+            <h3>📊 Console Output:</h3>
+            <div id="console-output" class="console-output">
+                Aguardando logs...
+            </div>
+        </div>
+
+        <script>
+            let consoleOutput = document.getElementById("console-output");
+            let statusBox = document.getElementById("loading-status");
+
+            // Interceptar console.log para mostrar na página
+            const originalLog = console.log;
+            const originalError = console.error;
+
+            function addToOutput(message, type = "log") {
+                const timestamp = new Date().toLocaleTimeString();
+                const color =
+                    type === "error"
+                        ? "#ff6b6b"
+                        : type === "warn"
+                          ? "#ffd93d"
+                          : "#ffffff";
+
+                consoleOutput.innerHTML += `<span style="color: ${color};">[${timestamp}] ${message}</span>\n`;
+                consoleOutput.scrollTop = consoleOutput.scrollHeight;
+            }
+
+            console.log = function (...args) {
+                originalLog.apply(console, args);
+                addToOutput(args.join(" "));
+            };
+
+            console.error = function (...args) {
+                originalError.apply(console, args);
+                addToOutput(args.join(" "), "error");
+            };
+
+            // Funções de controle
+            function checkStatus() {
+                console.log("🔍 VERIFICANDO STATUS ATUAL:");
+                console.log(
+                    "- QuickAccessIcon:",
+                    typeof QuickAccessIcon !== "undefined"
+                        ? "✅ Carregado"
+                        : "❌ Não carregado",
+                );
+                console.log(
+                    "- SymphilikaContentScript:",
+                    typeof SymphilikaContentScript !== "undefined"
+                        ? "✅ Carregado"
+                        : "❌ Não carregado",
+                );
+                console.log(
+                    "- Instância global:",
+                    window.symphilikaContentScript
+                        ? "✅ Existe"
+                        : "❌ Não existe",
+                );
+                console.log(
+                    "- Chrome APIs:",
+                    typeof chrome !== "undefined"
+                        ? "✅ Disponível"
+                        : "❌ Não disponível",
+                );
+
+                const fields = document.querySelectorAll(
+                    'input, textarea, [contenteditable="true"]',
+                );
+                console.log("- Campos na página:", fields.length);
+
+                const icons = document.querySelectorAll(
+                    ".symplifika-icon, .symplifika-test-icon",
+                );
+                console.log("- Ícones criados:", icons.length);
+
+                // Debug adicional dos ícones
+                if (icons.length > 0) {
+                    icons.forEach((icon, index) => {
+                        const computed = window.getComputedStyle(icon);
+                        console.log(`  Ícone ${index + 1}:`, {
+                            className: icon.className,
+                            display: computed.display,
+                            visibility: computed.visibility,
+                            opacity: computed.opacity,
+                            position: computed.position,
+                            zIndex: computed.zIndex,
+                        });
+                    });
+                }
+
+                updateStatus();
+            }
+
+            function manualTest() {
+                console.log("🚀 EXECUTANDO TESTE MANUAL:");
+
+                if (
+                    window.symplifikaLoadingTest &&
+                    window.symplifikaLoadingTest.forceTest
+                ) {
+                    window.symplifikaLoadingTest.forceTest();
+                } else if (
+                    window.symphilikaContentScript?.quickAccessIcon
+                        ?.forceTestIcon
+                ) {
+                    window.symphilikaContentScript.quickAccessIcon.forceTestIcon();
+                } else {
+                    console.log("❌ Nenhuma função de teste disponível");
+
+                    // Tentar criar indicador visual básico
+                    const indicator = document.createElement("div");
+                    indicator.style.cssText = `
+                    position: fixed;
+                    top: 50px;
+                    right: 20px;
+                    background: #dc3545;
+                    color: white;
+                    padding: 15px;
+                    border-radius: 8px;
+                    z-index: 999999;
+                    font-family: Arial, sans-serif;
+                `;
+                    indicator.textContent =
+                        "❌ Extensão não carregou corretamente";
+                    document.body.appendChild(indicator);
+
+                    setTimeout(() => {
+                        if (indicator.parentNode) {
+                            indicator.parentNode.removeChild(indicator);
+                        }
+                    }, 3000);
+                }
+            }
+
+            function clearOutput() {
+                consoleOutput.innerHTML = "Console limpo...\n";
+                console.log("🧹 Console limpo");
+            }
+
+            function updateStatus() {
+                const quickAccessLoaded =
+                    typeof QuickAccessIcon !== "undefined";
+                const contentScriptLoaded =
+                    typeof SymphilikaContentScript !== "undefined";
+                const instanceExists = !!window.symphilikaContentScript;
+
+                let status = "";
+                let className = "";
+
+                if (
+                    quickAccessLoaded &&
+                    contentScriptLoaded &&
+                    instanceExists
+                ) {
+                    status = "✅ Extensão carregada com sucesso!";
+                    className = "success";
+                } else if (quickAccessLoaded || contentScriptLoaded) {
+                    status = "⚠️ Extensão parcialmente carregada";
+                    className = "error";
+                } else {
+                    status = "❌ Extensão não carregou";
+                    className = "error";
+                }
+
+                statusBox.textContent = status;
+                statusBox.className = `status-box ${className}`;
+            }
+
+            // Verificações automáticas
+            setTimeout(() => {
+                console.log("🔍 Verificação automática após 2 segundos...");
+                checkStatus();
+            }, 2000);
+
+            setTimeout(() => {
+                console.log("🔍 Verificação final após 5 segundos...");
+                checkStatus();
+            }, 5000);
+
+            // Monitorar mudanças no mouse para detectar tentativas de hover
+            let hoverCount = 0;
+            document
+                .querySelectorAll('input, textarea, [contenteditable="true"]')
+                .forEach((field) => {
+                    field.addEventListener("mouseenter", () => {
+                        hoverCount++;
+                        console.log(
+                            `👆 Hover detectado no campo ${field.tagName} (${field.type || "contenteditable"}) - Tentativa ${hoverCount}`,
+                        );
+
+                        // Verificar se apareceu ícone
+                        setTimeout(() => {
+                            const icons = document.querySelectorAll(
+                                ".symplifika-icon, .symplifika-test-icon",
+                            );
+                            console.log(
+                                `🔍 Verificando ícones: ${icons.length} encontrados`,
+                            );
+
+                            if (icons.length > 0) {
+                                icons.forEach((icon, index) => {
+                                    const computed =
+                                        window.getComputedStyle(icon);
+                                    const rect = icon.getBoundingClientRect();
+                                    console.log(
+                                        `  Ícone ${index + 1}: display=${computed.display}, visible=${computed.visibility}, opacity=${computed.opacity}, rect=${rect.width}x${rect.height}`,
+                                    );
+                                });
+                                console.log(
+                                    "✅ Ícone(s) encontrado(s) no DOM!",
+                                );
+                            } else {
+                                console.log(
+                                    "❌ Nenhum ícone encontrado no DOM",
+                                );
+                            }
+                        }, 100);
+                    });
+                });
+
+            console.log(
+                "📄 Página de teste carregada - aguardando extensão...",
+            );
+        </script>
+    </body>
+</html>
