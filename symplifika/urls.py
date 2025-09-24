@@ -23,6 +23,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from users.views_auth import flexible_login
 
 
 def api_root(request):
@@ -58,7 +59,8 @@ urlpatterns = [
     path('api/notifications/', include(('notifications.api_urls', 'notifications-api'))),
 
     # JWT Auth endpoints
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/', flexible_login, name='token_obtain_pair'),  # Endpoint customizado
+    path('api/token/original/', TokenObtainPairView.as_view(), name='token_obtain_pair_original'),  # Backup
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
 

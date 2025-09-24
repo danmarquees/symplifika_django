@@ -66,14 +66,31 @@ DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "Symplifika <no-reply@
 
 # Render.com deployment configuration
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS = [RENDER_EXTERNAL_HOSTNAME, 'localhost', '127.0.0.1', 'testserver']
-else:
-    ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,testserver', cast=str).split(',')
 
-# Garantir que testserver esteja sempre incluído para testes
-if 'testserver' not in ALLOWED_HOSTS:
-    ALLOWED_HOSTS.append('testserver')
+# Comprehensive ALLOWED_HOSTS configuration
+DEVELOPMENT_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '0.0.0.0',
+    'testserver'
+]
+
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS = [RENDER_EXTERNAL_HOSTNAME] + DEVELOPMENT_HOSTS
+else:
+    try:
+        # Try to get from config, fallback to development hosts
+        config_hosts = config('ALLOWED_HOSTS', default='', cast=str)
+        if config_hosts:
+            ALLOWED_HOSTS = config_hosts.split(',') + DEVELOPMENT_HOSTS
+        else:
+            ALLOWED_HOSTS = DEVELOPMENT_HOSTS
+    except:
+        # If config fails, use development hosts
+        ALLOWED_HOSTS = DEVELOPMENT_HOSTS
+
+# Remove duplicates and ensure all development hosts are included
+ALLOWED_HOSTS = list(set(ALLOWED_HOSTS + DEVELOPMENT_HOSTS))
 
 
 # Application definition
@@ -102,6 +119,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
+    'users.middleware.ChromeExtensionMiddleware',  # Chrome extension support
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -237,7 +255,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        'users.authentication.CsrfExemptSessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -292,8 +310,11 @@ else:
 # Chrome Extension Origins
 CSRF_TRUSTED_ORIGINS.extend([
     'chrome-extension://npbabdmkiegnhkmpndnnbmoeljkaeedl',
-    'chrome-extension://*',  # Allow any chrome extension
+    'chrome-extension://deehgnjaebcffjbpmabnncphlpjglloa',  # Current extension ID
 ])
+
+# Allow all chrome extensions (wildcard doesn't work in CSRF_TRUSTED_ORIGINS)
+# So we handle this in the custom authentication class
 
 CORS_ALLOWED_ORIGINS.extend([
     'chrome-extension://npbabdmkiegnhkmpndnnbmoeljkaeedl',

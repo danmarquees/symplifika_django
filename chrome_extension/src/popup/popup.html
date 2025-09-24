@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Symplifika</title>
+  <style>
+    body {
+      width: 350px;
+      height: 500px;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    
+    #app {
+      width: 100%;
+      height: 100%;
+    }
+    
+    /* Estilos básicos para a extensão */
+    .popup-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .header {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .logo {
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .subtitle {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 12px;
+    }
+    
+    .content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    
+    .login-form {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #374151;
+      font-size: 14px;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+    
+    .error-message {
+      background: #fee2e2;
+      color: #dc2626;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+    
+    .success-message {
+      background: #dcfce7;
+      color: #16a34a;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+    
+    .shortcuts-list {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .shortcut-item {
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .shortcut-item:last-child {
+      border-bottom: none;
+    }
+    
+    .shortcut-trigger {
+      font-family: 'Courier New', monospace;
+      background: #f3f4f6;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #667eea;
+      font-weight: bold;
+    }
+    
+    .shortcut-title {
+      font-weight: 500;
+      color: #374151;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: white;
+    }
+    
+    .spinner {
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 3px solid white;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .footer {
+      padding: 16px 20px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+    
+    .footer-text {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+</body>
+</html>
