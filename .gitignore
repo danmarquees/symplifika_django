@@ -162,3 +162,5 @@ logs/
 # Database backups
 *.sql
 *.dump
+
+chrome-extension/node_modules/
