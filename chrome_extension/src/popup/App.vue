@@ -2,8 +2,13 @@
   <div class="popup-container">
     <!-- Header -->
     <div class="header">
-      <div class="logo">Symplifika</div>
-      <div class="subtitle">Atalhos de Texto Inteligentes</div>
+      <div class="logo-container">
+        <div class="logo-icon">S</div>
+        <div class="logo-text">
+          <div class="logo-title">Symplifika</div>
+          <div class="subtitle">Atalhos de Texto Inteligentes</div>
+        </div>
+      </div>
     </div>
 
     <!-- Content -->
@@ -11,12 +16,12 @@
       <!-- Loading State -->
       <div v-if="loading" class="loading">
         <div class="spinner"></div>
-        <div>Carregando...</div>
+        <div class="loading-text">Carregando...</div>
       </div>
 
       <!-- Login Form -->
       <div v-else-if="!isAuthenticated" class="login-form">
-        <h3 style="margin-top: 0; color: #374151; text-align: center;">Entre na sua conta</h3>
+        <h3>Entre na sua conta</h3>
         
         <!-- Error Message -->
         <div v-if="error" class="error-message">
@@ -63,10 +68,10 @@
           </button>
         </form>
 
-        <div style="text-align: center; margin-top: 16px;">
+        <div class="action-buttons" style="justify-content: center; margin-top: 20px;">
           <button 
             @click="openDashboard"
-            style="background: none; border: none; color: #667eea; font-size: 12px; cursor: pointer;"
+            class="btn-secondary"
           >
             Não tem conta? Criar uma nova
           </button>
@@ -75,51 +80,55 @@
 
       <!-- Shortcuts List -->
       <div v-else class="shortcuts-list">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-          <h3 style="margin: 0; color: #374151;">Seus Atalhos</h3>
-          <button @click="logout" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">
+        <h3>
+          Seus Atalhos
+          <button @click="logout" class="logout-btn">
             Sair
           </button>
-        </div>
+        </h3>
 
         <!-- User Info -->
-        <div v-if="user" style="background: #f9fafb; padding: 12px; border-radius: 8px; margin-bottom: 16px;">
-          <div style="font-weight: 500; color: #374151;">{{ user.first_name || user.username }}</div>
-          <div style="font-size: 12px; color: #6b7280;">{{ user.email }}</div>
-          <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">
-            {{ shortcuts.length }} atalhos • Plano: {{ user.is_premium ? 'Premium' : 'Gratuito' }}
+        <div v-if="user" class="user-info">
+          <div class="user-name">{{ user.first_name || user.username }}</div>
+          <div class="user-email">{{ user.email }}</div>
+          <div class="user-stats">
+            <span>{{ shortcuts.length }} atalhos</span>
+            <span class="plan-badge" :class="user.is_premium ? 'plan-premium' : 'plan-free'">
+              {{ user.is_premium ? 'Premium' : 'Gratuito' }}
+            </span>
           </div>
         </div>
 
         <!-- Shortcuts -->
         <div v-if="shortcuts.length > 0">
           <div v-for="shortcut in shortcuts.slice(0, 8)" :key="shortcut.id" class="shortcut-item">
-            <div>
+            <div class="shortcut-info">
               <div class="shortcut-title">{{ shortcut.title }}</div>
-              <div style="font-size: 12px; color: #6b7280; margin-top: 2px;">
-                {{ shortcut.content.substring(0, 40) }}{{ shortcut.content.length > 40 ? '...' : '' }}
+              <div class="shortcut-preview">
+                {{ shortcut.content.substring(0, 45) }}{{ shortcut.content.length > 45 ? '...' : '' }}
               </div>
             </div>
             <div class="shortcut-trigger">{{ shortcut.trigger }}</div>
           </div>
 
-          <div v-if="shortcuts.length > 8" style="text-align: center; margin-top: 12px;">
-            <button @click="openDashboard" style="background: #667eea; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;">
+          <div v-if="shortcuts.length > 8" class="action-buttons" style="justify-content: center; margin-top: 20px;">
+            <button @click="openDashboard" class="btn-success">
               Ver todos ({{ shortcuts.length }})
             </button>
           </div>
         </div>
 
-        <div v-else style="text-align: center; padding: 20px; color: #6b7280;">
-          <div style="margin-bottom: 12px;">Nenhum atalho encontrado</div>
-          <button @click="openDashboard" style="background: #667eea; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;">
+        <div v-else class="empty-state">
+          <div class="empty-state-icon">📝</div>
+          <div class="empty-state-text">Nenhum atalho encontrado</div>
+          <button @click="openDashboard" class="btn-success">
             Criar primeiro atalho
           </button>
         </div>
 
         <!-- Sync Info -->
-        <div style="text-align: center; margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
-          <button @click="syncShortcuts" :disabled="syncing" style="background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; cursor: pointer;">
+        <div class="action-buttons" style="justify-content: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--symplifika-gray-100);">
+          <button @click="syncShortcuts" :disabled="syncing" class="btn-success">
             <span v-if="syncing">Sincronizando...</span>
             <span v-else>🔄 Sincronizar</span>
           </button>

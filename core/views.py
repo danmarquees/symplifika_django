@@ -732,37 +732,53 @@ def search_suggestions_api(request):
         # Get shortcuts suggestions
         if filter_type in ['all', 'shortcuts']:
             if request.user.is_authenticated:
-                shortcuts = Shortcut.objects.filter(user=request.user)
+                shortcuts = Shortcut.objects.filter(user=request.user, is_active=True)
             else:
-                shortcuts = Shortcut.objects.filter(is_public=True)
+                # Para usuários não autenticados, não mostrar atalhos (são privados)
+                shortcuts = Shortcut.objects.none()
 
             shortcuts = shortcuts.filter(
                 Q(title__icontains=query) |
-                Q(description__icontains=query) |
-                Q(command__icontains=query)
-            )[:limit//2 if filter_type == 'all' else limit]
+                Q(content__icontains=query) |
+                Q(trigger__icontains=query)
+            ).select_related('category')[:limit//2 if filter_type == 'all' else limit]
 
             for shortcut in shortcuts:
+                # Criar preview do conteúdo (primeiros 100 caracteres)
+                content_preview = shortcut.content[:100] + '...' if len(shortcut.content) > 100 else shortcut.content
+                
                 suggestions.append({
                     'text': shortcut.title,
                     'type': 'shortcut',
-                    'description': shortcut.description[:100] if shortcut.description else None,
-                    'url': reverse('shortcuts:detail', args=[shortcut.id]) if hasattr(shortcut, 'get_absolute_url') else None
+                    'description': content_preview,
+                    'trigger': shortcut.trigger,
+                    'category': shortcut.category.name if shortcut.category else None,
+                    'url': f'/shortcuts/{shortcut.id}/' if shortcut.id else None
                 })
 
         # Get categories suggestions
         if filter_type in ['all', 'categories']:
-            categories = Category.objects.filter(
+            if request.user.is_authenticated:
+                categories = Category.objects.filter(user=request.user)
+            else:
+                # Para usuários não autenticados, não mostrar categorias (são privadas)
+                categories = Category.objects.none()
+
+            categories = categories.filter(
                 Q(name__icontains=query) |
                 Q(description__icontains=query)
             )[:limit//2 if filter_type == 'all' else limit]
 
             for category in categories:
+                # Criar preview da descrição
+                desc_preview = category.description[:100] + '...' if len(category.description) > 100 else category.description
+                
                 suggestions.append({
                     'text': category.name,
                     'type': 'category',
-                    'description': category.description[:100] if category.description else None,
-                    'url': reverse('shortcuts:category', args=[category.id]) if hasattr(category, 'get_absolute_url') else None
+                    'description': desc_preview if category.description else f'Categoria: {category.name}',
+                    'color': category.color,
+                    'url': f'/shortcuts/category/{category.id}/' if category.id else None
                 })
 
         # Sort by relevance (exact matches first, then starts with, then contains)
