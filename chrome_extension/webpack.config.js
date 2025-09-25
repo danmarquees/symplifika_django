@@ -46,7 +46,8 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         { from: 'manifest.json', to: 'manifest.json' },
-        { from: 'icons', to: 'icons' }
+        { from: 'icons', to: 'icons' },
+        { from: 'src/content/quick-action-icon.js', to: 'content/quick-action-icon.js' }
       ]
     })
   ],

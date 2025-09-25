@@ -28,7 +28,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"],
+      "js": ["content/toast-notifications.js", "content.js"],
       "run_at": "document_idle",
       "all_frames": true
     }
@@ -41,7 +41,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["*.js", "*.css"],
+      "resources": ["*.js", "*.css", "content/quick-action-icon.js", "content/toast-notifications.js"],
       "matches": ["<all_urls>"]
     }
   ]

@@ -107,7 +107,38 @@ function main() {
             log('⚠️ Pasta icons/ não encontrada', 'yellow');
         }
         
-        // 5. Verificar arquivos essenciais
+        // 5. Copiar arquivos de content scripts
+        log('\n📄 Copiando content scripts...', 'blue');
+        const contentSrc = path.join(__dirname, 'src', 'content');
+        const contentDest = path.join(distPath, 'content');
+        
+        if (fs.existsSync(contentSrc)) {
+            // Criar pasta content se não existir
+            if (!fs.existsSync(contentDest)) {
+                fs.mkdirSync(contentDest, { recursive: true });
+            }
+            
+            // Copiar arquivos específicos de content
+            const contentFiles = [
+                'quick-action-icon.js',
+                'toast-notifications.js'
+            ];
+            
+            contentFiles.forEach(file => {
+                const srcFile = path.join(contentSrc, file);
+                const destFile = path.join(contentDest, file);
+                
+                if (fs.existsSync(srcFile)) {
+                    copyFile(srcFile, destFile);
+                } else {
+                    log(`⚠️ ${file} não encontrado em src/content/`, 'yellow');
+                }
+            });
+        } else {
+            log('⚠️ Pasta src/content/ não encontrada', 'yellow');
+        }
+        
+        // 6. Verificar arquivos essenciais
         log('\n🔍 Verificando arquivos essenciais...', 'blue');
         const essentialFiles = [
             'manifest.json',
@@ -115,6 +146,12 @@ function main() {
             'popup.js',
             'background.js',
             'content.js'
+        ];
+        
+        // Verificar arquivos de content
+        const contentFiles = [
+            'content/quick-action-icon.js',
+            'content/toast-notifications.js'
         ];
         
         let allFilesPresent = true;
@@ -130,7 +167,20 @@ function main() {
             }
         });
         
-        // 6. Verificar ícones
+        // Verificar arquivos de content
+        contentFiles.forEach(file => {
+            const filePath = path.join(distPath, file);
+            if (fs.existsSync(filePath)) {
+                const stats = fs.statSync(filePath);
+                const size = (stats.size / 1024).toFixed(1);
+                log(`✅ ${file} (${size} KB)`, 'green');
+            } else {
+                log(`❌ ${file} - FALTANDO!`, 'red');
+                allFilesPresent = false;
+            }
+        });
+        
+        // 7. Verificar ícones
         const iconSizes = [16, 32, 48, 128];
         iconSizes.forEach(size => {
             const iconPath = path.join(iconsDest, `icon${size}.png`);
@@ -141,7 +191,7 @@ function main() {
             }
         });
         
-        // 7. Resultado final
+        // 8. Resultado final
         log('\n📊 RESULTADO DO BUILD', 'bold');
         log('=' * 30, 'blue');
         

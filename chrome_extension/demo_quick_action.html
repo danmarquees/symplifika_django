@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo - Quick Action Icon - Symplifika</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .demo-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .demo-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .contenteditable-field {
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            padding: 12px 15px;
+            min-height: 120px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .contenteditable-field:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .status-panel {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid #28a745;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .status-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .status-label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .status-value {
+            font-family: 'Courier New', monospace;
+            background: #e9ecef;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .status-success {
+            color: #28a745;
+        }
+
+        .status-error {
+            color: #dc3545;
+        }
+
+        .status-warning {
+            color: #ffc107;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+        }
+
+        .logs-container {
+            background: #1a1a1a;
+            color: #00ff00;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+
+        .log-success { color: #00ff00; }
+        .log-error { color: #ff4444; }
+        .log-warning { color: #ffaa00; }
+        .log-info { color: #00aaff; }
+
+        .instruction-box {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .instruction-box h3 {
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .instruction-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .instruction-list li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .instruction-list li:before {
+            content: "✨";
+            position: absolute;
+            left: 0;
+            font-size: 1.2rem;
+        }
+
+        .shortcuts-demo {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .shortcut-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .shortcut-trigger {
+            font-family: 'Courier New', monospace;
+            background: #e9ecef;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+
+        .shortcut-title {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+
+        .shortcut-content {
+            font-size: 14px;
+            color: #6c757d;
+            max-height: 60px;
+            overflow: hidden;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .demo-section {
+                padding: 20px;
+            }
+
+            .test-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✨ Quick Action Icon Demo</h1>
+            <p>Teste e demonstração do sistema de atalhos da Symplifika</p>
+        </div>
+
+        <!-- Instruções -->
+        <div class="demo-section">
+            <div class="instruction-box">
+                <h3>🚀 Como usar o Quick Action Icon</h3>
+                <ul class="instruction-list">
+                    <li>Clique em qualquer campo de texto abaixo</li>
+                    <li>Observe o ícone ✨ que aparece no canto direito</li>
+                    <li>Clique no ícone ou use <strong>Ctrl + Espaço</strong></li>
+                    <li>Escolha um atalho na lista que aparecer</li>
+                    <li>Use <strong>ESC</strong> para fechar o dropdown</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Status da Extensão -->
+        <div class="demo-section">
+            <h2>📊 Status da Extensão</h2>
+            <div class="status-panel">
+                <div class="status-item">
+                    <span class="status-label">Extensão Ativa:</span>
+                    <span class="status-value" id="extension-status">Verificando...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Autenticado:</span>
+                    <span class="status-value" id="auth-status">Verificando...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Atalhos Carregados:</span>
+                    <span class="status-value" id="shortcuts-count">0</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Última Sincronização:</span>
+                    <span class="status-value" id="last-sync">Nunca</span>
+                </div>
+            </div>
+            <div style="margin-top: 15px;">
+                <button class="btn btn-primary" onclick="checkExtensionStatus()">
+                    <span class="loading-spinner hidden" id="check-spinner"></span>
+                    🔄 Verificar Status
+                </button>
+                <button class="btn btn-success" onclick="syncShortcuts()">📥 Sincronizar Atalhos</button>
+                <button class="btn btn-info" onclick="runTests()">🧪 Executar Testes</button>
+            </div>
+        </div>
+
+        <!-- Campos de Teste -->
+        <div class="demo-section">
+            <h2>📝 Campos de Teste</h2>
+            <p style="margin-bottom: 20px; color: #6c757d;">
+                Teste o Quick Action Icon em diferentes tipos de campo:
+            </p>
+
+            <div class="test-grid">
+                <div class="form-group">
+                    <label for="test-input">Input de Texto</label>
+                    <input type="text" id="test-input" class="form-control" placeholder="Clique aqui e veja o ícone aparecer...">
+                </div>
+
+                <div class="form-group">
+                    <label for="test-email">Input de Email</label>
+                    <input type="email" id="test-email" class="form-control" placeholder="Digite seu email...">
+                </div>
+
+                <div class="form-group">
+                    <label for="test-search">Campo de Busca</label>
+                    <input type="search" id="test-search" class="form-control" placeholder="Buscar algo...">
+                </div>
+
+                <div class="form-group">
+                    <label for="test-textarea">Textarea</label>
+                    <textarea id="test-textarea" class="form-control" placeholder="Digite uma mensagem longa aqui..."></textarea>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="test-contenteditable">Campo Editável (ContentEditable)</label>
+                <div id="test-contenteditable" class="contenteditable-field" contenteditable="true">
+                    Clique aqui para editar este texto. Este campo simula editores ricos como Gmail, Notion, etc.
+                </div>
+            </div>
+        </div>
+
+        <!-- Atalhos Disponíveis -->
+        <div class="demo-section">
+            <h2>🎯 Atalhos Disponíveis</h2>
+            <p style="margin-bottom: 20px; color: #6c757d;">
+                Atalhos atualmente carregados na extensão:
+            </p>
+            <div id="shortcuts-list" class="shortcuts-demo">
+                <div class="shortcut-card">
+                    <div class="shortcut-trigger">Carregando...</div>
+                    <div class="shortcut-title">Verificando atalhos disponíveis...</div>
+                    <div class="shortcut-content">Aguarde enquanto carregamos seus atalhos.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logs de Teste -->
+        <div class="demo-section">
+            <h2>📋 Logs de Teste</h2>
+            <p style="margin-bottom: 15px; color: #6c757d;">
+                Acompanhe em tempo real o funcionamento do sistema:
+            </p>
+            <div class="logs-container" id="logs-container">
+                <div class="log-entry log-info">[INIT] Demo Quick Action carregado - aguardando testes...</div>
+            </div>
+            <div style="margin-top: 15px;">
+                <button class="btn btn-info" onclick="clearLogs()">🗑️ Limpar Logs</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2024 Symplifika - Sistema de Atalhos Inteligente</p>
+            <p>Versão 2.0.0 | Quick Action Icon Enhanced</p>
+        </div>
+    </div>
+
+    <script>
+        // Estado global
+        let demoState = {
+            extensionActive: false,
+            authenticated: false,
+            shortcuts: [],
+            lastSync: null
+        };
+
+        // Função para adicionar logs
+        function addLog(message, type = 'info') {
+            const logsContainer = document.getElementById('logs-container');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            logsContainer.appendChild(logEntry);
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+        }
+
+        // Função para limpar logs
+        function clearLogs() {
+            const logsContainer = document.getElementById('logs-container');
+            logsContainer.innerHTML = '<div class="log-entry log-info">[CLEAR] Logs limpos pelo usuário</div>';
+        }
+
+        // Verificar status da extensão
+        async function checkExtensionStatus() {
+            const spinner = document.getElementById('check-spinner');
+            const statusEl = document.getElementById('extension-status');
+            const authEl = document.getElementById('auth-status');
+            const countEl = document.getElementById('shortcuts-count');
+            const syncEl = document.getElementById('last-sync');
+
+            spinner.classList.remove('hidden');
+            addLog('Verificando status da extensão...', 'info');
+
+            try {
+                if (typeof chrome === 'undefined' || !chrome.runtime) {
+                    throw new Error('Chrome runtime não disponível');
+                }
+
+                const response = await sendMessage({ type: 'PING' });
+
+                if (response && response.success) {
+                    demoState.extensionActive = true;
+                    demoState.authenticated = response.authenticated;
+
+                    statusEl.textContent = '✅ Ativa';
+                    statusEl.className = 'status-value status-success';
+
+                    authEl.textContent = response.authenticated ? '✅ Sim' : '❌ Não';
+                    authEl.className = `status-value ${response.authenticated ? 'status-success' : 'status-error'}`;
+
+                    countEl.textContent = response.shortcuts || '0';
+
+                    addLog(`Extensão ativa - Autenticado: ${response.authenticated}`, 'success');
+
+                    // Carregar atalhos se autenticado
+                    if (response.authenticated) {
+                        await loadShortcuts();
+                    }
+                } else {
+                    throw new Error('Resposta inválida da extensão');
+                }
+            } catch (error) {
+                demoState.extensionActive = false;
+                statusEl.textContent = '❌ Inativa';
+                statusEl.className = 'status-value status-error';
+                authEl.textContent = '❌ Não';
+                authEl.className = 'status-value status-error';
+                addLog(`Erro: ${error.message}`, 'error');
+            } finally {
+                spinner.classList.add('hidden');
+            }
+        }
+
+        // Carregar atalhos
+        async function loadShortcuts() {
+            addLog('Carregando atalhos...', 'info');
+
+            try {
+                const response = await sendMessage({ type: 'GET_SHORTCUTS' });
+
+                if (response && response.success) {
+                    demoState.shortcuts = response.shortcuts || [];
+                    demoState.lastSync = response.lastSync;
+
+                    document.getElementById('shortcuts-count').textContent = demoState.shortcuts.length;
+                    document.getElementById('last-sync').textContent =
+                        demoState.lastSync ? new Date(demoState.lastSync).toLocaleString() : 'Nunca';
+
+                    renderShortcuts();
+                    addLog(`${demoState.shortcuts.length} atalhos carregados`, 'success');
+                } else {
+                    throw new Error('Falha ao carregar atalhos');
+                }
+            } catch (error) {
+                addLog(`Erro ao carregar atalhos: ${error.message}`, 'error');
+            }
+        }
+
+        // Renderizar atalhos na interface
+        function renderShortcuts() {
+            const container = document.getElementById('shortcuts-list');
+
+            if (demoState.shortcuts.length === 0) {
+                container.innerHTML = `
+                    <div class="shortcut-card">
+                        <div class="shortcut-trigger">Nenhum</div>
+                        <div class="shortcut-title">Nenhum atalho encontrado</div>
+                        <div class="shortcut-content">Crie atalhos no painel Symplifika para vê-los aqui.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = demoState.shortcuts.map(shortcut => `
+                <div class="shortcut-card" onclick="testShortcut('${shortcut.id}')">
+                    <div class="shortcut-trigger">${escapeHtml(shortcut.trigger || '')}</div>
+                    <div class="shortcut-title">${escapeHtml(shortcut.title || 'Sem título')}</div>
+                    <div class="shortcut-content">${escapeHtml(truncateText(shortcut.content || '', 100))}</div>
+                    ${shortcut.use_count ? `<small style="color: #6c757d;">Usado ${shortcut.use_count}x</small>` : ''}
+                </div>
+            `).join('');
+        }
+
+        // Sincronizar atalhos
+        async function syncShortcuts() {
+            addLog('Sincronizando atalhos...', 'info');
+
+            try {
+                const response = await sendMessage({ type: 'SYNC_SHORTCUTS' });
+
+                if (response && response.success) {
+                    addLog('Atalhos sincronizados com sucesso', 'success');
+                    await loadShortcuts();
+                } else {
+                    throw new Error('Falha na sincronização');
+                }
+            } catch (error) {
+                addLog(`Erro na sincronização: ${error.message}`, 'error');
+            }
+        }
+
+        // Testar atalho específico
+        async function testShortcut(shortcutId) {
+            const testField = document.getElementById('test-input');
+            testField.focus();
+
+            addLog(`Testando atalho ID: ${shortcutId}`, 'info');
+
+            try {
+                if (typeof window.insertShortcut === 'function') {
+                    await window.insertShortcut(shortcutId);
+                    addLog('Atalho inserido com sucesso', 'success');
+                } else {
+                    addLog('Função insertShortcut não encontrada', 'error');
+                }
+            } catch (error) {
+                addLog(`Erro ao inserir atalho: ${error.message}`, 'error');
+            }
+        }
+
+        // Executar testes automatizados
+        async function runTests() {
+            addLog('='.repeat(50), 'info');
+            addLog('INICIANDO TESTES AUTOMATIZADOS', 'info');
+            addLog('='.repeat(50), 'info');
+
+            // Verificar se testQuickAction está disponível
+            if (typeof window.testQuickAction === 'function') {
+                try {
+                    await window.testQuickAction();
+                    addLog('Testes automatizados concluídos', 'success');
+                } catch (error) {
+                    addLog(`Erro nos testes: ${error.message}`, 'error');
+                }
+            } else {
+                addLog('Função testQuickAction não encontrada - executando testes básicos', 'warning');
+                await runBasicTests();
+            }
+        }
+
+        // Testes básicos se o script completo não estiver disponível
+        async function runBasicTests() {
+            const tests = [
+                { name: 'Verificar Chrome Runtime', test: testChromeRuntime },
+                { name: 'Testar Comunicação', test: testCommunication },
+                { name: 'Verificar Quick Action System', test: testQuickActionSystem },
+                { name: 'Testar Detecção de Campos', test: testFieldDetection }
+            ];
+
+            for (const { name, test } of tests) {
+                addLog(`Executando: ${name}...`, 'info');
+                try {
+                    await test();
+                    addLog(`✅ ${name} - PASSOU`, 'success');
+                } catch (error) {
+                    addLog(`❌ ${name} - FALHOU: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        // Testes individuais
+        async function testChromeRuntime() {
+            if (typeof chrome === 'undefined' || !chrome.runtime) {
+                throw new Error('Chrome runtime não disponível');
+            }
+        }
+
+        async function testCommunication() {
+            const response = await sendMessage({ type: 'PING' });
+            if (!response || !response.success) {
+                throw new Error('Comunicação com background script falhou');
+            }
+        }
+
+        async function testQuickActionSystem() {
+            // Verificar se elementos do quick action existem
+            const testField = document.getElementById('test-input');
+            testField.focus();
+
+            await sleep(500);
+
+            const icon = document.querySelector('.symplifika-icon');
+            if (!icon) {
+                throw new Error('Quick Action Icon não foi criado');
+            }
+        }
+
+        async function testFieldDetection() {
+            const fields = ['test-input', 'test-email', 'test-search', 'test-textarea'];
+
+            for (const fieldId of fields) {
+                const field = document.getElementById(fieldId);
+                field.focus();
+                await sleep(200);
+
+                const icon = document.querySelector('.symplifika-icon.visible');
+                if (!icon) {
+                    throw new Error(`Campo ${fieldId} não foi detectado`);
+                }
+                field.blur();
+            }
+        }
+
+        // Utilitários
+        async function sendMessage(message, timeout = 5000) {
+            return new Promise((resolve, reject) => {
+                if (!chrome.runtime) {
+                    reject(new Error('Chrome runtime não disponível'));
+                    return;
+                }
+
+                const timeoutId = setTimeout(() => {
+                    reject(new Error('Timeout na mensagem'));
+                }, timeout);
+
+                chrome.runtime.sendMessage(message, (response) => {
+                    clearTimeout(timeoutId);
+
+                    if (chrome.runtime.lastError) {
+                        reject(new Error(chrome.runtime.lastError.message));
+                        return;
+                    }
+
+                    resolve(response);
+                });
+            });
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function truncateText(text, maxLength) {
+            if (!text || text.length <= maxLength) return text;
+            return text.substring(0, maxLength) + '...';
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            addLog('Demo página carregada', 'success');
+            addLog('Aguarde o carregamento da extensão...', 'info');
+
+            // Verificar status automaticamente após um tempo
+            setTimeout(checkExtensionStatus, 2000);
+
+            // Adicionar listeners para demonstrar funcionalidade
+            const fields = document.querySelectorAll('input, textarea, [contenteditable]');
+            fields.forEach(field => {
+                field.addEventListener('focus', () => {
+                    addLog(`Campo focado: ${field.tagName.toLowerCase()}${field.id ? '#' + field.id : ''}`, 'info');
+                });
+
+                field.addEventListener('input', () => {
+                    if (field.value && field.value.length > 0) {
+                        addLog(`Texto inserido no campo: "${field.value.substring(0, 50)}..."`, 'info');
+                    }
+                });
+            });
+        });
+
+        // Listener global para eventos da extensão
+        if (typeof chrome !== 'undefined' && chrome.runtime) {
+            chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+                if (message.type === 'SHORTCUT_INSERTED') {
+                    addLog(`Atalho inserido: ${message.shortcut}`, 'success');
+                } else if (message.type === 'QUICK_ACTION_EVENT') {
+                    addLog(`Evento Quick Action: ${message.event}`, 'info');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
