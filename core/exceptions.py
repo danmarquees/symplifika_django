@@ -1,5 +1,7 @@
 from rest_framework.views import exception_handler
 from rest_framework import status
+from rest_framework.response import Response
+from rest_framework_simplejwt.exceptions import InvalidToken
 import logging
 
 logger = logging.getLogger("django")
@@ -41,7 +43,18 @@ def custom_exception_handler(exc, context):
 
         # Detalhes extras (se houver)
         if hasattr(exc, 'get_full_details'):
-            response.data['details'] = exc.get_full_details()
+            try:
+                response.data['details'] = exc.get_full_details()
+            except (AttributeError, TypeError) as e:
+                # Fallback para JWT e outras exceções com estrutura complexa
+                logger.warning(f"Erro ao obter detalhes da exceção: {e}")
+                if isinstance(exc, InvalidToken):
+                    response.data['details'] = {
+                        'token_error': 'Token inválido ou expirado',
+                        'action_required': 'refresh_token'
+                    }
+                else:
+                    response.data['details'] = {'error': 'Detalhes não disponíveis'}
 
     else:
         # Erro não tratado pelo DRF, retorna padrão

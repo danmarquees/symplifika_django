@@ -8,6 +8,7 @@ let extensionState = {
   isAuthenticated: false,
   user: null,
   token: null,
+  refreshToken: null,
   shortcuts: [],
   lastSync: null,
 };
@@ -17,6 +18,7 @@ async function restoreState() {
   try {
     const result = await chrome.storage.local.get([
       "token",
+      "refreshToken",
       "user",
       "shortcuts",
       "lastSync",
@@ -25,6 +27,10 @@ async function restoreState() {
     if (result.token) {
       extensionState.token = result.token;
       extensionState.isAuthenticated = true;
+    }
+
+    if (result.refreshToken) {
+      extensionState.refreshToken = result.refreshToken;
     }
 
     if (result.user) {
@@ -57,12 +63,123 @@ async function saveState() {
   try {
     await chrome.storage.local.set({
       token: extensionState.token,
+      refreshToken: extensionState.refreshToken,
       user: extensionState.user,
       shortcuts: extensionState.shortcuts,
       lastSync: extensionState.lastSync,
     });
   } catch (error) {
     console.error("❌ Erro ao salvar estado:", error);
+  }
+}
+
+// Função para refresh do token JWT
+async function refreshAccessToken() {
+  if (!extensionState.refreshToken) {
+    console.warn("⚠️ Não há refresh token disponível");
+    return { success: false, error: "Sem refresh token" };
+  }
+
+  try {
+    console.log("🔄 Tentando refresh do token...");
+
+    const response = await fetch(`${API_BASE_URL}/api/token/refresh/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Origin: chrome.runtime.getURL(""),
+      },
+      body: JSON.stringify({
+        refresh: extensionState.refreshToken,
+      }),
+    });
+
+    console.log("📡 Status da resposta refresh:", response.status);
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("✅ Token refreshed com sucesso");
+
+      // Atualizar token de acesso
+      extensionState.token = data.access;
+      
+      // Se vier um novo refresh token, atualizar também
+      if (data.refresh) {
+        extensionState.refreshToken = data.refresh;
+      }
+
+      // Salvar no storage
+      await saveState();
+
+      return {
+        success: true,
+        token: extensionState.token,
+        refreshToken: extensionState.refreshToken,
+      };
+    } else {
+      console.error("❌ Erro no refresh do token:", response.status);
+      
+      // Se o refresh token também expirou, fazer logout
+      if (response.status === 401) {
+        console.log("🚪 Refresh token expirado, fazendo logout...");
+        await handleLogout();
+        return { success: false, error: "Refresh token expirado", requiresLogin: true };
+      }
+      
+      return { success: false, error: `Erro HTTP ${response.status}` };
+    }
+  } catch (error) {
+    console.error("❌ Erro de conexão no refresh:", error);
+    return { success: false, error: `Erro de conexão: ${error.message}` };
+  }
+}
+
+// Função para fazer requisições autenticadas com retry automático
+async function authenticatedFetch(url, options = {}) {
+  if (!extensionState.token) {
+    return { success: false, error: "Não autenticado", requiresLogin: true };
+  }
+
+  // Primeira tentativa com token atual
+  const requestOptions = {
+    ...options,
+    headers: {
+      ...options.headers,
+      Authorization: `Bearer ${extensionState.token}`,
+      "Content-Type": "application/json",
+    },
+  };
+
+  try {
+    let response = await fetch(url, requestOptions);
+
+    // Se token expirou, tentar refresh
+    if (response.status === 401) {
+      console.log("🔄 Token expirado, tentando refresh...");
+      
+      const refreshResult = await refreshAccessToken();
+      
+      if (refreshResult.success) {
+        // Retry com novo token
+        requestOptions.headers.Authorization = `Bearer ${extensionState.token}`;
+        response = await fetch(url, requestOptions);
+      } else {
+        return {
+          success: false,
+          error: "Token expirado e refresh falhou",
+          requiresLogin: refreshResult.requiresLogin || false,
+        };
+      }
+    }
+
+    return {
+      success: response.ok,
+      response: response,
+      status: response.status,
+    };
+  } catch (error) {
+    console.error("❌ Erro na requisição autenticada:", error);
+    return { success: false, error: `Erro de conexão: ${error.message}` };
   }
 }
 
@@ -163,12 +280,36 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         case "GET_SHORTCUTS":
           console.log(
-            `📋 Retornando ${extensionState.shortcuts.length} atalhos para popup`,
+            `📋 GET_SHORTCUTS solicitado. Estado atual:`,
+            {
+              authenticated: extensionState.isAuthenticated,
+              shortcuts: extensionState.shortcuts.length,
+              user: extensionState.user?.username,
+              lastSync: extensionState.lastSync ? new Date(extensionState.lastSync).toLocaleString() : 'nunca'
+            }
           );
+          
+          // Se não há atalhos e está autenticado, tentar sincronizar
+          if (extensionState.shortcuts.length === 0 && extensionState.isAuthenticated) {
+            console.log("🔄 Nenhum atalho em cache, tentando sincronizar...");
+            try {
+              const syncResult = await syncShortcuts();
+              if (syncResult.success) {
+                console.log(`✅ Sincronização bem-sucedida: ${extensionState.shortcuts.length} atalhos`);
+              } else {
+                console.warn("⚠️ Falha na sincronização:", syncResult.error);
+              }
+            } catch (syncError) {
+              console.error("❌ Erro na sincronização automática:", syncError);
+            }
+          }
+          
           response = {
             success: true,
             shortcuts: extensionState.shortcuts,
             lastSync: extensionState.lastSync,
+            authenticated: extensionState.isAuthenticated,
+            user: extensionState.user?.username
           };
           break;
 
@@ -178,6 +319,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         case "USE_SHORTCUT":
           response = await markShortcutAsUsed(request.payload.shortcutId);
+          break;
+
+        case "REFRESH_TOKEN":
+          response = await refreshAccessToken();
           break;
 
         case "PING":
@@ -261,6 +406,7 @@ async function handleLogin(credentials) {
     if (response.ok && data.access) {
       // Login bem-sucedido
       extensionState.token = data.access;
+      extensionState.refreshToken = data.refresh; // Armazenar refresh token
       extensionState.user = data.user;
       extensionState.isAuthenticated = true;
 
@@ -308,6 +454,7 @@ async function handleLogout() {
       isAuthenticated: false,
       user: null,
       token: null,
+      refreshToken: null,
       shortcuts: [],
       lastSync: null,
     };
@@ -333,18 +480,14 @@ async function syncShortcuts() {
   try {
     console.log("🔄 Sincronizando atalhos...");
 
-    const response = await fetch(`${API_BASE_URL}/shortcuts/api/shortcuts/`, {
+    const result = await authenticatedFetch(`${API_BASE_URL}/shortcuts/api/shortcuts/`, {
       method: "GET",
-      headers: {
-        Authorization: `Bearer ${extensionState.token}`,
-        "Content-Type": "application/json",
-      },
     });
 
-    if (response.ok) {
-      const data = await response.json();
+    if (result.success && result.response.ok) {
+      const data = await result.response.json();
       extensionState.shortcuts = data.results || data || [];
-      extensionState.lastSync = new Date().toISOString();
+      extensionState.lastSync = Date.now();
 
       // Salvar no storage
       await saveState();
@@ -359,8 +502,13 @@ async function syncShortcuts() {
         lastSync: extensionState.lastSync,
       };
     } else {
-      console.error("❌ Erro na sincronização:", response.status);
-      return { success: false, error: "Erro na API" };
+      console.error("❌ Erro na sincronização:", result.status || "desconhecido");
+      
+      if (result.requiresLogin) {
+        return { success: false, error: "Requer novo login", requiresLogin: true };
+      }
+      
+      return { success: false, error: result.error || "Erro na API" };
     }
   } catch (error) {
     console.error("❌ Erro de conexão na sincronização:", error);
@@ -375,23 +523,24 @@ async function markShortcutAsUsed(shortcutId) {
   }
 
   try {
-    const response = await fetch(
+    const result = await authenticatedFetch(
       `${API_BASE_URL}/shortcuts/api/shortcuts/${shortcutId}/use/`,
       {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${extensionState.token}`,
-          "Content-Type": "application/json",
-        },
       },
     );
 
-    if (response.ok) {
+    if (result.success && result.response.ok) {
       console.log(`✅ Atalho ${shortcutId} marcado como usado`);
       return { success: true };
     } else {
-      console.error("❌ Erro ao marcar atalho como usado:", response.status);
-      return { success: false, error: "Erro na API" };
+      console.error("❌ Erro ao marcar atalho como usado:", result.status || "desconhecido");
+      
+      if (result.requiresLogin) {
+        return { success: false, error: "Requer novo login", requiresLogin: true };
+      }
+      
+      return { success: false, error: result.error || "Erro na API" };
     }
   } catch (error) {
     console.error("❌ Erro de conexão ao marcar uso:", error);
@@ -437,14 +586,10 @@ async function handleTextExpansion(payload) {
 
     // Marcar como usado (opcional - não bloquear se falhar)
     try {
-      await fetch(
+      await authenticatedFetch(
         `${API_BASE_URL}/shortcuts/api/shortcuts/${shortcut.id}/use/`,
         {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${extensionState.token}`,
-            "Content-Type": "application/json",
-          },
         },
       );
     } catch (error) {

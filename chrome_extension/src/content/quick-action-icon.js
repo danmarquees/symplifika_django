@@ -567,18 +567,20 @@ function renderDropdown() {
           activeShortcuts.length > 3
             ? `
         <div class="search-container">
-            <input type="text" class="search-input" placeholder="Buscar atalhos..." value="${escapeHtml(state.searchTerm)}">
+            <input type="text" class="search-input" placeholder="Buscar atalhos..." />
         </div>
         `
             : ""
         }
 
-        <div class="shortcuts-container" id="shortcuts-list">
+        <div class="shortcuts-list" id="shortcuts-list">
             ${state.isLoading ? renderLoadingState() : renderShortcuts()}
         </div>
-
-        <div class="dropdown-footer">
-            <div class="dropdown-footer-text">Ctrl+Espaço para abrir • ESC para fechar</div>
+        
+        <div class="dropdown-footer" style="padding: 8px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
+            <button id="debug-reload-btn" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">
+                🔄 Recarregar Atalhos
+            </button>
         </div>
     `);
 
@@ -600,6 +602,29 @@ function renderDropdown() {
       }
     });
   }
+  
+  // Adicionar listener para botão de debug
+  const debugReloadBtn = state.dropdownElement.querySelector("#debug-reload-btn");
+  if (debugReloadBtn) {
+    debugReloadBtn.addEventListener("click", async () => {
+      console.log("🔄 Botão de debug clicado - forçando reload de atalhos");
+      debugReloadBtn.textContent = "⏳ Carregando...";
+      debugReloadBtn.disabled = true;
+      
+      // Limpar atalhos atuais
+      state.shortcuts = [];
+      
+      try {
+        await loadShortcuts();
+        renderDropdown(); // Re-renderizar após carregamento
+      } catch (error) {
+        console.error("❌ Erro no reload debug:", error);
+      } finally {
+        debugReloadBtn.textContent = "🔄 Recarregar Atalhos";
+        debugReloadBtn.disabled = false;
+      }
+    });
+  }
 }
 
 function renderLoadingState() {
@@ -612,14 +637,30 @@ function renderLoadingState() {
 }
 
 function renderShortcuts() {
+  console.log(`🎨 Renderizando shortcuts. Total no state: ${state.shortcuts.length}`);
   const activeShortcuts = state.shortcuts.filter((s) => s.is_active !== false);
+  console.log(`📊 Shortcuts ativos: ${activeShortcuts.length}`);
 
   if (activeShortcuts.length === 0) {
+    const totalShortcuts = state.shortcuts.length;
+    console.log("📝 Nenhum atalho ativo encontrado");
+    
+    let message = "Nenhum atalho disponível";
+    let subtitle = "Crie seus atalhos no painel Symplifika";
+    
+    if (totalShortcuts > 0) {
+      message = `${totalShortcuts} atalho(s) encontrado(s), mas nenhum ativo`;
+      subtitle = "Verifique se seus atalhos estão marcados como ativos";
+    }
+    
     return `
             <div class="no-shortcuts">
                 <div class="no-shortcuts-icon">📝</div>
-                <div>Nenhum atalho disponível</div>
-                <div style="margin-top: 4px; font-size: 11px;">Crie seus atalhos no painel Symplifika</div>
+                <div>${message}</div>
+                <div style="margin-top: 4px; font-size: 11px;">${subtitle}</div>
+                <div style="margin-top: 8px; font-size: 10px; opacity: 0.7;">
+                    Debug: ${totalShortcuts} total, ${activeShortcuts.length} ativos
+                </div>
             </div>
         `;
   }
@@ -909,25 +950,39 @@ async function loadShortcuts() {
   if (state.isLoading) return;
 
   state.isLoading = true;
+  console.log("🔄 Iniciando carregamento de atalhos...");
 
   try {
     if (!isChromeRuntimeAvailable()) {
-      console.warn("Chrome runtime não disponível - usando atalhos em cache");
+      console.warn("❌ Chrome runtime não disponível - usando atalhos em cache");
       state.isLoading = false;
       return;
     }
 
-    const response = await sendSafeMessage({ type: "GET_SHORTCUTS" });
+    console.log("📡 Enviando mensagem GET_SHORTCUTS para background...");
+    const response = await sendSafeMessage({ type: "GET_SHORTCUTS" }, 10000);
+    console.log("📄 Resposta recebida:", response);
 
     if (response && response.success) {
       const newShortcuts = response.shortcuts || [];
+      console.log(`📋 Processando ${newShortcuts.length} atalhos recebidos`);
+
+      // Log detalhado dos primeiros atalhos
+      if (newShortcuts.length > 0) {
+        console.log("📝 Primeiros atalhos:", newShortcuts.slice(0, 3).map(s => ({
+          id: s.id,
+          trigger: s.trigger,
+          title: s.title,
+          is_active: s.is_active
+        })));
+      }
 
       // Verificar se houve mudanças
       const shortcutsChanged =
         JSON.stringify(state.shortcuts) !== JSON.stringify(newShortcuts);
 
       state.shortcuts = newShortcuts;
-      console.log(`✅ ${state.shortcuts.length} atalhos carregados`);
+      console.log(`✅ ${state.shortcuts.length} atalhos carregados no state`);
 
       // Atualizar dropdown se estiver visível e houve mudanças
       if (
@@ -935,17 +990,39 @@ async function loadShortcuts() {
         state.dropdownElement &&
         state.dropdownElement.classList.contains("visible")
       ) {
+        console.log("🔄 Atualizando dropdown visível...");
         renderDropdown();
       }
     } else {
-      console.warn("Resposta inválida ao carregar atalhos:", response);
+      console.warn("❌ Resposta inválida ao carregar atalhos:", response);
+      
+      // Tentar verificar se o usuário está autenticado
+      try {
+        const pingResponse = await sendSafeMessage({ type: "PING" }, 5000);
+        console.log("🏓 Ping response:", pingResponse);
+        
+        if (pingResponse && !pingResponse.authenticated) {
+          console.warn("⚠️ Usuário não está autenticado na extensão");
+        }
+      } catch (pingError) {
+        console.error("❌ Erro no ping:", pingError);
+      }
     }
   } catch (error) {
-    console.error("Erro ao carregar atalhos:", error);
+    console.error("❌ Erro ao carregar atalhos:", error);
+    
+    // Verificar se é erro de contexto invalidado
+    if (error.message && error.message.includes("Extension context invalidated")) {
+      console.error("🔄 Contexto da extensão invalidado - recarregue a página");
+      return;
+    }
+    
     // Tentar novamente em 10 segundos
+    console.log("⏰ Tentando novamente em 10 segundos...");
     setTimeout(loadShortcuts, 10000);
   } finally {
     state.isLoading = false;
+    console.log("🏁 Carregamento de atalhos finalizado");
   }
 }
 
