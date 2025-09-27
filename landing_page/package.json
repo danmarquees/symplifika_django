@@ -1,0 +1,165 @@
+{
+  "name": "symplifika-landing-page",
+  "version": "1.0.0",
+  "description": "Landing page moderna para captura de leads do Symplifika - plataforma de automação de texto com IA",
+  "main": "index.html",
+  "scripts": {
+    "dev": "live-server --port=3000 --open=/",
+    "build": "npm run build:css && npm run build:js && npm run optimize",
+    "build:css": "tailwindcss -i ./assets/css/style.css -o ./dist/css/style.min.css --minify",
+    "build:js": "terser assets/js/main.js config.js -o dist/js/bundle.min.js --compress --mangle",
+    "optimize": "npm run optimize:images && npm run optimize:html",
+    "optimize:images": "imagemin assets/images/**/*.{jpg,png,svg} --out-dir=dist/images",
+    "optimize:html": "html-minifier --input-dir . --output-dir dist --file-ext html --remove-comments --collapse-whitespace --minify-css --minify-js",
+    "watch": "npm-run-all --parallel watch:*",
+    "watch:css": "tailwindcss -i ./assets/css/style.css -o ./assets/css/style.compiled.css --watch",
+    "watch:js": "nodemon --watch assets/js --ext js --exec 'npm run lint:js'",
+    "lint": "npm run lint:js && npm run lint:css && npm run lint:html",
+    "lint:js": "eslint assets/js/*.js config.js --fix",
+    "lint:css": "stylelint assets/css/*.css --fix",
+    "lint:html": "htmlhint *.html",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "validate": "npm run lint && npm run test",
+    "serve": "python -m http.server 8000",
+    "serve:dist": "serve -s dist -p 3000",
+    "analyze": "npm run analyze:bundle && npm run analyze:lighthouse",
+    "analyze:bundle": "bundlephobia analyze",
+    "analyze:lighthouse": "lighthouse http://localhost:3000 --output html --output-path ./reports/lighthouse.html",
+    "deploy": "npm run build && npm run deploy:netlify",
+    "deploy:netlify": "netlify deploy --prod --dir dist",
+    "clean": "rimraf dist reports coverage",
+    "precommit": "npm run validate",
+    "postinstall": "npm run build:css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seu-usuario/symplifika-landing.git"
+  },
+  "keywords": [
+    "landing-page",
+    "symplifika",
+    "automacao",
+    "ia",
+    "produtividade",
+    "atalhos",
+    "texto",
+    "waitlist",
+    "leads"
+  ],
+  "author": "Equipe Symplifika <dev@symplifika.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/seu-usuario/symplifika-landing/issues"
+  },
+  "homepage": "https://symplifika.com",
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.10",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.54.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "html-minifier": "^4.0.0",
+    "htmlhint": "^1.1.4",
+    "imagemin": "^8.0.1",
+    "imagemin-cli": "^7.0.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "lighthouse": "^11.4.0",
+    "live-server": "^1.2.2",
+    "nodemon": "^3.0.2",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^8.4.32",
+    "prettier": "^3.1.0",
+    "rimraf": "^5.0.5",
+    "serve": "^14.2.1",
+    "stylelint": "^15.11.0",
+    "stylelint-config-standard": "^34.0.0",
+    "tailwindcss": "^3.3.6",
+    "terser": "^5.24.0"
+  },
+  "dependencies": {
+    "netlify-cli": "^17.10.1"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ],
+  "jest": {
+    "testEnvironment": "jsdom",
+    "setupFilesAfterEnv": ["<rootDir>/tests/setup.js"],
+    "collectCoverageFrom": [
+      "assets/js/**/*.js",
+      "config.js",
+      "!assets/js/**/*.test.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    }
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "es2021": true,
+      "jest": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "prettier"
+    ],
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+    },
+    "rules": {
+      "no-console": "warn",
+      "no-debugger": "error",
+      "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+      "prefer-const": "error",
+      "no-var": "error"
+    }
+  },
+  "stylelint": {
+    "extends": ["stylelint-config-standard"],
+    "rules": {
+      "at-rule-no-unknown": [
+        true,
+        {
+          "ignoreAtRules": ["tailwind", "apply", "variants", "responsive", "screen"]
+        }
+      ]
+    }
+  },
+  "prettier": {
+    "semi": true,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "printWidth": 100,
+    "bracketSpacing": true,
+    "arrowParens": "avoid"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "files": [
+    "index.html",
+    "assets/**/*",
+    "config.js",
+    "README.md"
+  ],
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/symplifika"
+  }
+}
